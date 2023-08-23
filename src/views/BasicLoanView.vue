@@ -1,26 +1,28 @@
 <template>
-  <div style="display: flex; flex-direction: column;">
+  <div style="display: flex; flex-direction: column; padding: 1em;">
     <div style="display: flex; justify-content: space-around;">
       <div>
-        <label for="loanAmount">Loan Amount: </label>
-        <input id="loanAmount" type="text" v-model="loanAmount">
+        <label for="loanAmount">Loan Amount: {{currency}}</label>
+        <input id="loanAmount" type="number" v-model="loanAmount" style="width: 7em;">
       </div>
       <div>
         <label for="interestRate">Interest Rate: </label>
-        <input id="interestRate" type="number" v-model="interestRate">
+        <input id="interestRate" type="number" min="1" max="100" v-model="interestRate" style="width: 3em; text-align: end;">
+        <span>%</span>
       </div>
       <div>
         <label for="loanPeriod">Loan Period: </label>
-        <input id="loanPeriod" type="number" v-model="loanPeriod">
+        <input id="loanPeriod" type="number" min="1" max="720" v-model="loanPeriod" style="width: 3em; text-align: end;">
+        <span>Years</span>
       </div>
     </div>
     <div style="display: flex; justify-content: space-around;">
       <div>
-        <label for="MinPayment">Min Monthly Payment: </label>
+        <label for="MinPayment">Min Monthly Payment: {{currency}}</label>
         <span>{{ minPayment }}</span>
       </div>
       <div>
-        <label for="ActPayment">Actual Monthly Payment: </label>
+        <label for="ActPayment">Actual Monthly Payment: {{currency}}</label>
         <input id="interestRate" type="number" :placeholder="minPayment" v-model="actualPayment">
       </div>
     </div>
@@ -42,6 +44,10 @@
 <script setup>
 import {ref, reactive, computed} from 'vue'
 
+const currency = ref("$")
+
+const currencyFormatter = new Intl.NumberFormat('en-US')
+
 let loanAmount = ref(48000)
 
 let interestRate = ref(1)
@@ -59,9 +65,9 @@ let periodInMonths = computed(() => {
 })
 
 let minPayment = computed(() => {
-  return (loanAmount.value*monthlyInterest.value)/(1-1/((1+monthlyInterest.value)**periodInMonths.value))
+  const minPayment_ = (loanAmount.value*monthlyInterest.value)/(1-1/((1+monthlyInterest.value)**periodInMonths.value))
+  return currencyFormatter.format(minPayment_)
 })
-
 
 
 
