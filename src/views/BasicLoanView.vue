@@ -91,7 +91,14 @@ const bond = reactive({
     const minPayment_ = (bond.loanAmount*bond.monthlyInterest)/(1-1/((1+bond.monthlyInterest)**bond.periodInMonths))
     return currencyFormatter.format(minPayment_)
   }),
+  adHocPayments: Array.from({length: 60*12}, (x) => null),
+  annualInterestByMonth: Array.from({length: 60*12}, (x) => null),
+  monthlyInterestByMonth: computed(() => bond.annualInterestByMonth.map((x)=>x/1200)),
+  bondPaymentsByMonth: Array.from({length: 60*12}, (x) => null),
+
 })
+
+
 
 </script>
 
