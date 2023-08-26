@@ -71,7 +71,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, computed, watch} from 'vue'
+import {ref, reactive, computed, watch, watchEffect} from 'vue'
 
 const currencyFormatter = new Intl.NumberFormat('en-US')
 
@@ -92,12 +92,41 @@ const bond = reactive({
     return currencyFormatter.format(minPayment_)
   }),
   adHocPayments: Array.from({length: 60*12}, (x) => null),
+  adHocInterest: Array.from({length: 60*12}, (x) => null),
   annualInterestByMonth: Array.from({length: 60*12}, (x) => null),
-  monthlyInterestByMonth: computed(() => bond.annualInterestByMonth.map((x)=>x/1200)),
+  monthlyInterestByMonth: Array.from({length: 60*12}, (x) => null),
+  adHocMonthlyPayments: Array.from({length: 60*12}, (x) => null),
   bondPaymentsByMonth: Array.from({length: 60*12}, (x) => null),
 
 })
 
+const parseInterest = () => {
+  bond.annualInterestByMonth.forEach((x, i) => {
+    if (bond.adHocInterest[i]) {
+      bond.annualInterestByMonth[i] = bond.adHocInterest[i]
+    } else if (i == 0) {
+      bond.annualInterestByMonth[i] = bond.interestRate
+    } else {
+      bond.annualInterestByMonth[i] = bond.annualInterestByMonth[i-1]
+    }
+  })
+  bond.monthlyInterestByMonth = bond.annualInterestByMonth.map((x)=>x/1200)
+}
+
+const parsePaymentst = () => {
+  bond.bondPaymentsByMonth.forEach((x, i) => {
+    if (bond.adHocMonthlyPayments[i]) {
+      bond.bondPaymentsByMonth[i] = bond.adHocMonthlyPayments[i]
+    } else if (i == 0) {
+      bond.bondPaymentsByMonth[i] = bond.actualPayment ? bond.actualPayment : bond.minPayment
+    } else {
+      bond.bondPaymentsByMonth[i] = bond.bondPaymentsByMonth[i-1]
+    }
+  })
+}
+
+watchEffect(() => parseInterest())
+watchEffect(() => parsePaymentst())
 
 
 </script>
