@@ -128,6 +128,20 @@ const parsePaymentst = () => {
 watchEffect(() => parseInterest())
 watchEffect(() => parsePaymentst())
 
+const runningCapital = computed(() => {
+  let _runningCapital = Array.from({length: 60*12}, (x) => 0)
+
+  _runningCapital.forEach((x, i) => {
+    if (i == 0) {
+      _runningCapital[i] = bond.loanAmount
+    } else {
+      _runningCapital[i] = _runningCapital[i-1]*(1 + bond.monthlyInterestByMonth[i]) - bond.bondPaymentsByMonth[i] - bond.adHocPayments[i]
+    }
+  })
+  return _runningCapital
+})
+
+console.log(runningCapital.value)
 
 </script>
 
@@ -148,3 +162,14 @@ tr {
 
   
 </style>
+
+<!-- Pseudo code for calculating the running capital
+  =Prior months capital * (1 + monthly interest for current month ) - bond payment for current month - ad-hoc payment for current month
+  =AJ295*(1+AO149)-Y220-Y83
+-->
+
+
+<!-- Pseudo code for calculating the last payment date in excel, might be useful later...
+  =IF(running capital for the month prior > 0 , IF(running capital for the current month < 0 , monthly payment -  negative running capital for the current month , monthly payment) , 0)
+  =IF(AI300>0,IF(AJ300<0,AJ224+AJ300,AJ224),0)
+-->
