@@ -28,7 +28,7 @@
     </div>
     <div>
       <label for="LoanPayPeriod">Loan to be paid off in: </label>
-      <span>30 years and 1 month</span>
+      <span>{{paymentDuration}}</span>
     </div>
     <div>
       <label for="LastPayment">Last payment amount: </label>
@@ -141,7 +141,18 @@ const runningCapital = computed(() => {
   return _runningCapital
 })
 
-console.log(runningCapital.value)
+const paymentDuration = computed(() => {
+  const lastPaymentMonth = runningCapital.value.findIndex((x) => x < 0)
+
+  const _years = Math.floor(lastPaymentMonth/12)
+  const _months = lastPaymentMonth%12
+
+  const _monthTerm = _months ==1 ? "month" : "months"
+
+  return `${_years} years and ${_months} ${_monthTerm}`
+})
+
+console.log(paymentDuration.value)
 
 </script>
 
