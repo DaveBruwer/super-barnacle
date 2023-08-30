@@ -69,8 +69,48 @@ const bond = reactive({
   monthlyInterestByMonth: Array.from({length: 60*12}, (x) => null),
   adHocMonthlyPayments: Array.from({length: 60*12}, (x) => null),
   bondPaymentsByMonth: Array.from({length: 60*12}, (x) => null),
-
+  runningCalcs: Array.from({length: 60*12}, (x) => {
+    return {
+      annualInterest: null,
+      monthlyInterest: null,
+      payment: null,
+      capital: null
+    }
+  }),
 })
+
+const parseCalcs = () => {
+  bond.runningCalcs.forEach((x, i) => {
+    // interest calcs
+    if (bond.adHocInterest[i]) {
+      bond.runningCalcs[i].annualInterest = bond.adHocInterest[i]
+    } else if (i == 0) {
+      bond.runningCalcs[i].annualInterest = bond.interestRate
+    } else {
+      bond.runningCalcs[i].annualInterest = bond.runningCalcs[i-1].annualInterest
+    }
+    bond.runningCalcs[i].monthlyInterest = bond.runningCalcs[i].annualInterest/1200
+
+    // payment calcs
+    if (bond.adHocMonthlyPayments[i]) {
+      bond.runningCalcs[i].payment = bond.adHocMonthlyPayments[i]
+    } else if (i == 0) {
+      bond.runningCalcs[i].payment = bond.actualPayment ? bond.actualPayment : bond.minPayment
+    } else if (bond.runningCalcs[i-1].capital*(1 + bond.runningCalcs[i].monthlyInterest) < bond.runningCalcs[i-1].payment) {
+      bond.runningCalcs[i].payment = bond.runningCalcs[i-1].capital*(1 + bond.runningCalcs[i].monthlyInterest)
+    } else {
+      bond.runningCalcs[i].payment = bond.runningCalcs[i-1].payment
+    }
+
+    //running capital
+    if (i == 0) {
+      bond.runningCalcs[i].capital = bond.loanAmount
+    } else {
+      bond.runningCalcs[i].capital = bond.runningCalcs[i-1].capital*(1 + bond.runningCalcs[i].monthlyInterest) - bond.runningCalcs[i].payment - bond.adHocPayments[i]
+    }
+
+  })
+}
 
 const parseInterest = () => {
   bond.annualInterestByMonth.forEach((x, i) => {
@@ -99,6 +139,7 @@ const parsePaymentst = () => {
 
 watchEffect(() => parseInterest())
 watchEffect(() => parsePaymentst())
+watchEffect(() => parseCalcs())
 
 const runningCapital = computed(() => {
   let _runningCapital = Array.from({length: 60*12}, (x) => 0)
@@ -130,7 +171,7 @@ const paymentDuration = computed(() => {
 })
 
 const buttonPress = () => {
-  console.log(runningCapital.value)
+  console.log(bond.runningCalcs)
 }
 
 </script>
