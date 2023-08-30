@@ -32,42 +32,14 @@
     </div>
     <div>
       <label for="LastPayment">Last payment amount: </label>
-      <span>$1000</span>
+      <span>{{bond.currency}}{{lastPaymentAmount}}</span>
     </div>
     <div>
       <label for="TotalAmount">Total amount paid over period of load: </label>
       <span>$1000000</span>
     </div>
   </div>
-  <table>
-    <tr>
-      <th>1</th>
-      <th>2</th>
-      <th>3</th>
-      <th>4</th>
-      <th>5</th>
-      <th>6</th>
-      <th>7</th>
-      <th>8</th>
-      <th>9</th>
-      <th>10</th>
-      <th>11</th>
-      <th>12</th>
-    </tr>
-    <tr>
-      <td>1</td>
-      <td>
-        <input type="number">
-        <div>something else</div>
-      </td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <td>1</td>
-      <td>2</td>
-      <td>3</td>
-    </tr>
-  </table>
+  <button @click="buttonPress">Press Me!</button>
 </template>
 
 <script setup>
@@ -141,18 +113,25 @@ const runningCapital = computed(() => {
   return _runningCapital
 })
 
-const paymentDuration = computed(() => {
-  const lastPaymentMonth = runningCapital.value.findIndex((x) => x < 0)
+const lastPaymentMonth = computed(()=> runningCapital.value.findIndex((x) => x < 0))
+const lastPaymentAmount = computed(()=> currencyFormatter.format(runningCapital.value[lastPaymentMonth.value-1]))
 
-  const _years = Math.floor(lastPaymentMonth/12)
-  const _months = lastPaymentMonth%12
+const paymentDuration = computed(() => {
+  const _years = Math.floor(lastPaymentMonth.value/12)
+  const _months = lastPaymentMonth.value%12
+
+  if(_years < 0 || _months < 0) {
+    return "NEVER (more than 60 years!)"
+  }
 
   const _monthTerm = _months ==1 ? "month" : "months"
 
   return `${_years} years and ${_months} ${_monthTerm}`
 })
 
-console.log(paymentDuration.value)
+const buttonPress = () => {
+  console.log(runningCapital.value)
+}
 
 </script>
 
@@ -184,3 +163,33 @@ tr {
   =IF(running capital for the month prior > 0 , IF(running capital for the current month < 0 , monthly payment -  negative running capital for the current month , monthly payment) , 0)
   =IF(AI300>0,IF(AJ300<0,AJ224+AJ300,AJ224),0)
 -->
+
+<!-- <table>
+    <tr>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+      <th>10</th>
+      <th>11</th>
+      <th>12</th>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>
+        <input type="number">
+        <div>something else</div>
+      </td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+    </tr>
+  </table> -->
