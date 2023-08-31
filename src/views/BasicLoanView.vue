@@ -36,7 +36,7 @@
     </div>
     <div>
       <label for="TotalAmount">Total amount paid over period of load: </label>
-      <span>$1000000</span>
+      <span>${{bond.totalContribution}}</span>
     </div>
   </div>
   <button @click="buttonPress">Press Me!</button>
@@ -61,7 +61,7 @@ const bond = reactive({
   }),
   minPayment: computed(() => {
     const minPayment_ = (bond.loanAmount*bond.monthlyInterest)/(1-1/((1+bond.monthlyInterest)**bond.periodInMonths))
-    return currencyFormatter.format(minPayment_)
+    return minPayment_
   }),
   adHocPayments: Array.from({length: 60*12}, (x) => null),
   adHocInterest: Array.from({length: 60*12}, (x) => null),
@@ -71,6 +71,7 @@ const bond = reactive({
   bondPaymentsByMonth: Array.from({length: 60*12}, (x) => null),
   duration: "?! Something Went Wrong !?",
   finalPayment: null,
+  totalContribution: null,
   runningCalcs: Array.from({length: 60*12}, (x) => {
     return {
       annualInterest: null,
@@ -82,6 +83,7 @@ const bond = reactive({
 })
 
 const parseCalcs = () => {
+  bond.totalContribution = 0
   bond.runningCalcs.forEach((x, i) => {
     // interest calcs
     if (bond.adHocInterest[i]) {
@@ -110,80 +112,29 @@ const parseCalcs = () => {
     } else {
       bond.runningCalcs[i].capital = bond.runningCalcs[i-1].capital*(1 + bond.runningCalcs[i].monthlyInterest) - bond.runningCalcs[i].payment - bond.adHocPayments[i]
     }
+
+    // total contribution tally
+    if (i != 0) {
+      bond.totalContribution += Number(bond.runningCalcs[i].payment) + Number(bond.adHocPayments[i])
+    }
   })
 
-  // last payment month
+  // last payment month and amount
   const lastMonth = bond.runningCalcs.findIndex((x) => x.capital <= 0)
   if(lastMonth == -1) {
     bond.duration = "NEVER (more than 60 years!)"
-    bond.finalPayment = "?1?"
+    bond.finalPayment = " INFINITE"
   } else {
     const _years = Math.floor(lastMonth/12)
     const _months = lastMonth%12
     const _monthTerm = _months ==1 ? "month" : "months"
     bond.duration = `${_years} years and ${_months} ${_monthTerm}`
-    bond.finalPayment = currencyFormatter.format(bond.runningCalcs[lastMonth].payment)
+    bond.finalPayment = bond.runningCalcs[lastMonth].payment
   }
 
 }
 
-const parseInterest = () => {
-  bond.annualInterestByMonth.forEach((x, i) => {
-    if (bond.adHocInterest[i]) {
-      bond.annualInterestByMonth[i] = bond.adHocInterest[i]
-    } else if (i == 0) {
-      bond.annualInterestByMonth[i] = bond.interestRate
-    } else {
-      bond.annualInterestByMonth[i] = bond.annualInterestByMonth[i-1]
-    }
-  })
-  bond.monthlyInterestByMonth = bond.annualInterestByMonth.map((x)=>x/1200)
-}
-
-const parsePaymentst = () => {
-  bond.bondPaymentsByMonth.forEach((x, i) => {
-    if (bond.adHocMonthlyPayments[i]) {
-      bond.bondPaymentsByMonth[i] = bond.adHocMonthlyPayments[i]
-    } else if (i == 0) {
-      bond.bondPaymentsByMonth[i] = bond.actualPayment ? bond.actualPayment : bond.minPayment
-    } else {
-      bond.bondPaymentsByMonth[i] = bond.bondPaymentsByMonth[i-1]
-    }
-  })
-}
-
-watchEffect(() => parseInterest())
-watchEffect(() => parsePaymentst())
 watchEffect(() => parseCalcs())
-
-const runningCapital = computed(() => {
-  let _runningCapital = Array.from({length: 60*12}, (x) => 0)
-
-  _runningCapital.forEach((x, i) => {
-    if (i == 0) {
-      _runningCapital[i] = bond.loanAmount
-    } else {
-      _runningCapital[i] = _runningCapital[i-1]*(1 + bond.monthlyInterestByMonth[i]) - bond.bondPaymentsByMonth[i] - bond.adHocPayments[i]
-    }
-  })
-  return _runningCapital
-})
-
-const lastPaymentMonth = computed(()=> runningCapital.value.findIndex((x) => x < 0))
-const lastPaymentAmount = computed(()=> currencyFormatter.format(runningCapital.value[lastPaymentMonth.value]))
-
-const paymentDuration = computed(() => {
-  const _years = Math.floor(lastPaymentMonth.value/12)
-  const _months = lastPaymentMonth.value%12
-
-  if(_years < 0 || _months < 0) {
-    return "NEVER (more than 60 years!)"
-  }
-
-  const _monthTerm = _months ==1 ? "month" : "months"
-
-  return `${_years} years and ${_months} ${_monthTerm}`
-})
 
 const buttonPress = () => {
   console.log(bond.runningCalcs)
