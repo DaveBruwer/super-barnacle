@@ -28,11 +28,11 @@
     </div>
     <div>
       <label for="LoanPayPeriod">Loan to be paid off in: </label>
-      <span>{{paymentDuration}}</span>
+      <span>{{bond.duration}}</span>
     </div>
     <div>
       <label for="LastPayment">Last payment amount: </label>
-      <span>{{bond.currency}}{{lastPaymentAmount}}</span>
+      <span>{{bond.currency}}{{bond.finalPayment}}</span>
     </div>
     <div>
       <label for="TotalAmount">Total amount paid over period of load: </label>
@@ -69,12 +69,14 @@ const bond = reactive({
   monthlyInterestByMonth: Array.from({length: 60*12}, (x) => null),
   adHocMonthlyPayments: Array.from({length: 60*12}, (x) => null),
   bondPaymentsByMonth: Array.from({length: 60*12}, (x) => null),
+  duration: "?! Something Went Wrong !?",
+  finalPayment: null,
   runningCalcs: Array.from({length: 60*12}, (x) => {
     return {
       annualInterest: null,
       monthlyInterest: null,
       payment: null,
-      capital: null
+      capital: null,
     }
   }),
 })
@@ -108,8 +110,21 @@ const parseCalcs = () => {
     } else {
       bond.runningCalcs[i].capital = bond.runningCalcs[i-1].capital*(1 + bond.runningCalcs[i].monthlyInterest) - bond.runningCalcs[i].payment - bond.adHocPayments[i]
     }
-
   })
+
+  // last payment month
+  const lastMonth = bond.runningCalcs.findIndex((x) => x.capital <= 0)
+  if(lastMonth == -1) {
+    bond.duration = "NEVER (more than 60 years!)"
+    bond.finalPayment = "?1?"
+  } else {
+    const _years = Math.floor(lastMonth/12)
+    const _months = lastMonth%12
+    const _monthTerm = _months ==1 ? "month" : "months"
+    bond.duration = `${_years} years and ${_months} ${_monthTerm}`
+    bond.finalPayment = currencyFormatter.format(bond.runningCalcs[lastMonth].payment)
+  }
+
 }
 
 const parseInterest = () => {
@@ -155,7 +170,7 @@ const runningCapital = computed(() => {
 })
 
 const lastPaymentMonth = computed(()=> runningCapital.value.findIndex((x) => x < 0))
-const lastPaymentAmount = computed(()=> currencyFormatter.format(runningCapital.value[lastPaymentMonth.value-1]))
+const lastPaymentAmount = computed(()=> currencyFormatter.format(runningCapital.value[lastPaymentMonth.value]))
 
 const paymentDuration = computed(() => {
   const _years = Math.floor(lastPaymentMonth.value/12)
