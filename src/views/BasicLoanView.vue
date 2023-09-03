@@ -40,6 +40,116 @@
     </div>
   </div>
   <button @click="buttonPress">Press Me!</button>
+  <div>______________________________________________</div>
+  <table>
+    <thead>
+      <tr>
+        <th colspan="13">AD HOC PAYMENTS</th>
+      </tr>
+      <tr>
+        <th colspan="13">Enter any additional payments which you make into your bond account. Loans from it are entered as negative numbers.</th>
+      </tr>
+      <tr>
+        <th></th>
+        <th colspan="12">Months</th>
+      </tr>
+      <tr>
+        <th>Years</th>
+        <th v-for="n in 12">{{n}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="m in bond.finalYear">
+        <td>{{ m }}</td>
+        <td v-for="i in 12">
+          <input type="number" v-model="bond.adHocPayments[(m-1)*12 + i]" placeholder="0" style="width: 5em;">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div>______________________________________________</div>
+  <table>
+    <thead>
+      <tr>
+        <th colspan="13">INTEREST RATES</th>
+      </tr>
+      <tr>
+        <th colspan="13">Fill in the new interest rate in the month in which it changes.</th>
+      </tr>
+      <tr>
+        <th></th>
+        <th colspan="12">Months</th>
+      </tr>
+      <tr>
+        <th>Years</th>
+        <th v-for="n in 12">{{n}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="m in bond.finalYear">
+        <td>{{ m }}</td>
+        <td v-for="i in 12">
+          <input type="number" v-model="bond.adHocInterest[(m-1)*12 + i]" :placeholder="bond.runningCalcs[(m-1)*12 + i].annualInterest" style="width: 5em;">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div>______________________________________________</div>
+  <table>
+    <thead>
+      <tr>
+        <th colspan="13">BOND REPAYMENTS</th>
+      </tr>
+      <tr>
+        <th colspan="13">Fill in the new bond repayment amount in the month in which it changes.</th>
+      </tr>
+      <tr>
+        <th></th>
+        <th colspan="12">Months</th>
+      </tr>
+      <tr>
+        <th>Years</th>
+        <th v-for="n in 12">{{n}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="m in bond.finalYear">
+        <td>{{ m }}</td>
+        <td v-for="i in 12">
+          <input type="number" v-model="bond.adHocMonthlyPayments[(m-1)*12 + i]" :placeholder="bond.runningCalcs[(m-1)*12 + i].payment" style="width: 5em;">
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div>______________________________________________</div>
+  <table>
+    <thead>
+      <tr>
+        <th colspan="13">RUNNING CAPITAL</th>
+      </tr>
+      <tr>
+        <th colspan="13">Figures represent the remaining capital at the end of each month.</th>
+      </tr>
+      <tr>
+        <th></th>
+        <th colspan="12">Months</th>
+      </tr>
+      <tr>
+        <th>Years</th>
+        <th v-for="n in 12">{{n}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="m in bond.finalYear">
+        <td>{{ m }}</td>
+        <td v-for="i in 12">
+          <div style="width: 7em;">{{ currencyFormatter.format(bond.runningCalcs[(m-1)*12 + i].capital) }}</div>
+          <!-- <input type="number" v-model="bond.runningCalcs[(m-1)*12 + i].capital" style="width: 5em;"> -->
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  
 </template>
 
 <script setup>
@@ -65,12 +175,13 @@ const bond = reactive({
   }),
   adHocPayments: Array.from({length: 60*12}, (x) => null),
   adHocInterest: Array.from({length: 60*12}, (x) => null),
-  annualInterestByMonth: Array.from({length: 60*12}, (x) => null),
-  monthlyInterestByMonth: Array.from({length: 60*12}, (x) => null),
+  // annualInterestByMonth: Array.from({length: 60*12}, (x) => null),
+  // monthlyInterestByMonth: Array.from({length: 60*12}, (x) => null),
   adHocMonthlyPayments: Array.from({length: 60*12}, (x) => null),
-  bondPaymentsByMonth: Array.from({length: 60*12}, (x) => null),
+  // bondPaymentsByMonth: Array.from({length: 60*12}, (x) => null),
   duration: "?! Something Went Wrong !?",
   finalPayment: null,
+  finalYear: 60*12,
   totalContribution: null,
   runningCalcs: Array.from({length: 60*12}, (x) => {
     return {
@@ -124,12 +235,14 @@ const parseCalcs = () => {
   if(lastMonth == -1) {
     bond.duration = "NEVER (more than 60 years!)"
     bond.finalPayment = " INFINITE"
+    bond.finalYear = 60
   } else {
     const _years = Math.floor(lastMonth/12)
     const _months = lastMonth%12
     const _monthTerm = _months ==1 ? "month" : "months"
     bond.duration = `${_years} years and ${_months} ${_monthTerm}`
     bond.finalPayment = bond.runningCalcs[lastMonth].payment
+    bond.finalYear = _months > 0 ? _years + 1 : _years
   }
 
 }
@@ -149,12 +262,9 @@ th {
 }
 
 td {
-  border-bottom: 1px solid black;
+  /* border-bottom: 1px solid black; */
 }
 
-tr {
-  border: 1px solid red;
-}
 
 
   
@@ -171,32 +281,3 @@ tr {
   =IF(AI300>0,IF(AJ300<0,AJ224+AJ300,AJ224),0)
 -->
 
-<!-- <table>
-    <tr>
-      <th>1</th>
-      <th>2</th>
-      <th>3</th>
-      <th>4</th>
-      <th>5</th>
-      <th>6</th>
-      <th>7</th>
-      <th>8</th>
-      <th>9</th>
-      <th>10</th>
-      <th>11</th>
-      <th>12</th>
-    </tr>
-    <tr>
-      <td>1</td>
-      <td>
-        <input type="number">
-        <div>something else</div>
-      </td>
-      <td>3</td>
-    </tr>
-    <tr>
-      <td>1</td>
-      <td>2</td>
-      <td>3</td>
-    </tr>
-  </table> -->
