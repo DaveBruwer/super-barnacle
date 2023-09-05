@@ -3,16 +3,16 @@
     <div style="display: flex; justify-content: space-around;">
       <div>
         <label for="loanAmount">Loan Amount: {{bond.currency}}</label>
-        <input id="loanAmount" type="number" min="1" v-model="bond.loanAmount" style="width: 7em;">
+        <input id="loanAmount" type="number" min="1" v-model.lazy="bond.loanAmount" style="width: 7em;">
       </div>
       <div>
         <label for="interestRate">Interest Rate: </label>
-        <input id="interestRate" type="number" min="1" max="100" v-model="bond.interestRate" style="width: 3em; text-align: end;">
+        <input id="interestRate" type="number" min="1" max="100" v-model.lazy="bond.interestRate" style="width: 3em; text-align: end;">
         <span>%</span>
       </div>
       <div>
         <label for="loanPeriod">Loan Period: </label>
-        <input id="loanPeriod" type="number" min="1" max="720" v-model="bond.loanPeriod" style="width: 3em; text-align: end;">
+        <input id="loanPeriod" type="number" min="1" max="720" v-model.lazy="bond.loanPeriod" style="width: 3em; text-align: end;">
         <span>Years</span>
       </div>
     </div>
@@ -23,7 +23,7 @@
       </div>
       <div>
         <label for="ActPayment">Actual Monthly Payment: {{bond.currency}}</label>
-        <input id="interestRate" type="number" min="1" :placeholder="bond.minPayment" v-model="bond.actualPayment">
+        <input id="interestRate" type="number" min="1" :placeholder="bond.minPayment" v-model.lazy="bond.actualPayment">
       </div>
     </div>
     <div>
@@ -144,7 +144,6 @@
         <td>{{ m }}</td>
         <td v-for="i in 12">
           <div style="width: 7em;">{{ currencyFormatter.format(bond.runningCalcs[(m-1)*12 + i].capital) }}</div>
-          <!-- <input type="number" v-model="bond.runningCalcs[(m-1)*12 + i].capital" style="width: 5em;"> -->
         </td>
       </tr>
     </tbody>
@@ -173,17 +172,14 @@ const bond = reactive({
     const minPayment_ = (bond.loanAmount*bond.monthlyInterest)/(1-1/((1+bond.monthlyInterest)**bond.periodInMonths))
     return minPayment_
   }),
-  adHocPayments: Array.from({length: 60*12}, (x) => null),
-  adHocInterest: Array.from({length: 60*12}, (x) => null),
-  // annualInterestByMonth: Array.from({length: 60*12}, (x) => null),
-  // monthlyInterestByMonth: Array.from({length: 60*12}, (x) => null),
-  adHocMonthlyPayments: Array.from({length: 60*12}, (x) => null),
-  // bondPaymentsByMonth: Array.from({length: 60*12}, (x) => null),
+  adHocPayments: Array.from({length: 60*12+1}, (x) => null),
+  adHocInterest: Array.from({length: 60*12+1}, (x) => null),
+  adHocMonthlyPayments: Array.from({length: 60*12+1}, (x) => null),
   duration: "?! Something Went Wrong !?",
   finalPayment: null,
-  finalYear: 60*12,
+  finalYear: 60*12+1,
   totalContribution: null,
-  runningCalcs: Array.from({length: 60*12}, (x) => {
+  runningCalcs: Array.from({length: 60*12 + 1}, (x) => {
     return {
       annualInterest: null,
       monthlyInterest: null,
@@ -225,7 +221,7 @@ const parseCalcs = () => {
     }
 
     // total contribution tally
-    if (i != 0) {
+    if (i > 0 && i < 60*12+1) {
       bond.totalContribution += Number(bond.runningCalcs[i].payment) + Number(bond.adHocPayments[i])
     }
   })
@@ -259,10 +255,6 @@ const buttonPress = () => {
 
 th {
   border-bottom: 1px solid black;
-}
-
-td {
-  /* border-bottom: 1px solid black; */
 }
 
 
