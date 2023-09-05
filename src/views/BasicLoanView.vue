@@ -39,8 +39,9 @@
       <span>${{bond.totalContribution}}</span>
     </div>
   </div>
-  <button @click="buttonPress">Press Me!</button>
-  <div>______________________________________________</div>
+  <!-- <button @click="buttonPress">Press Me!</button> -->
+  <Line :data="chartData.data" :options="chartData.options" />
+  <!-- <div>______________________________________________</div>
   <table>
     <thead>
       <tr>
@@ -147,12 +148,34 @@
         </td>
       </tr>
     </tbody>
-  </table>
+  </table> -->
   
 </template>
 
 <script setup>
 import {ref, reactive, computed, watch, watchEffect} from 'vue'
+import { Line } from 'vue-chartjs'
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+} from 'chart.js'
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+)
+
 
 const currencyFormatter = new Intl.NumberFormat('en-US')
 
@@ -187,6 +210,24 @@ const bond = reactive({
       capital: null,
     }
   }),
+})
+
+const chartData = reactive({
+  data: {
+    // labels: computed(Array.from({length: bond.finalYear*12}, (x) => x)),
+    labels: [1, 2, 3, 4, 5, 6],
+    datasets: [
+      {
+        label: "Runnig Capital",
+        data: [1, 2, 3, 4, 5, 6]
+        // data: computed(Array.from({length: bond.finalYear*12}, (x) => bond.runningCalcs[x].capital))
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false
+  }
 })
 
 const parseCalcs = () => {
