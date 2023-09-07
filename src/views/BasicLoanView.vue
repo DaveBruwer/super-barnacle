@@ -155,7 +155,6 @@
 import {ref, reactive, computed, watch, watchEffect} from 'vue'
 
 
-
 const currencyFormatter = new Intl.NumberFormat('en-US')
 
 const bond = reactive({
