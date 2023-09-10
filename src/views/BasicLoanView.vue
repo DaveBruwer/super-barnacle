@@ -39,8 +39,9 @@
       <span>${{bond.totalContribution}}</span>
     </div>
   </div>
-  <!-- <button @click="buttonPress">Press Me!</button> -->
-  <canvas id="myChart"></canvas>
+  <div style="height: 800px; width: auto; margin: 1em;">
+    <LineChart :chart-data="chartData"/>
+  </div>
   <!-- <div>______________________________________________</div>
   <table>
     <thead>
@@ -154,40 +155,15 @@
 
 <script setup>
 import {ref, reactive, computed, watch, watchEffect, onMounted} from 'vue'
-import Chart from 'chart.js/auto'
-
-onMounted(() => {
-  const ctx = document.getElementById('myChart');
-  
-  new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-      datasets: [{
-        label: '# of Votes',
-        data: [12, 19, 3, 5, 2, 3],
-        borderWidth: 1
-      }]
-    },
-    options: {
-      scales: {
-        y: {
-          beginAtZero: true
-        }
-      }
-    }
-  });
-})
-
-
+import LineChart from '../components/LineChart.vue';
 
 const currencyFormatter = new Intl.NumberFormat('en-US')
 
 const bond = reactive({
   currency: "$",
-  loanAmount: 48000,
-  interestRate: 1,
-  loanPeriod: 5,
+  loanAmount: 1000000,
+  interestRate: 5,
+  loanPeriod: 20,
   actualPayment: null,
   monthlyInterest:  computed(() => {
     return bond.interestRate/1200
@@ -204,7 +180,7 @@ const bond = reactive({
   adHocMonthlyPayments: Array.from({length: 60*12+1}, (x) => null),
   duration: "?! Something Went Wrong !?",
   finalPayment: null,
-  finalYear: 60*12+1,
+  finalYear: 60,
   totalContribution: null,
   runningCalcs: Array.from({length: 60*12 + 1}, (x) => {
     return {
@@ -214,6 +190,16 @@ const bond = reactive({
       capital: null,
     }
   }),
+})
+
+const chartData = reactive({
+  labels: Array.from({length: bond.finalYear * 12}, (x, i) => i),
+  datasets: [
+    {
+      label: "Loan Capital",
+      data: Array.from({length: bond.loanPeriod * 12}, (x) => bond.loanAmount),
+    }
+  ]
 })
 
 const parseCalcs = () => {
@@ -268,6 +254,9 @@ const parseCalcs = () => {
     bond.finalYear = _months > 0 ? _years + 1 : _years
   }
 
+  // chart data update
+  chartData.labels = Array.from({length: bond.finalYear * 12}, (x, i) => i)
+  chartData.datasets[0].data = Array.from({length: bond.finalYear * 12}, (x, i) => {return bond.runningCalcs[i].capital})
 }
 
 watchEffect(() => parseCalcs())
