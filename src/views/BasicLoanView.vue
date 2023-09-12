@@ -39,8 +39,8 @@
       <span>${{bond.totalContribution}}</span>
     </div>
   </div>
-  <div style="height: 800px; width: auto; margin: 1em;">
-    <LineChart :chart-data="chartData"/>
+  <div style="width: 50em;">
+    <LineChart style="margin: 1em;" :chart-data="chartData"/>
   </div>
   <!-- <div>______________________________________________</div>
   <table>
@@ -239,12 +239,15 @@ const parseCalcs = () => {
     }
   })
 
-  // last payment month and amount
+  // last payment month and amount and chart data update
   const lastMonth = bond.runningCalcs.findIndex((x) => x.capital <= 0)
   if(lastMonth == -1) {
     bond.duration = "NEVER (more than 60 years!)"
     bond.finalPayment = " INFINITE"
     bond.finalYear = 60
+
+    chartData.labels = Array.from({length: bond.finalYear * 12}, (x, i) => i)
+    chartData.datasets[0].data = Array.from({length: bond.finalYear * 12}, (x, i) => {return bond.runningCalcs[i].capital})
   } else {
     const _years = Math.floor(lastMonth/12)
     const _months = lastMonth%12
@@ -252,11 +255,10 @@ const parseCalcs = () => {
     bond.duration = `${_years} years and ${_months} ${_monthTerm}`
     bond.finalPayment = bond.runningCalcs[lastMonth].payment
     bond.finalYear = _months > 0 ? _years + 1 : _years
-  }
 
-  // chart data update
-  chartData.labels = Array.from({length: bond.finalYear * 12}, (x, i) => i)
-  chartData.datasets[0].data = Array.from({length: bond.finalYear * 12}, (x, i) => {return bond.runningCalcs[i].capital})
+    chartData.labels = Array.from({length: lastMonth}, (x, i) => i)
+    chartData.datasets[0].data = Array.from({length: lastMonth}, (x, i) => {return bond.runningCalcs[i].capital})
+  }
 }
 
 watchEffect(() => parseCalcs())

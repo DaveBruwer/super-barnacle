@@ -23,7 +23,8 @@
       type: 'line',
       options: {
         fill: true,
-        tension: 0.25
+        tension: 0.25,
+        pointStyle: false
       },
       data: props.chartData
     })
