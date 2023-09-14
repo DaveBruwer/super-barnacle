@@ -19,11 +19,11 @@
     <div style="display: flex; justify-content: space-around;">
       <div>
         <label for="MinPayment">Min Monthly Payment: {{bond.currency}}</label>
-        <span>{{ bond.minPayment }}</span>
+        <span>{{ currencyFormatter.format(bond.minPayment) }}</span>
       </div>
       <div>
         <label for="ActPayment">Actual Monthly Payment: {{bond.currency}}</label>
-        <input id="interestRate" type="number" min="1" :placeholder="bond.minPayment" v-model.lazy="bond.actualPayment">
+        <input id="interestRate" type="number" min="1" :placeholder="currencyFormatter.format(bond.minPayment)" v-model.lazy="bond.actualPayment">
       </div>
     </div>
     <div>
@@ -32,11 +32,11 @@
     </div>
     <div>
       <label for="LastPayment">Last payment amount: </label>
-      <span>{{bond.currency}}{{bond.finalPayment}}</span>
+      <span>{{bond.currency}}{{currencyFormatter.format(bond.finalPayment)}}</span>
     </div>
     <div>
       <label for="TotalAmount">Total amount paid over period of load: </label>
-      <span>${{bond.totalContribution}}</span>
+      <span>${{currencyFormatter.format(bond.totalContribution)}}</span>
     </div>
   </div>
   <div style="width: 50em;">
@@ -157,7 +157,7 @@
 import {ref, reactive, computed, watch, watchEffect, onMounted} from 'vue'
 import LineChart from '../components/LineChart.vue';
 
-const currencyFormatter = new Intl.NumberFormat('en-US')
+const currencyFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 const bond = reactive({
   currency: "$",

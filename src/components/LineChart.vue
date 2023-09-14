@@ -29,7 +29,6 @@
           tooltip: {
             callbacks: {
               label: function(context) {
-                console.log(context.label)
                 let label = context.dataset.label || '';
                 if (label) {
                     label += ': ';
@@ -40,7 +39,6 @@
                 return label;
               },
               title: function(context) {
-                console.log(context)
                 let title = context[0].label || '';
                 if( !isNaN(title) ) {
                   const _year = Math.floor(title/12)
