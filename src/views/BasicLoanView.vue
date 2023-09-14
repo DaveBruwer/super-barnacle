@@ -23,7 +23,11 @@
       </div>
       <div>
         <label for="ActPayment">Actual Monthly Payment: {{bond.currency}}</label>
-        <input id="interestRate" type="number" min="1" :placeholder="currencyFormatter.format(bond.minPayment)" v-model.lazy="bond.actualPayment">
+        <input id="ActPayment" type="number" min="1" :placeholder="currencyFormatter.format(bond.minPayment)" v-model.lazy="bond.actualPayment">
+      </div>
+      <div>
+        <label for="startDate">Loan Start Date: </label>
+        <input type="date" v-model="bond.startingDate">
       </div>
     </div>
     <div>
@@ -165,6 +169,7 @@ const bond = reactive({
   interestRate: 5,
   loanPeriod: 20,
   actualPayment: null,
+  startingDate: new Date().toISOString().split('T')[0],
   monthlyInterest:  computed(() => {
     return bond.interestRate/1200
   }),
