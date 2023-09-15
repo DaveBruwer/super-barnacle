@@ -246,12 +246,19 @@ const parseCalcs = () => {
 
   // last payment month and amount and chart data update
   const lastMonth = bond.runningCalcs.findIndex((x) => x.capital <= 0)
+  const _startDate = new Date(bond.startingDate)
+  const _startMonth = _startDate.getMonth()
+
   if(lastMonth == -1) {
     bond.duration = "NEVER (more than 60 years!)"
     bond.finalPayment = " INFINITE"
     bond.finalYear = 60
 
-    chartData.labels = Array.from({length: bond.finalYear * 12}, (x, i) => i)
+    chartData.labels = Array.from({length: bond.finalYear * 12}, (x, i) => {
+      const _currentMonth = new Date(_startDate)
+      _currentMonth.setMonth(_startMonth + i)
+      return _currentMonth.toISOString().split('T')[0]
+    })
     chartData.datasets[0].data = Array.from({length: bond.finalYear * 12}, (x, i) => {return bond.runningCalcs[i].capital})
   } else {
     const _years = Math.floor(lastMonth/12)
@@ -260,8 +267,14 @@ const parseCalcs = () => {
     bond.duration = `${_years} years and ${_months} ${_monthTerm}`
     bond.finalPayment = bond.runningCalcs[lastMonth].payment
     bond.finalYear = _months > 0 ? _years + 1 : _years
+    
 
-    chartData.labels = Array.from({length: lastMonth}, (x, i) => i)
+    chartData.labels = Array.from({length: lastMonth}, (x, i) => {
+      const _currentMonth = new Date(_startDate)
+      _currentMonth.setMonth(_startMonth + i)
+      return _currentMonth.toISOString().split('T')[0]
+    })
+
     chartData.datasets[0].data = Array.from({length: lastMonth}, (x, i) => {return bond.runningCalcs[i].capital})
   }
 }
