@@ -170,6 +170,18 @@ const bond = reactive({
   loanPeriod: 20,
   actualPayment: null,
   startingDate: new Date().toISOString().split('T')[0],
+  dates: computed(() => {
+    const _startDate = new Date(bond.startingDate)
+    const _startMonth = _startDate.getMonth()
+
+    const _datesArray = Array.from({length: 60 * 12}, (x, i) => {
+      const _currentMonth = new Date(_startDate)
+      _currentMonth.setMonth(_startMonth + i)
+      return _currentMonth
+    })
+
+    return _datesArray
+  }),
   monthlyInterest:  computed(() => {
     return bond.interestRate/1200
   }),
@@ -254,11 +266,7 @@ const parseCalcs = () => {
     bond.finalPayment = " INFINITE"
     bond.finalYear = 60
 
-    chartData.labels = Array.from({length: bond.finalYear * 12}, (x, i) => {
-      const _currentMonth = new Date(_startDate)
-      _currentMonth.setMonth(_startMonth + i)
-      return _currentMonth.toISOString().split('T')[0]
-    })
+    chartData.labels = Array.from({length: bond.finalYear * 12}, (x, i) => bond.dates[i].toISOString().split('T')[0])
     chartData.datasets[0].data = Array.from({length: bond.finalYear * 12}, (x, i) => {return bond.runningCalcs[i].capital})
   } else {
     const _years = Math.floor(lastMonth/12)
@@ -269,11 +277,7 @@ const parseCalcs = () => {
     bond.finalYear = _months > 0 ? _years + 1 : _years
     
 
-    chartData.labels = Array.from({length: lastMonth}, (x, i) => {
-      const _currentMonth = new Date(_startDate)
-      _currentMonth.setMonth(_startMonth + i)
-      return _currentMonth.toISOString().split('T')[0]
-    })
+    chartData.labels = Array.from({length: lastMonth}, (x, i) => bond.dates[i].toISOString().split('T')[0])
 
     chartData.datasets[0].data = Array.from({length: lastMonth}, (x, i) => {return bond.runningCalcs[i].capital})
   }
