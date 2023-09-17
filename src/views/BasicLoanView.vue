@@ -27,7 +27,7 @@
       </div>
       <div>
         <label for="startDate">Loan Start Date: </label>
-        <input type="date" v-model="bond.startingDate">
+        <input type="month" v-model="bond.startingDate">
       </div>
     </div>
     <div>
@@ -72,8 +72,8 @@
         </td>
       </tr>
     </tbody>
-  </table>
-  <div>______________________________________________</div>
+  </table> -->
+  <!-- <div>______________________________________________</div>
   <table>
     <thead>
       <tr>
@@ -163,13 +163,17 @@ import LineChart from '../components/LineChart.vue';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
+const dateToMonth = (_date) => {
+  return _date.toISOString().split('T')[0].split('-').slice(0, 2).join('-')
+}
+
 const bond = reactive({
   currency: "$",
   loanAmount: 1000000,
   interestRate: 5,
   loanPeriod: 20,
   actualPayment: null,
-  startingDate: new Date().toISOString().split('T')[0],
+  startingDate: dateToMonth(new Date()),
   dates: computed(() => {
     const _startDate = new Date(bond.startingDate)
     const _startMonth = _startDate.getMonth()
@@ -266,7 +270,7 @@ const parseCalcs = () => {
     bond.finalPayment = " INFINITE"
     bond.finalYear = 60
 
-    chartData.labels = Array.from({length: bond.finalYear * 12}, (x, i) => bond.dates[i].toISOString().split('T')[0])
+    chartData.labels = Array.from({length: bond.finalYear * 12}, (x, i) => dateToMonth(bond.dates[i]))
     chartData.datasets[0].data = Array.from({length: bond.finalYear * 12}, (x, i) => {return bond.runningCalcs[i].capital})
   } else {
     const _years = Math.floor(lastMonth/12)
@@ -277,7 +281,7 @@ const parseCalcs = () => {
     bond.finalYear = _months > 0 ? _years + 1 : _years
     
 
-    chartData.labels = Array.from({length: lastMonth}, (x, i) => bond.dates[i].toISOString().split('T')[0])
+    chartData.labels = Array.from({length: lastMonth}, (x, i) => dateToMonth(bond.dates[i]))
 
     chartData.datasets[0].data = Array.from({length: lastMonth}, (x, i) => {return bond.runningCalcs[i].capital})
   }
