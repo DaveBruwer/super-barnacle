@@ -46,7 +46,7 @@
   <div style="width: 50em;">
     <LineChart style="margin: 1em;" :chart-data="chartData"/>
   </div>
-  <!-- <div>______________________________________________</div>
+  <div>______________________________________________</div>
   <table>
     <thead>
       <tr>
@@ -57,7 +57,7 @@
       </tr>
       <tr>
         <th></th>
-        <th colspan="12">Months</th>
+        <th colspan="12">Month</th>
       </tr>
       <tr>
         <th>Years</th>
@@ -66,13 +66,14 @@
     </thead>
     <tbody>
       <tr v-for="m in bond.finalYear">
-        <td>{{ m }}</td>
+        <td>{{ bond.dates[0].getFullYear() + m-1 }}</td>
         <td v-for="i in 12">
-          <input type="number" v-model="bond.adHocPayments[(m-1)*12 + i]" placeholder="0" style="width: 5em;">
+          <input v-if="m < 2 && i < bond.dates[0].getMonth()+1" type="number" disabled="true" style="width: 5em;">
+          <input v-else type="number" v-model="bond.adHocPayments[(m-1)*12 + i]" placeholder="0" style="width: 5em;">
         </td>
       </tr>
     </tbody>
-  </table> -->
+  </table>
   <!-- <div>______________________________________________</div>
   <table>
     <thead>
