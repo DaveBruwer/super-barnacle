@@ -46,8 +46,8 @@
   <div style="width: 50em;">
     <LineChart style="margin: 1em;" :chart-data="chartData"/>
   </div>
-  <div>______________________________________________</div>
-  <table>
+  <button @click="adHocToggles.adHocPayments = !adHocToggles.adHocPayments"> Ad-Hoc Payments</button>
+  <table v-if="adHocToggles.adHocPayments">
     <thead>
       <tr>
         <th colspan="13">AD HOC PAYMENTS</th>
@@ -74,8 +74,8 @@
       </tr>
     </tbody>
   </table>
-  <div>______________________________________________</div>
-  <table>
+  <button @click="adHocToggles.interestRates = !adHocToggles.interestRates"> Interest Rates</button>
+  <table v-if="adHocToggles.interestRates">
     <thead>
       <tr>
         <th colspan="13">INTEREST RATES</th>
@@ -102,8 +102,8 @@
       </tr>
     </tbody>
   </table>
-  <div>______________________________________________</div>
-  <table>
+  <button @click="adHocToggles.bondPayments = !adHocToggles.bondPayments"> Bond Repayments</button>
+  <table v-if="adHocToggles.bondPayments">
     <thead>
       <tr>
         <th colspan="13">BOND REPAYMENTS</th>
@@ -130,8 +130,8 @@
       </tr>
     </tbody>
   </table>
-  <div>______________________________________________</div>
-  <table>
+  <button @click="adHocToggles.runningCapital = !adHocToggles.runningCapital"> Running Capital</button>
+  <table v-if="adHocToggles.runningCapital">
     <thead>
       <tr>
         <th colspan="13">RUNNING CAPITAL</th>
@@ -166,6 +166,13 @@ import {ref, reactive, computed, watch, watchEffect, onMounted} from 'vue'
 import LineChart from '../components/LineChart.vue';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
+const adHocToggles = reactive({
+  adHocPayments: false,
+  interestRates: false,
+  bondPayments: false,
+  runningCapital: false
+})
 
 const dateToMonth = (_date) => {
   return _date.toISOString().split('T')[0].split('-').slice(0, 2).join('-')
