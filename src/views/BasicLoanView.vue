@@ -26,7 +26,7 @@
         <input id="ActPayment" type="number" min="1" :placeholder="currencyFormatter.format(bond.minPayment)" v-model.lazy="bond.actualPayment">
       </div>
       <div>
-        <label for="startDate">Loan Start Date: </label>
+        <label for="startDate">First Payment: </label>
         <input type="month" v-model="bond.startingDate">
       </div>
     </div>
@@ -74,7 +74,7 @@
       </tr>
     </tbody>
   </table>
-  <!-- <div>______________________________________________</div>
+  <div>______________________________________________</div>
   <table>
     <thead>
       <tr>
@@ -94,9 +94,10 @@
     </thead>
     <tbody>
       <tr v-for="m in bond.finalYear">
-        <td>{{ m }}</td>
+        <td>{{ bond.dates[0].getFullYear() + m-1 }}</td>
         <td v-for="i in 12">
-          <input type="number" v-model="bond.adHocInterest[(m-1)*12 + i]" :placeholder="bond.runningCalcs[(m-1)*12 + i].annualInterest" style="width: 5em;">
+          <input v-if="m < 2 && i < bond.dates[0].getMonth()+1" type="number" disabled="true" style="width: 5em;">
+          <input v-else type="number" v-model="bond.adHocInterest[(m-1)*12 + i]" :placeholder="bond.runningCalcs[(m-1)*12 + i].annualInterest" style="width: 5em;">
         </td>
       </tr>
     </tbody>
@@ -121,9 +122,10 @@
     </thead>
     <tbody>
       <tr v-for="m in bond.finalYear">
-        <td>{{ m }}</td>
+        <td>{{ bond.dates[0].getFullYear() + m-1 }}</td>
         <td v-for="i in 12">
-          <input type="number" v-model="bond.adHocMonthlyPayments[(m-1)*12 + i]" :placeholder="bond.runningCalcs[(m-1)*12 + i].payment" style="width: 5em;">
+          <input v-if="m < 2 && i < bond.dates[0].getMonth()+1" type="number" disabled="true" style="width: 5em;">
+          <input v-else type="number" v-model="bond.adHocMonthlyPayments[(m-1)*12 + i]" :placeholder="bond.runningCalcs[(m-1)*12 + i].payment" style="width: 5em;">
         </td>
       </tr>
     </tbody>
@@ -148,13 +150,14 @@
     </thead>
     <tbody>
       <tr v-for="m in bond.finalYear">
-        <td>{{ m }}</td>
+        <td>{{ bond.dates[0].getFullYear() + m-1 }}</td>
         <td v-for="i in 12">
-          <div style="width: 7em;">{{ currencyFormatter.format(bond.runningCalcs[(m-1)*12 + i].capital) }}</div>
+          <div v-if="m < 2 && i < bond.dates[0].getMonth()+1" style="width: 7em; text-align: center;">-</div>
+          <div v-else style="width: 7em;">{{bond.currency}}{{ currencyFormatter.format(bond.runningCalcs[(m-1)*12 + i].capital) }}</div>
         </td>
       </tr>
     </tbody>
-  </table> -->
+  </table>
   
 </template>
 
