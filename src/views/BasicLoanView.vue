@@ -46,119 +46,120 @@
   <div style="width: 50em;">
     <LineChart style="margin: 1em;" :chart-data="chartData"/>
   </div>
-  <button @click="adHocToggles.adHocPayments = !adHocToggles.adHocPayments"> Ad-Hoc Payments</button>
-  <table v-if="adHocToggles.adHocPayments">
-    <thead>
-      <tr>
-        <th colspan="13">AD HOC PAYMENTS</th>
-      </tr>
-      <tr>
-        <th colspan="13">Enter any additional payments which you make into your bond account. Loans from it are entered as negative numbers.</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th colspan="12">Month</th>
-      </tr>
-      <tr>
-        <th>Years</th>
-        <th v-for="n in 12">{{n}}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="m in bond.finalYear">
-        <td>{{ bond.dates[0].getFullYear() + m-1 }}</td>
-        <td v-for="i in 12">
-          <input v-if="m < 2 && i < bond.dates[0].getMonth()+1" type="number" disabled="true" style="width: 5em;">
-          <input v-else type="number" v-model="bond.adHocPayments[(m-1)*12 + i]" placeholder="0" style="width: 5em;">
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <button @click="adHocToggles.interestRates = !adHocToggles.interestRates"> Interest Rates</button>
-  <table v-if="adHocToggles.interestRates">
-    <thead>
-      <tr>
-        <th colspan="13">INTEREST RATES</th>
-      </tr>
-      <tr>
-        <th colspan="13">Fill in the new interest rate in the month in which it changes.</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th colspan="12">Months</th>
-      </tr>
-      <tr>
-        <th>Years</th>
-        <th v-for="n in 12">{{n}}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="m in bond.finalYear">
-        <td>{{ bond.dates[0].getFullYear() + m-1 }}</td>
-        <td v-for="i in 12">
-          <input v-if="m < 2 && i < bond.dates[0].getMonth()+1" type="number" disabled="true" style="width: 5em;">
-          <input v-else type="number" v-model="bond.adHocInterest[(m-1)*12 + i]" :placeholder="bond.runningCalcs[(m-1)*12 + i].annualInterest" style="width: 5em;">
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <button @click="adHocToggles.bondPayments = !adHocToggles.bondPayments"> Bond Repayments</button>
-  <table v-if="adHocToggles.bondPayments">
-    <thead>
-      <tr>
-        <th colspan="13">BOND REPAYMENTS</th>
-      </tr>
-      <tr>
-        <th colspan="13">Fill in the new bond repayment amount in the month in which it changes.</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th colspan="12">Months</th>
-      </tr>
-      <tr>
-        <th>Years</th>
-        <th v-for="n in 12">{{n}}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="m in bond.finalYear">
-        <td>{{ bond.dates[0].getFullYear() + m-1 }}</td>
-        <td v-for="i in 12">
-          <input v-if="m < 2 && i < bond.dates[0].getMonth()+1" type="number" disabled="true" style="width: 5em;">
-          <input v-else type="number" v-model="bond.adHocMonthlyPayments[(m-1)*12 + i]" :placeholder="bond.runningCalcs[(m-1)*12 + i].payment" style="width: 5em;">
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <button @click="adHocToggles.runningCapital = !adHocToggles.runningCapital"> Running Capital</button>
-  <table v-if="adHocToggles.runningCapital">
-    <thead>
-      <tr>
-        <th colspan="13">RUNNING CAPITAL</th>
-      </tr>
-      <tr>
-        <th colspan="13">Figures represent the remaining capital at the end of each month.</th>
-      </tr>
-      <tr>
-        <th></th>
-        <th colspan="12">Months</th>
-      </tr>
-      <tr>
-        <th>Years</th>
-        <th v-for="n in 12">{{n}}</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="m in bond.finalYear">
-        <td>{{ bond.dates[0].getFullYear() + m-1 }}</td>
-        <td v-for="i in 12">
-          <div v-if="m < 2 && i < bond.dates[0].getMonth()+1" style="width: 7em; text-align: center;">-</div>
-          <div v-else style="width: 7em;">{{bond.currency}}{{ currencyFormatter.format(bond.runningCalcs[(m-1)*12 + i].capital) }}</div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  
+  <div>
+    <button @click="adHocToggles.adHocPayments = !adHocToggles.adHocPayments"> Ad-Hoc Payments</button>
+    <table v-if="adHocToggles.adHocPayments">
+      <thead>
+        <tr>
+          <th colspan="13">AD HOC PAYMENTS</th>
+        </tr>
+        <tr>
+          <th colspan="13">Enter any additional payments which you make into your bond account. Loans from it are entered as negative numbers.</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th colspan="12">Month</th>
+        </tr>
+        <tr>
+          <th>Years</th>
+          <th v-for="n in 12">{{n}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="m in bond.finalYear + 1">
+          <td>{{ bond.dates[0].getFullYear() + m-1 }}</td>
+          <td v-for="i in 12">
+            <input v-if="(m < 2 && i < bond.dates[0].getMonth()+1) || (m == bond.finalYear + 1 && i > bond.dates[bond.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
+            <input v-else type="number" v-model="bond.adHocPayments[(m-1)*12 + i - bond.dates[0].getMonth()]" placeholder="0" style="width: 5em;">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button @click="adHocToggles.interestRates = !adHocToggles.interestRates"> Interest Rates</button>
+    <table v-if="adHocToggles.interestRates">
+      <thead>
+        <tr>
+          <th colspan="13">INTEREST RATES</th>
+        </tr>
+        <tr>
+          <th colspan="13">Fill in the new interest rate in the month in which it changes.</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th colspan="12">Months</th>
+        </tr>
+        <tr>
+          <th>Years</th>
+          <th v-for="n in 12">{{n}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="m in bond.finalYear + 1">
+          <td>{{ bond.dates[0].getFullYear() + m-1 }}</td>
+          <td v-for="i in 12">
+            <input v-if="(m < 2 && i < bond.dates[0].getMonth()+1) || (m == bond.finalYear + 1 && i > bond.dates[bond.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
+            <input v-else type="number" v-model="bond.adHocInterest[(m-1)*12 + i]" :placeholder="bond.runningCalcs[(m-1)*12 + i - bond.dates[0].getMonth()].annualInterest" style="width: 5em;">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button @click="adHocToggles.bondPayments = !adHocToggles.bondPayments"> Bond Repayments</button>
+    <table v-if="adHocToggles.bondPayments">
+      <thead>
+        <tr>
+          <th colspan="13">BOND REPAYMENTS</th>
+        </tr>
+        <tr>
+          <th colspan="13">Fill in the new bond repayment amount in the month in which it changes.</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th colspan="12">Months</th>
+        </tr>
+        <tr>
+          <th>Years</th>
+          <th v-for="n in 12">{{n}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="m in bond.finalYear + 1">
+          <td>{{ bond.dates[0].getFullYear() + m-1 }}</td>
+          <td v-for="i in 12">
+            <input v-if="(m < 2 && i < bond.dates[0].getMonth()+1) || (m == bond.finalYear + 1 && i > bond.dates[bond.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
+            <input v-else type="number" v-model="bond.adHocMonthlyPayments[(m-1)*12 + i]" :placeholder="bond.runningCalcs[(m-1)*12 + i - bond.dates[0].getMonth()].payment" style="width: 5em;">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <button @click="adHocToggles.runningCapital = !adHocToggles.runningCapital"> Running Capital</button>
+    <table v-if="adHocToggles.runningCapital">
+      <thead>
+        <tr>
+          <th colspan="13">RUNNING CAPITAL</th>
+        </tr>
+        <tr>
+          <th colspan="13">Figures represent the remaining capital at the end of each month.</th>
+        </tr>
+        <tr>
+          <th></th>
+          <th colspan="12">Months</th>
+        </tr>
+        <tr>
+          <th>Years</th>
+          <th v-for="n in 12">{{n}}</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="m in bond.finalYear + 1">
+          <td>{{ bond.dates[0].getFullYear() + m -1 }}</td>
+          <td v-for="i in 12">
+            <div v-if="(m < 2 && i < bond.dates[0].getMonth()+1) || (m == bond.finalYear + 1 && i > bond.dates[bond.finalYear*12].getMonth())" style="width: 7em; text-align: center;">-</div>
+            <div v-else style="width: 7em;">{{bond.currency}}{{ currencyFormatter.format(bond.runningCalcs[(m-1)*12 + i - bond.dates[0].getMonth()].capital) }}</div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup>
@@ -317,14 +318,4 @@ th {
   
 </style>
 
-<!-- Pseudo code for calculating the running capital
-  =Prior months capital * (1 + monthly interest for current month ) - bond payment for current month - ad-hoc payment for current month
-  =AJ295*(1+AO149)-Y220-Y83
--->
-
-
-<!-- Pseudo code for calculating the last payment date in excel, might be useful later...
-  =IF(running capital for the month prior > 0 , IF(running capital for the current month < 0 , monthly payment -  negative running capital for the current month , monthly payment) , 0)
-  =IF(AI300>0,IF(AJ300<0,AJ224+AJ300,AJ224),0)
--->
 
