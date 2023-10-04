@@ -47,9 +47,8 @@
     <LineChart style="margin: 1em;" :chart-data="chartData"/>
   </div>
 <!-- _____________________________________________________________________________________________________________ -->
-  <div>
-    <button @click="adHocToggles.adHocPayments = !adHocToggles.adHocPayments"> Ad-Hoc Payments</button>
-    <table v-if="adHocToggles.adHocPayments">
+  <dialog ref="adHocPaymentsDialog">
+    <table >
       <thead>
         <tr>
           <th colspan="13">AD HOC PAYMENTS</th>
@@ -59,7 +58,7 @@
         </tr>
         <tr>
           <th></th>
-          <th v-for="n in 12">{{months[n-1]}}</th>
+          <th v-for="n in 12">{{n}}</th>
         </tr>
       </thead>
       <tbody>
@@ -72,6 +71,9 @@
         </tr>
       </tbody>
     </table>
+  </dialog>
+  <div>
+    <button @click="adHocPaymentsDialog.showModal()"> Ad-Hoc Payments</button>
 <!-- _____________________________________________________________________________________________________________ -->
     <button @click="adHocToggles.interestRates = !adHocToggles.interestRates"> Interest Rates</button>
     <table v-if="adHocToggles.interestRates">
@@ -167,77 +169,14 @@ import { bondStore, dateToMonth } from '../Stores/bond';
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
+const adHocPaymentsDialog = ref()
+
 const adHocToggles = reactive({
   adHocPayments: false,
   interestRates: false,
   bondPayments: false,
   runningCapital: false
 })
-
-const months = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec'
-]
-
-// const dateToMonth = (_date) => {
-//   return _date.toISOString().split('T')[0].split('-').slice(0, 2).join('-')
-// }
-
-// const bond = reactive({
-//   currency: "$",
-//   loanAmount: 1000000,
-//   interestRate: 5,
-//   loanPeriod: 20,
-//   actualPayment: null,
-//   startingDate: dateToMonth(new Date()),
-//   dates: computed(() => {
-//     const _startDate = new Date(bond.startingDate)
-//     const _startMonth = _startDate.getMonth()
-
-//     const _datesArray = Array.from({length: 60 * 12}, (x, i) => {
-//       const _currentMonth = new Date(_startDate)
-//       _currentMonth.setMonth(_startMonth + i)
-//       return _currentMonth
-//     })
-
-//     return _datesArray
-//   }),
-//   monthlyInterest:  computed(() => {
-//     return bond.interestRate/1200
-//   }),
-//   periodInMonths: computed(() => {
-//     return bond.loanPeriod*12
-//   }),
-//   minPayment: computed(() => {
-//     const minPayment_ = (bond.loanAmount*bond.monthlyInterest)/(1-1/((1+bond.monthlyInterest)**bond.periodInMonths))
-//     return minPayment_
-//   }),
-//   adHocPayments: Array.from({length: 60*12+1}, (x) => null),
-//   adHocInterest: Array.from({length: 60*12+1}, (x) => null),
-//   adHocMonthlyPayments: Array.from({length: 60*12+1}, (x) => null),
-//   duration: "?! Something Went Wrong !?",
-//   finalPayment: null,
-//   finalYear: 60,
-//   totalContribution: null,
-//   runningCalcs: Array.from({length: 60*12 + 1}, (x) => {
-//     return {
-//       annualInterest: null,
-//       monthlyInterest: null,
-//       payment: null,
-//       capital: null,
-//     }
-//   }),
-// })
 
 const chartData = reactive({
   labels: Array.from({length: bondStore.finalYear * 12}, (x, i) => i),

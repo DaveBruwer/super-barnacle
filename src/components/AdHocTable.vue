@@ -16,9 +16,10 @@
       <tr v-for="m in bondStore.finalYear + 1">
         <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
         <td v-for="i in 12">
-          <slot name="outOfRange" v-if="(m < 2 && i < props.startDate.getMonth()+1) || (m == props.finalYear + 1 && i > props.endDate.getMonth())" style="width: 5em;"></slot>
-          <slot v-else ></slot>
-          <input type="number" v-model="bond.adHocPayments[(m-1)*12 + i - props.startDate.getMonth()]" placeholder="0" style="width: 5em;">
+          <div>
+            <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
+            <input v-else type="number" v-model="dataArray[(m-1)*12 + i]" :placeholder="bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].annualInterest" style="width: 5em;">
+          </div>
         </td>
       </tr>
     </tbody>
@@ -46,6 +47,10 @@ const props = defineProps({
   dataArray: {
     type: Array,
     required: true
+  },
+  isInput: {
+    type: Boolean,
+    default: false
   }
 })
 
