@@ -71,6 +71,7 @@
         </tr>
       </tbody>
     </table>
+    <button @click="adHocPaymentsDialog.close()">Close</button>
   </dialog>
   <div>
     <button @click="adHocPaymentsDialog.showModal()"> Ad-Hoc Payments</button>
