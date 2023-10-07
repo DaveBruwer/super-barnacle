@@ -106,62 +106,68 @@
       </table>
       <button @click="interestRatesDialog.close()">Close</button>
     </dialog>
-    <button @click="adHocToggles.bondPayments = !adHocToggles.bondPayments"> Bond Repayments</button>
-    <table v-if="adHocToggles.bondPayments">
-      <thead>
-        <tr>
-          <th colspan="13">BOND REPAYMENTS</th>
-        </tr>
-        <tr>
-          <th colspan="13">Fill in the new bond repayment amount in the month in which it changes.</th>
-        </tr>
-        <tr>
-          <th></th>
-          <th colspan="12">Months</th>
-        </tr>
-        <tr>
-          <th>Years</th>
-          <th v-for="n in 12">{{n}}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="m in bondStore.finalYear + 1">
-          <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
-          <td v-for="i in 12">
-            <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
-            <input v-else type="number" v-model="bondStore.adHocMonthlyPayments[(m-1)*12 + i]" :placeholder="bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].payment" style="width: 5em;">
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    <button @click="adHocToggles.runningCapital = !adHocToggles.runningCapital"> Running Capital</button>
-    <table v-if="adHocToggles.runningCapital">
-      <thead>
-        <tr>
-          <th colspan="13">RUNNING CAPITAL</th>
-        </tr>
-        <tr>
-          <th colspan="13">Figures represent the remaining capital at the end of each month.</th>
-        </tr>
-        <tr>
-          <th></th>
-          <th colspan="12">Months</th>
-        </tr>
-        <tr>
-          <th>Years</th>
-          <th v-for="n in 12">{{n}}</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="m in bondStore.finalYear + 1">
-          <td>{{ bondStore.dates[0].getFullYear() + m -1 }}</td>
-          <td v-for="i in 12">
-            <div v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" style="width: 7em; text-align: center;">-</div>
-            <div v-else style="width: 7em;">{{bondStore.currency}}{{ currencyFormatter.format(bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].capital) }}</div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <button @click="bondPaymentsDialog.showModal()"> Bond Repayments</button>
+    <dialog ref="bondPaymentsDialog">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="13">BOND REPAYMENTS</th>
+          </tr>
+          <tr>
+            <th colspan="13">Fill in the new bond repayment amount in the month in which it changes.</th>
+          </tr>
+          <tr>
+            <th></th>
+            <th colspan="12">Months</th>
+          </tr>
+          <tr>
+            <th>Years</th>
+            <th v-for="n in 12">{{n}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="m in bondStore.finalYear + 1">
+            <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
+            <td v-for="i in 12">
+              <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
+              <input v-else type="number" v-model="bondStore.adHocMonthlyPayments[(m-1)*12 + i]" :placeholder="bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].payment" style="width: 5em;">
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button @click="bondPaymentsDialog.close()">Close</button>
+    </dialog>
+    <button @click="runningCapitalDialog.showModal()"> Running Capital</button>
+    <dialog ref="runningCapitalDialog">
+      <table>
+        <thead>
+          <tr>
+            <th colspan="13">RUNNING CAPITAL</th>
+          </tr>
+          <tr>
+            <th colspan="13">Figures represent the remaining capital at the end of each month.</th>
+          </tr>
+          <tr>
+            <th></th>
+            <th colspan="12">Months</th>
+          </tr>
+          <tr>
+            <th>Years</th>
+            <th v-for="n in 12">{{n}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="m in bondStore.finalYear + 1">
+            <td>{{ bondStore.dates[0].getFullYear() + m -1 }}</td>
+            <td v-for="i in 12">
+              <div v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" style="width: 7em; text-align: center;">-</div>
+              <div v-else style="width: 7em;">{{bondStore.currency}}{{ currencyFormatter.format(bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].capital) }}</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <button @click="runningCapitalDialog.close()">Close</button>
+    </dialog>
   </div>
 </template>
 
@@ -175,14 +181,7 @@ const currencyFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits
 const adHocPaymentsDialog = ref()
 const interestRatesDialog = ref()
 const bondPaymentsDialog = ref()
-const runnignCapitalDialog = ref()
-
-const adHocToggles = reactive({
-  adHocPayments: false,
-  interestRates: false,
-  bondPayments: false,
-  runningCapital: false
-})
+const runningCapitalDialog = ref()
 
 const chartData = reactive({
   labels: Array.from({length: bondStore.finalYear * 12}, (x, i) => i),
