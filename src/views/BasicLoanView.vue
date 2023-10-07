@@ -77,7 +77,7 @@
     </dialog>
     <button @click="interestRatesDialog.showModal()"> Interest Rates</button>
     <dialog ref="interestRatesDialog">
-      <table >
+      <table>
         <thead>
           <tr>
             <th colspan="13">INTEREST RATES</th>
