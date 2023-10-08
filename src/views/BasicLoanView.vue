@@ -1,4 +1,10 @@
 <template>
+  <div>
+    <label for="currencies">Currency: </label>
+    <select name="currencies" id="currencies" v-model.lazy="bondStore.currency">
+      <option v-for="currency in currencies" :title="currency.name" :value="currency.symbol">{{currency.code}} ({{currency.symbol}})</option>
+    </select>
+  </div>
   <div style="display: flex; flex-direction: column; padding: 1em;">
     <div style="display: flex; justify-content: space-around;">
       <div>
@@ -40,7 +46,7 @@
     </div>
     <div>
       <label for="TotalAmount">Total amount paid over period of load: </label>
-      <span>${{currencyFormatter.format(bondStore.totalContribution)}}</span>
+      <span>{{bondStore.currency}}{{currencyFormatter.format(bondStore.totalContribution)}}</span>
     </div>
   </div>
   <div style="width: 50em;">
@@ -175,6 +181,7 @@
 import {ref, reactive, computed, watch, watchEffect, onMounted} from 'vue'
 import LineChart from '../components/LineChart.vue';
 import { bondStore, dateToMonth } from '../Stores/bond';
+import currencies from "../assets/currencies.json"
 
 const currencyFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
