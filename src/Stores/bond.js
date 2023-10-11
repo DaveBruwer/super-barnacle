@@ -2,9 +2,9 @@ import { reactive, computed } from "vue";
 
 export const bondStore = reactive({
   currency: "$",
-  loanAmount: 1000000,
-  interestRate: 5,
-  loanPeriod: 20,
+  loanAmount: 500000,
+  interestRate: 7,
+  loanPeriod: 30,
   actualPayment: null,
   startingDate: dateToMonth(new Date()),
   dates: computed(() => {

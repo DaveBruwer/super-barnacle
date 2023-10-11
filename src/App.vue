@@ -1,12 +1,16 @@
-<script setup>
-</script>
-
 <template>
-  <header>
-    <h1 id="title">Super Barnacle!</h1>
-  </header>
-  <RouterView />
+  <v-app>
+    <dHeader />
+    <v-main>
+      <RouterView />
+    </v-main>
+  </v-app>
 </template>
+
+<script setup>
+import dHeader from './components/dHeader.vue'
+
+</script>
 
 <style scoped>
 

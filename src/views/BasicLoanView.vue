@@ -33,7 +33,7 @@
       </div>
       <div>
         <label for="startDate">First Payment: </label>
-        <input type="month" v-model="bondStore.startingDate">
+        <input type="month" v-model.lazy="bondStore.startingDate">
       </div>
     </div>
     <div>
@@ -74,7 +74,7 @@
             <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
             <td v-for="i in 12">
               <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
-              <input v-else type="number" v-model="bondStore.adHocPayments[(m-1)*12 + i - bondStore.dates[0].getMonth()]" placeholder="0" style="width: 5em;">
+              <input v-else type="number" v-model.lazy="bondStore.adHocPayments[(m-1)*12 + i - bondStore.dates[0].getMonth()]" placeholder="0" style="width: 5em;">
             </td>
           </tr>
         </tbody>
@@ -105,7 +105,7 @@
             <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
             <td v-for="i in 12">
               <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
-              <input v-else type="number" v-model="bondStore.adHocInterest[(m-1)*12 + i]" :placeholder="bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].annualInterest" style="width: 5em;">
+              <input v-else type="number" v-model.lazy="bondStore.adHocInterest[(m-1)*12 + i]" :placeholder="bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].annualInterest" style="width: 5em;">
             </td>
           </tr>
         </tbody>
@@ -136,7 +136,7 @@
             <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
             <td v-for="i in 12">
               <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
-              <input v-else type="number" v-model="bondStore.adHocMonthlyPayments[(m-1)*12 + i]" :placeholder="bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].payment" style="width: 5em;">
+              <input v-else type="number" v-model.lazy="bondStore.adHocMonthlyPayments[(m-1)*12 + i]" :placeholder="bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].payment" style="width: 5em;">
             </td>
           </tr>
         </tbody>
