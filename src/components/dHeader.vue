@@ -3,7 +3,9 @@
   <div class="card relative z-2">
     <Menubar :model="items">
       <template #start>
-        <img alt="logo" src="/SBicon.png" height="40" class="mr-2" />
+        <router-link to="/">
+          <img alt="logo" src="/SBicon.png" height="40" class="mr-2" />
+        </router-link>
       </template>
       <template #item="{ label, item, props, root, hasSubmenu }">
         <router-link v-if="item.route" v-slot="routerProps" :to="item.route" custom>

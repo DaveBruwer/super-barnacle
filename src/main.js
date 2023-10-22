@@ -10,7 +10,7 @@ import "primevue/resources/themes/vela-blue/theme.css"
 const app = createApp(App)
 
 app.use(router)
-app.use(PrimeVue)
+app.use(PrimeVue, {ripple: true})
 
 
 app.mount("#app")

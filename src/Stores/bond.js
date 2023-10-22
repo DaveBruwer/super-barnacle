@@ -1,7 +1,14 @@
-import { reactive, computed } from "vue";
+import { reactive, computed } from "vue"
 
 export const bondStore = reactive({
-  currency: "$",
+  currency: {
+    symbol: "$",
+    name: "US Dollar",
+    decimal_digits: 2,
+    rounding: 0,
+    code: "USD",
+    name_plural: "US dollars"
+  },
   loanAmount: 500000,
   interestRate: 7,
   loanPeriod: 30,
@@ -29,14 +36,14 @@ export const bondStore = reactive({
     const minPayment_ = (bondStore.loanAmount*bondStore.monthlyInterest)/(1-1/((1+bondStore.monthlyInterest)**bondStore.periodInMonths))
     return minPayment_
   }),
-  adHocPayments: Array.from({length: 60*12+1}, (x) => null),
-  adHocInterest: Array.from({length: 60*12+1}, (x) => null),
-  adHocMonthlyPayments: Array.from({length: 60*12+1}, (x) => null),
+  adHocPayments: Array.from({length: 60*12+1}, () => null),
+  adHocInterest: Array.from({length: 60*12+1}, () => null),
+  adHocMonthlyPayments: Array.from({length: 60*12+1}, () => null),
   duration: "?! Something Went Wrong !?",
   finalPayment: null,
   finalYear: 60,
   totalContribution: null,
-  runningCalcs: Array.from({length: 60*12 + 1}, (x) => {
+  runningCalcs: Array.from({length: 60*12 + 1}, () => {
     return {
       annualInterest: null,
       monthlyInterest: null,
@@ -47,5 +54,5 @@ export const bondStore = reactive({
 })
 
 export function dateToMonth(_date) {
-  return _date.toISOString().split('T')[0].split('-').slice(0, 2).join('-')
+  return _date.toISOString().split("T")[0].split("-").slice(0, 2).join("-")
 }

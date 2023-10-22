@@ -1,54 +1,45 @@
 <template>
-  <div>
-    <label for="currencies">Currency: </label>
-    <select name="currencies" id="currencies" v-model.lazy="bondStore.currency">
-      <option v-for="currency in currencies" :title="currency.name" :value="currency.symbol">{{currency.code}} ({{currency.symbol}})</option>
-    </select>
-  </div>
-  <div style="display: flex; flex-direction: column; padding: 1em;">
-    <div style="display: flex; justify-content: space-around;">
-      <div>
-        <label for="loanAmount">Loan Amount: {{bondStore.currency}}</label>
-        <input id="loanAmount" type="number" min="1" v-model.lazy="bondStore.loanAmount" style="width: 7em;">
-      </div>
-      <div>
-        <label for="interestRate">Interest Rate: </label>
-        <input id="interestRate" type="number" min="1" max="100" v-model.lazy="bondStore.interestRate" style="width: 3em; text-align: end;">
-        <span>%</span>
-      </div>
-      <div>
-        <label for="loanPeriod">Loan Period: </label>
-        <input id="loanPeriod" type="number" min="1" max="720" v-model.lazy="bondStore.loanPeriod" style="width: 3em; text-align: end;">
-        <span>Years</span>
-      </div>
+  <div class="card flex flex-wrap gap-3 p-fluid">
+    <div class="flex-auto">
+        <label for="currencies" class="font-bold block mb-2"> Currency: </label>
+        <Dropdown v-model.lazy="bondStore.currency" :options="Object.values(currencies)" optionLabel="code" inputId="currencies" class="w-full md:w-14rem" />
     </div>
-    <div style="display: flex; justify-content: space-around;">
-      <div>
-        <label for="MinPayment">Min Monthly Payment: {{bondStore.currency}}</label>
-        <span>{{ currencyFormatter.format(bondStore.minPayment) }}</span>
-      </div>
-      <div>
-        <label for="ActPayment">Actual Monthly Payment: {{bondStore.currency}}</label>
-        <input id="ActPayment" type="number" min="1" :placeholder="currencyFormatter.format(bondStore.minPayment)" v-model.lazy="bondStore.actualPayment">
-      </div>
-      <div>
-        <label for="startDate">First Payment: </label>
-        <input type="month" v-model.lazy="bondStore.startingDate">
-      </div>
+    <div class="flex-auto">
+        <label for="loan-amount" class="font-bold block mb-2"> Loan Amount: </label>
+        <InputNumber v-model.lazy="bondStore.loanAmount" inputId="loan-amount" mode="currency" :currency="bondStore.currency.code" locale="en-US" />
     </div>
-    <div>
-      <label for="LoanPayPeriod">Loan to be paid off in: </label>
-      <span>{{bondStore.duration}}</span>
+    <div class="flex-auto">
+        <label for="interestRate" class="font-bold block mb-2"> Interest Rate: </label>
+        <InputNumber v-model.lazy="bondStore.interestRate" mode="decimal" :minFractionDigits="2"  inputId="interestRate" suffix="%" showButtons/>
     </div>
-    <div>
-      <label for="LastPayment">Last payment amount: </label>
-      <span>{{bondStore.currency}}{{currencyFormatter.format(bondStore.finalPayment)}}</span>
+    <div class="flex-auto">
+        <label for="loanPeriod" class="font-bold block mb-2"> Interest Rate: </label>
+        <InputNumber v-model.lazy="bondStore.loanPeriod" mode="decimal" :minFractionDigits="0"  inputId="loanPeriod" suffix=" Yrs" />
     </div>
-    <div>
-      <label for="TotalAmount">Total amount paid over period of load: </label>
-      <span>{{bondStore.currency}}{{currencyFormatter.format(bondStore.totalContribution)}}</span>
+    <div class="flex-auto">
+      <label for="actualPayment" class="font-bold block mb-2"> Payment Amount: </label>
+      <InputNumber v-model.lazy="bondStore.actualPayment" inputId="actualPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" :min="bondStore.minPayment" />
+    </div>
+    <div class="flex-auto">
+      <label for="startDate" class="font-bold block mb-2"> First Payment: </label>
+      <Calendar v-model.lazy="bondStore.startingDate" view="month" dateFormat="MM yy" showIcon />
+    </div>
+    <div class="font-bold block mb-2">
+     Minimum monthly payments:
+      <InputNumber v-model.lazy="bondStore.minPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled />
+    </div>
+    <div class="font-bold block mb-2"> Loan to be paid off in: {{bondStore.duration}} </div>
+    <div class="font-bold block mb-2">
+      Last payment amount will be:
+      <InputNumber v-model.lazy="bondStore.finalPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled />
+    </div>
+    <div class="font-bold block mb-2">
+      Total amount paid over the period of the loan:
+      <InputNumber v-model.lazy="bondStore.totalContribution" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled />
     </div>
   </div>
+  <Button label="Button" icon="pi pi-circle" @click="buttonPress" />
+  
   <div style="width: 50em;">
     <LineChart style="margin: 1em;" :chart-data="chartData"/>
   </div>
@@ -66,13 +57,13 @@
           </tr>
           <tr>
             <th></th>
-            <th v-for="n in 12">{{n}}</th>
+            <th v-for="n in 12" :key="n">{{n}}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="m in bondStore.finalYear + 1">
+          <tr v-for="m in bondStore.finalYear + 1" :key="m">
             <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
-            <td v-for="i in 12">
+            <td v-for="i in 12" :key="i">
               <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
               <input v-else type="number" v-model.lazy="bondStore.adHocPayments[(m-1)*12 + i - bondStore.dates[0].getMonth()]" placeholder="0" style="width: 5em;">
             </td>
@@ -97,13 +88,13 @@
           </tr>
           <tr>
             <th>Years</th>
-            <th v-for="n in 12">{{n}}</th>
+            <th v-for="n in 12" :key="n">{{n}}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="m in bondStore.finalYear + 1">
+          <tr v-for="m in bondStore.finalYear + 1" :key="m">
             <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
-            <td v-for="i in 12">
+            <td v-for="i in 12" :key="i">
               <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
               <input v-else type="number" v-model.lazy="bondStore.adHocInterest[(m-1)*12 + i]" :placeholder="bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].annualInterest" style="width: 5em;">
             </td>
@@ -128,13 +119,13 @@
           </tr>
           <tr>
             <th>Years</th>
-            <th v-for="n in 12">{{n}}</th>
+            <th v-for="n in 12" :key="n">{{n}}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="m in bondStore.finalYear + 1">
+          <tr v-for="m in bondStore.finalYear + 1" :key="m">
             <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
-            <td v-for="i in 12">
+            <td v-for="i in 12" :key="i">
               <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
               <input v-else type="number" v-model.lazy="bondStore.adHocMonthlyPayments[(m-1)*12 + i]" :placeholder="bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].payment" style="width: 5em;">
             </td>
@@ -159,15 +150,15 @@
           </tr>
           <tr>
             <th>Years</th>
-            <th v-for="n in 12">{{n}}</th>
+            <th v-for="n in 12" :key="n">{{n}}</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="m in bondStore.finalYear + 1">
+          <tr v-for="m in bondStore.finalYear + 1" :key="m">
             <td>{{ bondStore.dates[0].getFullYear() + m -1 }}</td>
-            <td v-for="i in 12">
+            <td v-for="i in 12" :key="i">
               <div v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" style="width: 7em; text-align: center;">-</div>
-              <div v-else style="width: 7em;">{{bondStore.currency}}{{ currencyFormatter.format(bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].capital) }}</div>
+              <div v-else style="width: 7em;">{{bondStore.currency.symbol}}{{ currencyFormatter.format(bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].capital) }}</div>
             </td>
           </tr>
         </tbody>
@@ -178,12 +169,16 @@
 </template>
 
 <script setup>
-import {ref, reactive, computed, watch, watchEffect, onMounted} from 'vue'
-import LineChart from '../components/LineChart.vue';
-import { bondStore, dateToMonth } from '../Stores/bond';
+import {ref, reactive, watchEffect} from "vue"
+import LineChart from "../components/LineChart.vue"
+import { bondStore, dateToMonth } from "../Stores/bond"
 import currencies from "../assets/currencies.json"
+import InputNumber from "primevue/inputnumber"
+import Button from "primevue/button"
+import Dropdown from "primevue/dropdown"
+import Calendar from "primevue/calendar"
 
-const currencyFormatter = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+const currencyFormatter = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
 const adHocPaymentsDialog = ref()
 const interestRatesDialog = ref()
@@ -195,7 +190,7 @@ const chartData = reactive({
   datasets: [
     {
       label: "Loan Capital",
-      data: Array.from({length: bondStore.loanPeriod * 12}, (x) => bondStore.loanAmount),
+      data: Array.from({length: bondStore.loanPeriod * 12}, () => bondStore.loanAmount),
     }
   ]
 })
@@ -214,10 +209,13 @@ const parseCalcs = () => {
     bondStore.runningCalcs[i].monthlyInterest = bondStore.runningCalcs[i].annualInterest/1200
 
     // payment calcs
+    if (bondStore.actualPayment === null) {
+      bondStore.actualPayment = bondStore.minPayment
+    }
     if (bondStore.adHocMonthlyPayments[i]) {
       bondStore.runningCalcs[i].payment = bondStore.adHocMonthlyPayments[i]
     } else if (i == 0) {
-      bondStore.runningCalcs[i].payment = bondStore.actualPayment ? bondStore.actualPayment : bondStore.minPayment
+      bondStore.runningCalcs[i].payment = bondStore.actualPayment
     } else if (bondStore.runningCalcs[i-1].capital*(1 + bondStore.runningCalcs[i].monthlyInterest) < bondStore.runningCalcs[i-1].payment) {
       bondStore.runningCalcs[i].payment = bondStore.runningCalcs[i-1].capital*(1 + bondStore.runningCalcs[i].monthlyInterest)
     } else {
@@ -265,7 +263,7 @@ const parseCalcs = () => {
 watchEffect(() => parseCalcs())
 
 const buttonPress = () => {
-  console.log(bondStore.runningCalcs)
+  console.log(bondStore.startingDate)
 }
 
 </script>

@@ -1,10 +1,6 @@
 <template>
   <dHeader />
   <RouterView />
-  <!-- <v-app>
-    <v-main>
-    </v-main>
-  </v-app> -->
 </template>
 
 <script setup>

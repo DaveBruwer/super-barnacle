@@ -1,5 +1,7 @@
 <template>
-  <Button label="Check" icon="pi pi-check" />
+  <router-link to="/basicloan" style="text-decoration-line: none;">
+    <Button label="Basic Loan" icon="pi pi-dollar" /> 
+  </router-link>
 </template>
 
 <script setup>
