@@ -10,10 +10,10 @@
     </div>
     <div class="flex-auto">
         <label for="interestRate" class="font-bold block mb-2"> Interest Rate: </label>
-        <InputNumber v-model.lazy="bondStore.interestRate" mode="decimal" :minFractionDigits="2"  inputId="interestRate" suffix="%" showButtons/>
+        <InputNumber v-model.lazy="bondStore.interestRate" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" showButtons/>
     </div>
     <div class="flex-auto">
-        <label for="loanPeriod" class="font-bold block mb-2"> Interest Rate: </label>
+        <label for="loanPeriod" class="font-bold block mb-2"> Loan Period: </label>
         <InputNumber v-model.lazy="bondStore.loanPeriod" mode="decimal" :minFractionDigits="0"  inputId="loanPeriod" suffix=" Yrs" />
     </div>
     <div class="flex-auto">
@@ -41,7 +41,7 @@
   <Button label="Button" icon="pi pi-circle" @click="buttonPress" />
   
   <div style="width: 50em;">
-    <LineChart style="margin: 1em;" :chart-data="chartData"/>
+    <PrimeChart style="margin: 1em;" :chart-data="chartData"/>
   </div>
   <!-- _____________________________________________________________________________________________________________ -->
   <div>
@@ -170,9 +170,11 @@
 
 <script setup>
 import {ref, reactive, watchEffect} from "vue"
-import LineChart from "../components/LineChart.vue"
 import { bondStore, dateToMonth } from "../Stores/bond"
 import currencies from "../assets/currencies.json"
+import PrimeChart from "../components/PrimeChart.vue"
+
+// PrimeVue imports...
 import InputNumber from "primevue/inputnumber"
 import Button from "primevue/button"
 import Dropdown from "primevue/dropdown"
@@ -263,7 +265,7 @@ const parseCalcs = () => {
 watchEffect(() => parseCalcs())
 
 const buttonPress = () => {
-  console.log(bondStore.startingDate)
+  console.log(bondStore.dates[0].getMonth())
 }
 
 </script>
