@@ -18,7 +18,7 @@
     </div>
     <div class="flex-auto">
       <label for="actualPayment" class="font-bold block mb-2"> Payment Amount: </label>
-      <InputNumber class="p-inputnumber-button" v-model.lazy="bondStore.actualPayment" inputId="actualPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" :min="bondStore.minPayment" />
+      <InputNumber class="p-inputnumber-button" v-model.lazy="bondStore.actualPayment" @input="actualPaymentInput" @focus="actualPaymentInput" inputId="actualPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" :min="bondStore.minPayment" :suffix="bondStore.customPayments ? '' : ' (min)'" />
     </div>
     <div class="flex-auto">
       <label for="startDate" class="font-bold block mb-2"> First Payment: </label>
@@ -211,8 +211,9 @@ const parseCalcs = () => {
     bondStore.runningCalcs[i].monthlyInterest = bondStore.runningCalcs[i].annualInterest/1200
 
     // payment calcs
-    if (bondStore.actualPayment === null || bondStore.actualPayment < bondStore.minPayment) {
+    if (bondStore.actualPayment === null || bondStore.actualPayment <= bondStore.minPayment || !bondStore.customPayments) {
       bondStore.actualPayment = bondStore.minPayment
+      bondStore.customPayments = false
     }
     if (bondStore.adHocMonthlyPayments[i]) {
       bondStore.runningCalcs[i].payment = bondStore.adHocMonthlyPayments[i]
@@ -266,6 +267,10 @@ watchEffect(() => parseCalcs())
 
 const buttonPress = () => {
   console.log(bondStore)
+}
+
+const actualPaymentInput = () => {
+  bondStore.customPayments = true
 }
 
 </script>

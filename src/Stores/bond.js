@@ -13,6 +13,7 @@ export const bondStore = reactive({
   interestRate: 7,
   loanPeriod: 30,
   actualPayment: null,
+  customPayment: false,
   startingDate: dateToMonth(new Date()),
   dates: computed(() => {
     const _startDate = new Date(bondStore.startingDate)
