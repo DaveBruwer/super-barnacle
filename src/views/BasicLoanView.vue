@@ -18,7 +18,7 @@
     </div>
     <div class="flex-auto">
       <label for="actualPayment" class="font-bold block mb-2"> Payment Amount: </label>
-      <InputNumber v-model.lazy="bondStore.actualPayment" inputId="actualPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" :min="bondStore.minPayment" />
+      <InputNumber class="p-inputnumber-button" v-model.lazy="bondStore.actualPayment" inputId="actualPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" :min="bondStore.minPayment" />
     </div>
     <div class="flex-auto">
       <label for="startDate" class="font-bold block mb-2"> First Payment: </label>
@@ -211,7 +211,7 @@ const parseCalcs = () => {
     bondStore.runningCalcs[i].monthlyInterest = bondStore.runningCalcs[i].annualInterest/1200
 
     // payment calcs
-    if (bondStore.actualPayment === null) {
+    if (bondStore.actualPayment === null || bondStore.actualPayment < bondStore.minPayment) {
       bondStore.actualPayment = bondStore.minPayment
     }
     if (bondStore.adHocMonthlyPayments[i]) {
@@ -242,7 +242,7 @@ const parseCalcs = () => {
 
   if(lastMonth == -1) {
     bondStore.duration = "NEVER (more than 60 years!)"
-    bondStore.finalPayment = " INFINITE"
+    bondStore.finalPayment = bondStore.actualPayment
     bondStore.finalYear = 60
 
     chartData.labels = Array.from({length: bondStore.finalYear * 12}, (x, i) => dateToMonth(bondStore.dates[i]))
@@ -265,7 +265,7 @@ const parseCalcs = () => {
 watchEffect(() => parseCalcs())
 
 const buttonPress = () => {
-  console.log(bondStore.dates[0].getMonth())
+  console.log(bondStore)
 }
 
 </script>
