@@ -1,21 +1,28 @@
 <template>
-  <div class="card flex flex-wrap gap-3 p-fluid">
-    <div class="flex-auto">
-        <label for="currencies" class="font-bold block mb-2"> Currency: </label>
+  <div class="m-2">
+    <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around gap-5">
+      <div class="w-14rem">
+        <label for="currencies" class="font-bold block"> Currency: </label>
         <Dropdown v-model.lazy="bondStore.currency" :options="Object.values(currencies)" optionLabel="code" inputId="currencies" class="w-full md:w-14rem" />
-    </div>
-    <div class="flex-auto">
-        <label for="loan-amount" class="font-bold block mb-2"> Loan Amount: </label>
+      </div>
+      <div class="w-14rem">
+        <label for="loan-amount" class="font-bold block"> Loan Amount: </label>
         <InputNumber v-model.lazy="bondStore.loanAmount" inputId="loan-amount" mode="currency" :currency="bondStore.currency.code" locale="en-US" />
-    </div>
-    <div class="flex-auto">
-        <label for="interestRate" class="font-bold block mb-2"> Interest Rate: </label>
-        <InputNumber v-model.lazy="bondStore.interestRate" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" showButtons/>
-    </div>
-    <div class="flex-auto">
-        <label for="loanPeriod" class="font-bold block mb-2"> Loan Period: </label>
+      </div>
+      <div class="w-14rem">
+        <label for="interestRate" class="font-bold block"> Interest Rate: </label>
+        <InputNumber style="width: 10rem;" v-model.lazy="bondStore.interestRate" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" showButtons/>
+      </div>
+      <div class="w-14rem">
+        <label for="loanPeriod" class="font-bold block"> Loan Period: </label>
         <InputNumber v-model.lazy="bondStore.loanPeriod" mode="decimal" :minFractionDigits="0"  inputId="loanPeriod" suffix=" Yrs" />
+      </div>
     </div>
+
+  </div>
+
+  <div class="card flex flex-wrap gap-3 p-fluid">
+    
     <div class="font-bold block mb-2">
      Minimum monthly payments:
       <InputNumber v-model.lazy="bondStore.minPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled />
@@ -38,14 +45,14 @@
       <InputNumber v-model.lazy="bondStore.totalContribution" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled />
     </div>
   </div>
-  <Button label="Button" icon="pi pi-circle" @click="buttonPress" />
   
   <div style="width: 50em;">
     <PrimeChart style="margin: 1em;" :chart-data="chartData"/>
   </div>
   <!-- _____________________________________________________________________________________________________________ -->
+  <Button label="Button" icon="pi pi-circle" @click="buttonPress" />
   <div>
-    <button @click="adHocPaymentsDialog.showModal()"> Ad-Hoc Payments</button>
+    <Button @click="adHocPaymentsDialog.showModal()"> Ad-Hoc Payments</Button>
     <dialog ref="adHocPaymentsDialog">
       <table >
         <thead>
@@ -70,9 +77,9 @@
           </tr>
         </tbody>
       </table>
-      <button @click="adHocPaymentsDialog.close()">Close</button>
+      <Button @click="adHocPaymentsDialog.close()">Close</Button>
     </dialog>
-    <button @click="interestRatesDialog.showModal()"> Interest Rates</button>
+    <Button @click="interestRatesDialog.showModal()"> Interest Rates</Button>
     <dialog ref="interestRatesDialog">
       <table>
         <thead>
@@ -101,9 +108,9 @@
           </tr>
         </tbody>
       </table>
-      <button @click="interestRatesDialog.close()">Close</button>
+      <Button @click="interestRatesDialog.close()">Close</Button>
     </dialog>
-    <button @click="bondPaymentsDialog.showModal()"> Bond Repayments</button>
+    <Button @click="bondPaymentsDialog.showModal()"> Bond Repayments</Button>
     <dialog ref="bondPaymentsDialog">
       <table>
         <thead>
@@ -132,9 +139,9 @@
           </tr>
         </tbody>
       </table>
-      <button @click="bondPaymentsDialog.close()">Close</button>
+      <Button @click="bondPaymentsDialog.close()">Close</Button>
     </dialog>
-    <button @click="runningCapitalDialog.showModal()"> Running Capital</button>
+    <Button @click="runningCapitalDialog.showModal()"> Running Capital</Button>
     <dialog ref="runningCapitalDialog">
       <table>
         <thead>
@@ -163,9 +170,10 @@
           </tr>
         </tbody>
       </table>
-      <button @click="runningCapitalDialog.close()">Close</button>
+      <Button @click="runningCapitalDialog.close()">Close</Button>
     </dialog>
   </div>
+  
 </template>
 
 <script setup>
