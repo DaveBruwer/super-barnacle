@@ -16,19 +16,19 @@
         <label for="loanPeriod" class="font-bold block mb-2"> Loan Period: </label>
         <InputNumber v-model.lazy="bondStore.loanPeriod" mode="decimal" :minFractionDigits="0"  inputId="loanPeriod" suffix=" Yrs" />
     </div>
-    <div class="flex-auto">
-      <label for="actualPayment" class="font-bold block mb-2"> Payment Amount: </label>
-      <InputNumber class="p-inputnumber-button" v-model.lazy="bondStore.actualPayment" @input="actualPaymentInput" @focus="actualPaymentInput" inputId="actualPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" :min="bondStore.minPayment" :suffix="bondStore.customPayments ? '' : ' (min)'" />
-    </div>
-    <div class="flex-auto">
-      <label for="startDate" class="font-bold block mb-2"> First Payment: </label>
-      <Calendar v-model.lazy="bondStore.startingDate" view="month" dateFormat="MM yy" showIcon />
-    </div>
     <div class="font-bold block mb-2">
      Minimum monthly payments:
       <InputNumber v-model.lazy="bondStore.minPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled />
     </div>
-    <div class="font-bold block mb-2"> Loan to be paid off in: {{bondStore.duration}} </div>
+    <div class="flex-auto">
+      <label for="actualPayment" class="font-bold block mb-2">Monthly Payment Amount: {{bondStore.customPayments ? '' : ' (min)'}}</label>
+      <InputNumber class="p-inputnumber-button" v-model.lazy="bondStore.actualPayment" @input="actualPaymentInput" inputId="actualPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" :min="bondStore.minPayment" />
+    </div>
+    <div class="flex-auto">
+      <label for="startDate" class="font-bold block mb-2"> First Payment Month: </label>
+      <Calendar v-model.lazy="bondStore.startingDate" view="month" dateFormat="MM yy" showIcon />
+    </div>
+    <div class="font-bold block mb-2"> Loan will be paid off in: {{bondStore.duration}} </div>
     <div class="font-bold block mb-2">
       Last payment amount will be:
       <InputNumber v-model.lazy="bondStore.finalPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled />
