@@ -1,19 +1,19 @@
 <template>
   <div class="m-2">
-    <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around gap-5">
-      <div class="w-14rem">
+    <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around">
+      <div class="w-14rem m-1 md:mx-6 lg:mx-1">
         <label for="currencies" class="font-bold block"> Currency: </label>
         <Dropdown v-model.lazy="bondStore.currency" :options="Object.values(currencies)" optionLabel="code" inputId="currencies" class="w-full md:w-14rem" />
       </div>
-      <div class="w-14rem">
+      <div class="w-14rem m-1 md:mx-6 lg:mx-1">
         <label for="loan-amount" class="font-bold block"> Loan Amount: </label>
         <InputNumber v-model.lazy="bondStore.loanAmount" inputId="loan-amount" mode="currency" :currency="bondStore.currency.code" locale="en-US" />
       </div>
-      <div class="w-14rem">
+      <div class="w-14rem m-1 md:mx-6 lg:mx-1">
         <label for="interestRate" class="font-bold block"> Interest Rate: </label>
-        <InputNumber style="width: 10rem;" v-model.lazy="bondStore.interestRate" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" showButtons/>
+        <InputNumber style="width: 10rem;" v-model.lazy="bondStore.interestRate" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" />
       </div>
-      <div class="w-14rem">
+      <div class="w-14rem m-1 md:mx-6 lg:mx-1">
         <label for="loanPeriod" class="font-bold block"> Loan Period: </label>
         <InputNumber v-model.lazy="bondStore.loanPeriod" mode="decimal" :minFractionDigits="0"  inputId="loanPeriod" suffix=" Yrs" />
       </div>
@@ -35,7 +35,7 @@
       <label for="startDate" class="font-bold block mb-2"> First Payment Month: </label>
       <Calendar v-model.lazy="bondStore.startingDate" view="month" dateFormat="MM yy" showIcon />
     </div>
-    <div class="font-bold block mb-2"> Loan will be paid off in: {{bondStore.duration}} </div>
+    <div class="font-bold block mb-2"> Loan will be paid off in {{bondStore.duration}} </div>
     <div class="font-bold block mb-2">
       Last payment amount will be:
       <InputNumber v-model.lazy="bondStore.finalPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled />
@@ -50,6 +50,7 @@
     <PrimeChart style="margin: 1em;" :chart-data="chartData"/>
   </div>
   <!-- _____________________________________________________________________________________________________________ -->
+  <div class="bg-primary md:bg-primary-reverse lg:bg-primary">Colours will invert during md size only.</div>
   <Button label="Button" icon="pi pi-circle" @click="buttonPress" />
   <div>
     <Button @click="adHocPaymentsDialog.showModal()"> Ad-Hoc Payments</Button>
