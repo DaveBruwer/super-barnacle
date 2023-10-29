@@ -18,35 +18,38 @@
         <InputNumber v-model.lazy="bondStore.loanPeriod" mode="decimal" :minFractionDigits="0"  inputId="loanPeriod" suffix=" Yrs" />
       </div>
     </div>
+    <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around">
+      <div class="w-14rem m-1">
+        <label for="actualPayment" class="font-bold block"> Monthly Payment Amount: {{bondStore.customPayments ? '' : '*'}}</label>
+        <InputNumber v-model.lazy="bondStore.actualPayment" mode="currency" @input="actualPaymentInput" :currency="bondStore.currency.code" locale="en-US" inputId="actualPayment"/>
+      </div>
+      <div class="w-14rem m-1">
+        <label for="startDate" class="font-bold block"> First Payment Month: </label>
+        <Calendar v-model.lazy="bondStore.startingDate" view="month" dateFormat="MM yy" showIcon />
+      </div>
+    </div>
+    <Fieldset class="my-2 flex justify-content-center" legend="Basic Loan Info" :toggleable="true">
+      <div class="m-0">
+        <div>
+          <label for="minPayment" class=""> Minimum monthly payments: </label>
+          <InputNumber v-model.lazy="bondStore.minPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled inputId="minPayment" />
+        </div>
+        <div class=" block my-2"> Loan will be paid off in <span class="font-bold">{{bondStore.duration}}</span>.</div>
+        <div>
+          <label for="lastPayment" class=""> Last payment amount will be: </label>
+          <InputNumber v-model.lazy="bondStore.finalPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled inputId="lastPayment" />
+        </div>
+        <div>
+          <label for="totalPayments" class=""> Total amount paid over the period of the loan: </label>
+          <InputNumber v-model.lazy="bondStore.totalContribution" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled inputId="totalPayments" />
+        </div>
+      </div>
+    </Fieldset>
 
   </div>
 
-  <div class="card flex flex-wrap gap-3 p-fluid">
-    
-    <div class="font-bold block mb-2">
-     Minimum monthly payments:
-      <InputNumber v-model.lazy="bondStore.minPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled />
-    </div>
-    <div class="flex-auto">
-      <label for="actualPayment" class="font-bold block mb-2">Monthly Payment Amount: {{bondStore.customPayments ? '' : ' (min)'}}</label>
-      <InputNumber class="p-inputnumber-button" v-model.lazy="bondStore.actualPayment" @input="actualPaymentInput" inputId="actualPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" :min="bondStore.minPayment" />
-    </div>
-    <div class="flex-auto">
-      <label for="startDate" class="font-bold block mb-2"> First Payment Month: </label>
-      <Calendar v-model.lazy="bondStore.startingDate" view="month" dateFormat="MM yy" showIcon />
-    </div>
-    <div class="font-bold block mb-2"> Loan will be paid off in {{bondStore.duration}} </div>
-    <div class="font-bold block mb-2">
-      Last payment amount will be:
-      <InputNumber v-model.lazy="bondStore.finalPayment" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled />
-    </div>
-    <div class="font-bold block mb-2">
-      Total amount paid over the period of the loan:
-      <InputNumber v-model.lazy="bondStore.totalContribution" mode="currency" :currency="bondStore.currency.code" locale="en-US" disabled />
-    </div>
-  </div>
   
-  <div style="width: 50em;">
+  <div class="flex justify-content-around" style="width: 50em;">
     <PrimeChart style="margin: 1em;" :chart-data="chartData"/>
   </div>
   <!-- _____________________________________________________________________________________________________________ -->
@@ -188,6 +191,7 @@ import InputNumber from "primevue/inputnumber"
 import Button from "primevue/button"
 import Dropdown from "primevue/dropdown"
 import Calendar from "primevue/calendar"
+import Fieldset from "primevue/fieldset"
 
 const currencyFormatter = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
