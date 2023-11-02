@@ -8,7 +8,7 @@
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
           <label for="loan-amount" class="font-bold block"> Loan Amount: </label>
-          <InputNumber v-model.lazy="bondStore.loanAmount" inputId="loan-amount" mode="currency" :currency="bondStore.currency.code" locale="en-US" />
+          <InputNumber v-model.lazy="bondStore.loanAmount" inputId="loan-amount" mode="currency" :currency="bondStore.currency.code" locale="en-US" :step="50000" />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
           <label for="interestRate" class="font-bold block"> Interest Rate: </label>
@@ -16,13 +16,13 @@
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
           <label for="loanPeriod" class="font-bold block"> Loan Period: </label>
-          <InputNumber v-model.lazy="bondStore.loanPeriod" mode="decimal" :minFractionDigits="0"  inputId="loanPeriod" suffix=" Yrs" />
+          <InputNumber v-model.lazy="bondStore.loanPeriod" mode="decimal" :minFractionDigits="0"  inputId="loanPeriod" suffix=" Yrs" :step="5" />
         </div>
       </div>
       <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around">
         <div class="w-14rem m-1">
           <label for="actualPayment" class="font-bold block"> Monthly Payment Amount: {{bondStore.customPayments ? '' : '*'}}</label>
-          <InputNumber v-model.lazy="bondStore.actualPayment" mode="currency" @input="actualPaymentInput" :currency="bondStore.currency.code" locale="en-US" inputId="actualPayment"/>
+          <InputNumber v-model.lazy="bondStore.actualPayment" mode="currency" @input="actualPaymentInput" :currency="bondStore.currency.code" locale="en-US" inputId="actualPayment" :step="100"/>
         </div>
         <div class="w-14rem m-1">
           <label for="startDate" class="font-bold block"> First Payment Month: </label>
