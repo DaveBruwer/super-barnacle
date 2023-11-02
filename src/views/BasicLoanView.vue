@@ -46,8 +46,9 @@
           </div>
         </div>
       </Fieldset>
-      <div class="m-2 lg:w-9 align-self-center" >
-        <PrimeChart :chart-data="chartData"/>
+      <div class="m-2 card lg:w-9 align-self-center" >
+        <PrimeChart ref="primaryChart" :chart-data="chartData"/>
+        <Button @click="primaryChart.reinit()"> Refresh Chart</Button>
       </div>
     </div>
 
@@ -183,7 +184,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, watchEffect} from "vue"
+import {ref, reactive, watchEffect, onMounted } from "vue"
 import { bondStore, dateToMonth } from "../Stores/bond"
 import currencies from "../assets/currencies.json"
 import PrimeChart from "../components/PrimeChart.vue"
@@ -201,6 +202,12 @@ const adHocPaymentsDialog = ref()
 const interestRatesDialog = ref()
 const bondPaymentsDialog = ref()
 const runningCapitalDialog = ref()
+const primaryChart = ref()
+
+onMounted(() => {
+  window.addEventListener("resize", resizeHandler.execute)
+})
+
 
 const chartData = reactive({
   labels: Array.from({length: bondStore.finalYear * 12}, (x, i) => i),
@@ -281,11 +288,21 @@ const parseCalcs = () => {
 watchEffect(() => parseCalcs())
 
 const buttonPress = () => {
-  console.log(bondStore)
+  console.log(primaryChart)
 }
 
 const actualPaymentInput = () => {
   bondStore.customPayments = true
+}
+
+const resizeHandler = {
+  timeOut: null,
+  execute: function() {
+    if (this.timeOut) {
+      clearTimeout(this.timeOut)
+    }
+    this.timeOut = setTimeout(primaryChart.value.reinit, 200)
+  }
 }
 
 </script>

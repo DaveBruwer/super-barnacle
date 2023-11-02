@@ -1,9 +1,19 @@
 <template>
-  <Chart :type="chartOptions.type" :data="props.chartData" :options="chartOptions.options" />
+  <Chart ref="chart" :type="chartOptions.type" :data="props.chartData" :options="chartOptions.options" />
 </template>
 
 <script setup>
+import { ref } from "vue"
 import Chart from "primevue/chart"
+
+const chart = ref()
+
+const reinit = function() {
+  chart.value.reinit()
+}
+const refresh = function() {
+  chart.value.refresh()
+}
 
 const props = defineProps({
   chartData: {
@@ -36,6 +46,11 @@ const chartOptions = {
     }
   }
 }
+
+defineExpose({
+  reinit,
+  refresh
+})
 
 </script>
 
