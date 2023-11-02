@@ -46,7 +46,9 @@
           </div>
         </div>
       </Fieldset>
-      <PrimeChart style="margin: 1em;" :chart-data="chartData"/>
+      <div class="m-2 lg:w-9 align-self-center" >
+        <PrimeChart :chart-data="chartData"/>
+      </div>
     </div>
 
   </div>
