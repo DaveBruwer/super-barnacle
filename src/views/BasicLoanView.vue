@@ -1,6 +1,6 @@
 <template>
-  <div class=" mx-2 my-2 flex justify-content-center align-content-center">
-    <div class="lg:w-9 flex flex-column justify-content-center" >
+  <div class=" m-2 flex justify-content-center align-content-center">
+    <div class="w-full flex flex-column justify-content-center" style="max-width: 60em;" >
       <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around">
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
           <label for="currencies" class="font-bold block"> Currency: </label>
@@ -29,7 +29,7 @@
           <Calendar v-model.lazy="bondStore.startingDate" view="month" dateFormat="MM yy" showIcon />
         </div>
       </div>
-      <Fieldset class="my-2 flex justify-content-center" legend="Basic Loan Info" :toggleable="true" :collapsed="true">
+      <Fieldset class="m-3 flex justify-content-center" legend="Basic Loan Info" :toggleable="true" :collapsed="true">
         <div class="m-0">
           <div>
             <label for="minPayment" class=""> Minimum monthly payments: </label>
@@ -46,18 +46,17 @@
           </div>
         </div>
       </Fieldset>
-      <div class="m-2 card lg:w-9 align-self-center" >
+      <div class="w-full card align-self-center" >
         <PrimeChart ref="primaryChart" :chart-data="chartData"/>
-        <Button @click="primaryChart.reinit()"> Refresh Chart</Button>
+        <Button icon="pi pi-refresh" @click="primaryChart.reinit()" />
       </div>
     </div>
-
   </div>
 
   
   <!-- _____________________________________________________________________________________________________________ -->
   <div class="bg-primary md:bg-primary-reverse lg:bg-primary max-w-screen">Colours will invert during md size only.</div>
-  <Button label="Button" icon="pi pi-circle" @click="buttonPress" />
+  <Button icon="pi pi-question-circle" @click="buttonPress" />
   <div>
     <Button @click="adHocPaymentsDialog.showModal()"> Ad-Hoc Payments</Button>
     <dialog ref="adHocPaymentsDialog">
@@ -301,7 +300,7 @@ const resizeHandler = {
     if (this.timeOut) {
       clearTimeout(this.timeOut)
     }
-    this.timeOut = setTimeout(primaryChart.value.reinit, 200)
+    this.timeOut = setTimeout(primaryChart.value.reinit, 100)
   }
 }
 
