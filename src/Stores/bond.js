@@ -37,7 +37,7 @@ export const bondStore = reactive({
     const minPayment_ = (bondStore.loanAmount*bondStore.monthlyInterest)/(1-1/((1+bondStore.monthlyInterest)**bondStore.periodInMonths))
     return minPayment_
   }),
-  adHocPayments: Array.from({length: 60*12+1}, () => null),
+  adHocPayments: Array.from({length: 60*12+1}, () => 0),
   adHocInterest: Array.from({length: 60*12+1}, () => null),
   adHocMonthlyPayments: Array.from({length: 60*12+1}, () => null),
   duration: "?! Something Went Wrong !?",

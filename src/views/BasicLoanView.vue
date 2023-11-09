@@ -22,7 +22,10 @@
       <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around">
         <div class="w-14rem m-1">
           <label for="actualPayment" class="font-bold block"> Monthly Payment Amount: {{bondStore.customPayments ? '' : '*'}}</label>
-          <InputNumber v-model.lazy="bondStore.actualPayment" mode="currency" @input="actualPaymentInput" :currency="bondStore.currency.code" locale="en-US" inputId="actualPayment" :step="100"/>
+          <div class="p-inputgroup">
+            <InputNumber v-model.lazy="bondStore.actualPayment" mode="currency" @input="actualPaymentInput" :currency="bondStore.currency.code" locale="en-US" inputId="actualPayment" :step="100"/>
+            <Button icon="pi pi-refresh" @click="bondStore.actualPayment = bondStore.minPayment" />
+          </div>
         </div>
         <div class="w-14rem m-1">
           <label for="startDate" class="font-bold block"> First Payment Month: </label>
@@ -51,8 +54,27 @@
         <!-- <Button icon="pi pi-refresh" @click="primaryChart.reinit()" /> -->
       </div>
       <div>
-        <Button label="Ad-Hoc Payments" icon="pi pi-external-link" @click="showAdHocPaymentsDialog = true" />
-        <Dialog class="w-11" v-model:visible="showAdHocPaymentsDialog" modal header="AD-HOC PAYMENTS" style="max-width: 60rem;" >
+        <Button label="Once-Off Payments" icon="pi pi-external-link" @click="showAdHocPaymentsDialog = true" />
+        <Dialog class="w-11" v-model:visible="showAdHocPaymentsDialog" modal header="ONCE-OFF PAYMENTS" style="max-width: 60rem;" >
+          <DataTable >
+            <ColumnGroup type="header">
+              <Row>
+                <Column header="Enter any additional payments which you make into your bond account. Loans from it are entered as negative numbers." :colspan="13" />
+              </Row>
+              <Row>
+                <Column header="Year" :rowspan="2" />
+                <Column header="Month" :colspan="12" />
+              </Row>
+              <Row>
+                <Column v-for="n in 12" :key="n" :header="n" />
+              </Row>
+            </ColumnGroup>
+            
+          </DataTable>
+        </Dialog>
+
+        <Button label="Ad-Hoc Payments (Old)" icon="pi pi-external-link" @click="showAdHocPaymentsDialog = true" />
+        <Dialog class="w-11" :visible="false" modal header="AD-HOC PAYMENTS" style="max-width: 60rem;" >
           <table >
             <thead>
               <tr>
@@ -182,6 +204,11 @@ import Dropdown from "primevue/dropdown"
 import Calendar from "primevue/calendar"
 import Fieldset from "primevue/fieldset"
 import Dialog from "primevue/dialog"
+import DataTable from "primevue/datatable"
+import Column from "primevue/column"
+import ColumnGroup from "primevue/columngroup"   // optional
+import Row from "primevue/row"                   // optional
+
 
 const currencyFormatter = new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
