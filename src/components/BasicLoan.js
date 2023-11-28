@@ -14,7 +14,7 @@ class BasicLoan {
     // this.dates = [] // Include in monthlyFigures?
     this.adHocPayments = Array.from({length: 60*12+1}, () => 0)
     this.adHocInterest = Array.from({length: 60*12+1}, () => null)
-    this.adHocMontlyPayments = Array.from({length: 60*12+1}, () => null)
+    this.adHocMonthlyPayments = Array.from({length: 60*12+1}, () => null)
     this.duration = "?! Something Went Wrong !?"
     this.finalPayment = null
     this.finalYear = 60
@@ -58,24 +58,74 @@ class BasicLoan {
   get minPayment() {
     return (this.loanAmount*this.monthlyInterest)/(1-1/((1+this.monthlyInterest)**this.periodInMonths))
   }
-  // get monthlyFigures() {
-  //   let _monthlyFigures = []
-  //   do {
-  //     // calcs go here
-  //     let tempDate = new Date(this.startingDate).setMonth(this.startingDate.getMonth() + _monthlyFigures.length)
 
-  //     // push all calculated things to array
-  //     _monthlyFigures.push({
-  //       date: new Date(tempDate),
-  //       dateString: this.dateToMonth(_monthlyFigures.date),
-        
-  //     })
+  get monthlyFigures() {
+    let _monthlyFigures = []
+    do {
+      const _i = _monthlyFigures.length
 
-  //   } while (true)
+      // calcs go here
+      //date
+      let tempDate = new Date(this.startingDate).setMonth(this.startingDate.getMonth() + _i)
+      // interests
+      let annualInterest = this.interestRate
+      if (this.adHocInterest[_i]) {
+        annualInterest = this.adHocInterest[_i]
+      } else if (_i > 0) {
+        annualInterest = _monthlyFigures[_i-1].annualInterest
+      }
+      let monthlyInterest = annualInterest/1200
+      // actual payment [global]
+      if (this.actualPayment === null || this.actualPayment <= this.minPayment || !this.customPayment) {
+        this.actualPayment = this.minPayment
+        this.customPayment = false
+      }
+      // ad hoc payment
+      let _adHocPayment = this.adHocPayments[_i] ? this.adHocPayments[_i] : 0
+      // this months payment
+      let _payment
+      if (this.adHocMonthlyPayments[_i]) {
+        _payment = this.adHocMonthlyPayments[_i]
+      } else if (_i == 0) {
+        _payment = this.actualPayment
+      } else if (_monthlyFigures[_i-1].capital*(1 + _monthlyFigures[_i].monthlyInterest) < _monthlyFigures[_i-1].payment) {
+        _payment = _monthlyFigures[_i-1].capital*(1 + _monthlyFigures[_i].monthlyInterest)
+      } else {
+        _payment = _monthlyFigures[_i-1].payment
+      }
+      //capital
+      let _capital
+      if (_i == 0) {
+        _capital = this.loanAmount
+      } else {
+        _capital = _monthlyFigures[_i-1].capital*(1 + _monthlyFigures[_i].monthlyInterest) - _monthlyFigures[_i].payment - _adHocPayment
+      }
+      //contribution
+      let _contribution
+      if (_i === 0) {
+        _contribution = 0
+      } else {
+        _contribution = _monthlyFigures[_i-1]._contribution + _payment + _adHocPayment
+      }
+
+
+      // push all calculated things to array
+      _monthlyFigures.push({
+        date: new Date(tempDate),
+        dateString: this.dateToMonth(_monthlyFigures.date),
+        annualInterest,
+        monthlyInterest,
+        adHocPayment: _adHocPayment,
+        payment: _payment,
+        capital: _capital,
+        contribution: _contribution
+      })
+
+    } while (_monthlyFigures[_monthlyFigures.length-1].capital > 0)
 
     
-  //   return _monthlyFigures
-  // }
+    return _monthlyFigures
+  }
 
   // Setters
   set payments(_paymentAmount) {
