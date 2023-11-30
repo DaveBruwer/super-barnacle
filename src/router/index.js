@@ -1,5 +1,6 @@
 // router
 import BasicLoan from "../views/BasicLoanView.vue"
+import BasicLoan2 from "../views/BasicLoan2View.vue"
 import TestPage from "../components/TestPage.vue"
 import { createRouter, createWebHistory } from "vue-router"
 
@@ -13,6 +14,11 @@ const routes = [
     path: "/basicloan",
     name: "BasicLoan",
     component: BasicLoan
+  },
+  {
+    path: "/basicloan2",
+    name: "BasicLoan2",
+    component: BasicLoan2
   }
 ]
 

@@ -1,24 +1,17 @@
 class BasicLoan {
-  constructor(_currency, _loanAmount, _interestRate, _loanPeriod, _actualPayment, _startingDate) {
+  constructor(_currency, _loanAmount, _interestRate, _loanPeriod, _startingDate) {
     this.currency = _currency
     this.loanAmount = _loanAmount
     this.interestRate = _interestRate
     this.loanPeriod = _loanPeriod
     this.startingDate = _startingDate
-    this.startingDateString = this.dateToMonth(this.startingDate)
-    this.actualPayment = _actualPayment
+    this.actualPayment = null
     this.customPayment = false
-    this.monthlyInterest = this.interestRate/1200
-    this.periodInMonths = this.loanPeriod*12
-    this.minPayment = (this.loanAmount*this.monthlyInterest)/(1-1/((1+this.monthlyInterest)**this.periodInMonths))
     // this.dates = [] // Include in monthlyFigures?
     this.adHocPayments = Array.from({length: 60*12+1}, () => 0)
     this.adHocInterest = Array.from({length: 60*12+1}, () => null)
     this.adHocMonthlyPayments = Array.from({length: 60*12+1}, () => null)
-    this.duration = "?! Something Went Wrong !?"
-    this.finalPayment = null
     this.finalYear = 60
-    this.totalContribution = 0
     this.monthlyFiguresArray = Array.from({length: this.periodInMonths + 1}, () => {
       return {
         date: null,
@@ -44,10 +37,14 @@ class BasicLoan {
   }
 
   get payments() {
+    if (this.actualPayment === null || this.actualPayment <= this.minPayment || !this.customPayment) {
+      this.actualPayment = this.minPayment
+      this.customPayment = false
+    }
     return this.actualPayment
   }
   get startingDateString() {
-    return this.startingDate.toISOString().split("T")[0].split("-").slice(0, 2).join("-")
+    return this.dateToMonth(this.startingDate)
   }
   get monthlyInterest() {
     return this.interestRate/1200
@@ -58,6 +55,25 @@ class BasicLoan {
   get minPayment() {
     return (this.loanAmount*this.monthlyInterest)/(1-1/((1+this.monthlyInterest)**this.periodInMonths))
   }
+  get finalPayment() {
+    return this.monthlyFigures[this.monthlyFigures.length-1].payment
+  }
+
+  get duration() {
+    const _lastMonth = this.monthlyFigures.length - 1
+    if (isNaN(_lastMonth)) {
+      return "?! Something Went Wrong !?"
+    } else {
+      const _years = Math.floor(_lastMonth/12)
+      const _months = _lastMonth%12
+      const _monthTerm = _months ==1 ? "month" : "months"
+      return `${_years} years and ${_months} ${_monthTerm}`
+    }
+  }
+
+  get totalContribution() {
+    return this.monthlyFigures[this.monthlyFigures.length-1].contribution
+  }
 
   get monthlyFigures() {
     let _monthlyFigures = []
@@ -65,8 +81,9 @@ class BasicLoan {
       const _i = _monthlyFigures.length
 
       // calcs go here
-      //date
-      let tempDate = new Date(this.startingDate).setMonth(this.startingDate.getMonth() + _i)
+      //date & dateString
+      const tempDate = new Date(this.startingDate).setMonth(this.startingDate.getMonth() + _i)
+      const temDateString = this.dateToMonth(new Date(tempDate))
       // interests
       let annualInterest = this.interestRate
       if (this.adHocInterest[_i]) {
@@ -75,11 +92,6 @@ class BasicLoan {
         annualInterest = _monthlyFigures[_i-1].annualInterest
       }
       let monthlyInterest = annualInterest/1200
-      // actual payment [global]
-      if (this.actualPayment === null || this.actualPayment <= this.minPayment || !this.customPayment) {
-        this.actualPayment = this.minPayment
-        this.customPayment = false
-      }
       // ad hoc payment
       let _adHocPayment = this.adHocPayments[_i] ? this.adHocPayments[_i] : 0
       // this months payment
@@ -88,8 +100,8 @@ class BasicLoan {
         _payment = this.adHocMonthlyPayments[_i]
       } else if (_i == 0) {
         _payment = this.actualPayment
-      } else if (_monthlyFigures[_i-1].capital*(1 + _monthlyFigures[_i].monthlyInterest) < _monthlyFigures[_i-1].payment) {
-        _payment = _monthlyFigures[_i-1].capital*(1 + _monthlyFigures[_i].monthlyInterest)
+      } else if (_monthlyFigures[_i-1].capital*(1 + monthlyInterest) < _monthlyFigures[_i-1].payment) {
+        _payment = _monthlyFigures[_i-1].capital*(1 + monthlyInterest)
       } else {
         _payment = _monthlyFigures[_i-1].payment
       }
@@ -98,21 +110,20 @@ class BasicLoan {
       if (_i == 0) {
         _capital = this.loanAmount
       } else {
-        _capital = _monthlyFigures[_i-1].capital*(1 + _monthlyFigures[_i].monthlyInterest) - _monthlyFigures[_i].payment - _adHocPayment
+        _capital = _monthlyFigures[_i-1].capital*(1 + monthlyInterest) - _payment - _adHocPayment
       }
       //contribution
       let _contribution
       if (_i === 0) {
         _contribution = 0
       } else {
-        _contribution = _monthlyFigures[_i-1]._contribution + _payment + _adHocPayment
+        _contribution = _monthlyFigures[_i-1].contribution + _payment + _adHocPayment
       }
-
 
       // push all calculated things to array
       _monthlyFigures.push({
         date: new Date(tempDate),
-        dateString: this.dateToMonth(_monthlyFigures.date),
+        dateString: temDateString,
         annualInterest,
         monthlyInterest,
         adHocPayment: _adHocPayment,
@@ -123,7 +134,6 @@ class BasicLoan {
 
     } while (_monthlyFigures[_monthlyFigures.length-1].capital > 0)
 
-    
     return _monthlyFigures
   }
 
@@ -131,8 +141,10 @@ class BasicLoan {
   set payments(_paymentAmount) {
     if(_paymentAmount > this.minPayment) {
       this.actualPayment = _paymentAmount
+      this.customPayment = true
     } else {
       this.actualPayment = this.minPayment
+      this.customPayment = false
     }
   }
 
