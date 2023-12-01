@@ -49,9 +49,9 @@
           </div>
         </div>
       </Fieldset>
-      <!-- <div class="w-full card align-self-center" >
+      <div class="w-full card align-self-center" >
         <PrimeChart ref="primaryChart" :chart-data="chartData"/>
-      </div> -->
+      </div>
       <div>
         <!-- <Button label="Once-Off Payments" icon="pi pi-external-link" @click="showAdHocPaymentsDialog = true" />
         <Dialog class="w-11" v-model:visible="showAdHocPaymentsDialog" modal header="ONCE-OFF PAYMENTS" style="max-width: 60rem;" >
@@ -188,7 +188,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, watchEffect, onMounted, onBeforeMount } from "vue"
+import {ref, reactive, onMounted, computed, onBeforeMount } from "vue"
 import BasicLoan from "../components/BasicLoan.js"
 
 // import { bondStore, dateToMonth } from "../Stores/bond"
@@ -223,9 +223,21 @@ onBeforeMount(() => {
   bond = reactive(new BasicLoan(currencies.USD, 500000, 7, 30, new Date()))
 })
 
-// onMounted(() => {
-//   window.addEventListener("resize", resizeHandler.execute)
-// })
+onMounted(() => {
+  window.addEventListener("resize", resizeHandler.execute)
+})
+
+const chartData = computed(() => {
+  return {
+    labels: Array.from(bond.monthlyFigures, (x, i) => x.dateString),
+    datasets: [
+      {
+        label: "Loan Capital",
+        data: Array.from(bond.monthlyFigures, (x, i) => x.capital),
+      }
+    ]
+  }
+})
 
 
 // const chartData = reactive({
@@ -239,18 +251,18 @@ onBeforeMount(() => {
 // })
 
 const buttonPress = () => {
-  console.log(bond.monthlyFigures)
+  console.log(chartData)
 }
 
-// const resizeHandler = {
-//   timeOut: null,
-//   execute: function() {
-//     if (this.timeOut) {
-//       clearTimeout(this.timeOut)
-//     }
-//     this.timeOut = setTimeout(primaryChart.value.reinit, 100)
-//   }
-// }
+const resizeHandler = {
+  timeOut: null,
+  execute: function() {
+    if (this.timeOut) {
+      clearTimeout(this.timeOut)
+    }
+    this.timeOut = setTimeout(primaryChart.value.reinit, 100)
+  }
+}
 
 </script>
 
