@@ -11,7 +11,6 @@ class BasicLoan {
     this.adHocPayments = Array.from({length: 60*12+1}, () => 0)
     this.adHocInterest = Array.from({length: 60*12+1}, () => null)
     this.adHocMonthlyPayments = Array.from({length: 60*12+1}, () => null)
-    this.finalYear = 60
     this.monthlyFiguresArray = Array.from({length: this.periodInMonths + 1}, () => {
       return {
         date: null,
@@ -59,6 +58,10 @@ class BasicLoan {
     return this.monthlyFigures[this.monthlyFigures.length-1].payment
   }
 
+  get finalYear() {
+    return Math.ceil(this.monthlyFigures.length/12) - 1
+  }
+
   get duration() {
     const _lastMonth = this.monthlyFigures.length - 1
     if (isNaN(_lastMonth)) {
@@ -76,6 +79,7 @@ class BasicLoan {
   }
 
   get monthlyFigures() {
+    console.log("montlyFigures")
     let _monthlyFigures = []
     do {
       const _i = _monthlyFigures.length

@@ -53,7 +53,7 @@
         <PrimeChart ref="primaryChart" :chart-data="chartData"/>
       </div>
       <div>
-        <!-- <Button label="Once-Off Payments" icon="pi pi-external-link" @click="showAdHocPaymentsDialog = true" />
+        <Button label="Once-Off Payments" icon="pi pi-external-link" @click="showAdHocPaymentsDialog = true" />
         <Dialog class="w-11" v-model:visible="showAdHocPaymentsDialog" modal header="ONCE-OFF PAYMENTS" style="max-width: 60rem;" >
           <DataTable >
             <ColumnGroup type="header">
@@ -70,10 +70,10 @@
             </ColumnGroup>
             
           </DataTable>
-        </Dialog> -->
+        </Dialog>
 
-        <!-- <Button label="Ad-Hoc Payments (Old)" icon="pi pi-external-link" @click="showAdHocPaymentsDialog = true" />
-        <Dialog class="w-11" :visible="false" modal header="AD-HOC PAYMENTS" style="max-width: 60rem;" >
+        <Button label="Ad-Hoc Payments (Old)" icon="pi pi-external-link" @click="showAdHocPaymentsOldDialog = true" />
+        <Dialog class="w-11" v-model:visible="showAdHocPaymentsOldDialog" modal header="AD-HOC PAYMENTS" style="max-width: 60rem;" >
           <table >
             <thead>
               <tr>
@@ -85,16 +85,16 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="m in bondStore.finalYear + 1" :key="m">
-                <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
+              <tr v-for="m in bond.finalYear + 1" :key="m">
+                <td>{{ bond.startingDate.getFullYear() + m-1 }}</td>
                 <td v-for="i in 12" :key="i">
-                  <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
-                  <input v-else type="number" v-model.lazy="bondStore.adHocPayments[(m-1)*12 + i - bondStore.dates[0].getMonth()]" placeholder="0" style="width: 5em;">
+                  <input v-if="(m < 2 && i < bond.startingDate.getMonth()+1) || (m == bond.finalYear + 1 && i > bond.monthlyFigures[bond.monthlyFigures.length-1].date.getMonth())" type="number" disabled="true" style="width: 5em;">
+                  <input v-else type="number" v-model.lazy="bond.adHocPayments[(m-1)*12 + i - bond.startingDate.getMonth()]" placeholder="0" style="width: 5em;">
                 </td>
               </tr>
             </tbody>
           </table>
-        </Dialog> -->
+        </Dialog>
 
         <!-- <Button label="Interest Rates" icon="pi pi-external-link" @click="showInterestRatesDialog = true" />
         <Dialog class="w-11" v-model:visible="showInterestRatesDialog" modal header="INTEREST RATES" style="max-width: 60rem;" >
@@ -213,6 +213,7 @@ const currencyFormatter = new Intl.NumberFormat("en-US", { minimumFractionDigits
 const primaryChart = ref()
 
 const showAdHocPaymentsDialog = ref(false)
+const showAdHocPaymentsOldDialog = ref(false)
 const showInterestRatesDialog = ref(false)
 const showBondPaymentsDialog = ref(false)
 const showRunningCapitalDialog = ref(false)
@@ -251,7 +252,7 @@ const chartData = computed(() => {
 // })
 
 const buttonPress = () => {
-  console.log(chartData)
+  console.log(bond.monthlyFigures)
 }
 
 const resizeHandler = {
