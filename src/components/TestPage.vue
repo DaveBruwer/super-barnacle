@@ -5,6 +5,9 @@
   <router-link to="/basicloan2" style="text-decoration-line: none;">
     <Button label="Basic Loan Refactored" icon="pi pi-dollar" /> 
   </router-link>
+  <router-link to="/basicloan3" style="text-decoration-line: none;">
+    <Button label="Basic Loan 3" icon="pi pi-dollar" /> 
+  </router-link>
 </template>
 
 <script setup>
