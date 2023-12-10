@@ -4,48 +4,48 @@
       <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around">
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
           <label for="currencies" class="font-bold block"> Currency: </label>
-          <Dropdown v-model.lazy="props.currency" :options="Object.values(currencies)" optionLabel="code" inputId="currencies" class="w-full md:w-14rem" />
+          <Dropdown v-model.lazy="bond.currency" :options="Object.values(currencies)" optionLabel="code" inputId="currencies" class="w-full md:w-14rem" />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
           <label for="loan-amount" class="font-bold block"> Loan Amount: </label>
-          <InputNumber v-model.lazy="props.loanAmount" inputId="loan-amount" mode="currency" :currency="props.currency.code" locale="en-US" :step="50000" />
+          <InputNumber v-model.lazy="bond.loanAmount" inputId="loan-amount" mode="currency" :currency="bond.currency.code" locale="en-US" :step="50000" />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
           <label for="interestRate" class="font-bold block"> Interest Rate: </label>
-          <InputNumber style="width: 10rem;" v-model.lazy="props.interestRate" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" />
+          <InputNumber style="width: 10rem;" v-model.lazy="bond.interestRate" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
           <label for="loanPeriod" class="font-bold block"> Loan Period: </label>
-          <InputNumber v-model.lazy="props.loanPeriod" mode="decimal" :minFractionDigits="0"  inputId="loanPeriod" suffix=" Yrs" :step="5" />
+          <InputNumber v-model.lazy="bond.loanPeriod" mode="decimal" :minFractionDigits="0"  inputId="loanPeriod" suffix=" Yrs" :step="5" />
         </div>
       </div>
       <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around">
         <div class="w-14rem m-1">
-          <label for="actualPayment" class="font-bold block"> Monthly Payment Amount: {{props.customPayment ? '' : '*'}}</label>
+          <label for="actualPayment" class="font-bold block"> Monthly Payment Amount: {{bond.customPayment ? '' : '*'}}</label>
           <div class="p-inputgroup">
-            <InputNumber v-model.lazy="actualPayment" mode="currency" :currency="props.currency.code" locale="en-US" inputId="actualPayment" :step="100"/>
-            <Button icon="pi pi-refresh" @click="actualPayment = minPayment" />
+            <InputNumber v-model.lazy="bond.actualPayment" mode="currency" :currency="bond.currency.code" locale="en-US" inputId="actualPayment" :step="100" :min="minPayment"/>
+            <Button icon="pi pi-refresh" @click="bond.actualPayment = minPayment" />
           </div>
         </div>
         <div class="w-14rem m-1">
           <label for="startDate" class="font-bold block"> First Payment Month: </label>
-          <Calendar v-model.lazy="props.startingDate" view="month" dateFormat="MM yy" showIcon />
+          <Calendar v-model.lazy="bond.startingDate" view="month" dateFormat="MM yy" showIcon />
         </div>
       </div>
       <Fieldset class="m-3 flex justify-content-center" legend="Basic Loan Info" :toggleable="true" :collapsed="true">
         <div class="m-0">
           <div>
             <label for="minPayment" class=""> Minimum monthly payments: </label>
-            <InputNumber v-model.lazy="minPayment" mode="currency" :currency="props.currency.code" locale="en-US" disabled inputId="minPayment" />
+            <InputNumber v-model.lazy="minPayment" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="minPayment" />
           </div>
           <div class=" block my-2"> Loan will be paid off in <span class="font-bold">{{duration}}</span>.</div>
           <div>
             <label for="lastPayment" class=""> Last payment amount will be: </label>
-            <InputNumber v-model.lazy="finalPayment" mode="currency" :currency="props.currency.code" locale="en-US" disabled inputId="lastPayment" />
+            <InputNumber v-model.lazy="finalPayment" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="lastPayment" />
           </div>
           <div>
             <label for="totalPayments" class=""> Total amount paid over the period of the loan: </label>
-            <InputNumber v-model.lazy="totalContribution" mode="currency" :currency="props.currency.code" locale="en-US" disabled inputId="totalPayments" />
+            <InputNumber v-model.lazy="totalContribution" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="totalPayments" />
           </div>
         </div>
       </Fieldset>
@@ -189,6 +189,7 @@
 
 <script setup>
 import { reactive, ref, defineProps, computed, watch } from "vue"
+import { calcMinPayment, monthlyCalcs, calcDuration } from "../assets/LoanCalcs"
 
 // import { bondStore, dateToMonth } from "../Stores/bond"
 import currencies from "../assets/currencies.json"
@@ -206,164 +207,50 @@ import Column from "primevue/column"
 import ColumnGroup from "primevue/columngroup"   // optional
 import Row from "primevue/row"                   // optional
 
-// PROPS
-const props = defineProps({
+// COMPONENT VARIABLES
+const bond = reactive({
   currency: {
-    type: Object,
-    default() { return {
-      symbol: "$",
-      name: "US Dollar",
-      decimal_digits: 2,
-      rounding: 0,
-      code: "USD",
-      name_plural: "US dollars"
-    }}
+    symbol: "$",
+    name: "US Dollar",
+    decimal_digits: 2,
+    rounding: 0,
+    code: "USD",
+    name_plural: "US dollars"
   },
-  loanAmount: {
-    type: Number,
-    default: 500000
-  },
-  interestRate: {
-    type: Number,
-    default: 5
-  },
-  loanPeriod: {
-    type: Number,
-    default: 30
-  },
-  startingDate: {
-    type: Date,
-    default: new Date()
-  }
+  loanAmount: 500000,
+  interestRate: 7,
+  loanPeriod: 30,
+  actualPayment: calcMinPayment(500000, 7, 30),
+  customPayment: false,
+  startingDate: new Date(),
+  adHocPayments: Array.from({length: 60*12+1}, () => 0),
+  adHocInterest: Array.from({length: 60*12+1}, () => null),
+  adHocMonthlyPayments: Array.from({length: 60*12+1}, () => null)
 })
 
-
-// COMPONENT VARIABLES
-const adHocPayments = reactive(Array.from({length: 60*12+1}, () => 0))
-const adHocInterest = reactive(Array.from({length: 60*12+1}, () => null))
-const adHocMonthlyPayments = reactive(Array.from({length: 60*12+1}, () => null))
-let actualPayment = ref(null)
-let customPayment = ref(false)
-
-
 //COMPUTED PROPERTIES
-// const dates = computed(() => {
-//   const _startMonth = props.startingDate.getMonth()
-//   const _datesArray = Array.from({length: 60 * 12}, (x, i) => {
-//     const _currentMonth = new Date(props.startingDate)
-//     _currentMonth.setMonth(_startMonth + i)
-//     return _currentMonth
-//   })
-//   return _datesArray
-// })
 
 const monthlyInterest = computed(() => {
-  return props.interestRate/1200
+  return bond.interestRate/1200
 })
 
 const periodInMonths = computed(() => {
-  return props.loanPeriod*12
+  return bond.loanPeriod*12
 })
 
-const minPayment = computed(() => {
-  return (props.loanAmount*monthlyInterest.value)/(1-1/((1+monthlyInterest.value)**periodInMonths.value))
-})
-
-// const startingDateString = computed(() => {
-//   return dateToMonth(props.startingDate)
-// })
+const minPayment = computed(() => calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod))
 
 // monthlyFigures
-const monthlyFigures = computed(() => {
-  console.log("montlyFigures")
-  let _monthlyFigures = []
-  do {
-    const _i = _monthlyFigures.length
-
-    // calcs go here
-    //date & dateString
-    const tempDate = new Date(props.startingDate).setMonth(props.startingDate.getMonth() + _i)
-    const temDateString = dateToMonth(new Date(tempDate))
-    // interests
-    let annualInterest = props.interestRate
-    if (adHocInterest[_i]) {
-      annualInterest = adHocInterest[_i]
-    } else if (_i > 0) {
-      annualInterest = _monthlyFigures[_i-1].annualInterest
-    }
-    let monthlyInterest = annualInterest/1200
-    // ad hoc payment
-    let adHocPayment = adHocPayments[_i]
-    // this months payment
-    let _payment = minPayment.value
-    if (adHocMonthlyPayments[_i]) {
-      _payment = adHocMonthlyPayments[_i]
-    } else if (_i === 0 || !isNaN(actualPayment)) {
-      _payment = actualPayment
-    } else if (_monthlyFigures[_i-1].capital*(1 + monthlyInterest) < _monthlyFigures[_i-1].payment) {
-      _payment = _monthlyFigures[_i-1].capital*(1 + monthlyInterest)
-    } else {
-      _payment = _monthlyFigures[_i-1].payment
-    }
-    //capital
-    let _capital
-    if (_i === 0) {
-      _capital = props.loanAmount
-    } else {
-      _capital = _monthlyFigures[_i-1].capital*(1 + monthlyInterest) - _payment - adHocPayment
-    }
-    //contribution
-    let _contribution
-    if (_i === 0) {
-      _contribution = 0
-    } else {
-      _contribution = _monthlyFigures[_i-1].contribution + _payment + adHocPayment
-    }
-
-    // push all calculated things to array
-    _monthlyFigures.push({
-      date: new Date(tempDate),
-      dateString: temDateString,
-      annualInterest,
-      monthlyInterest,
-      adHocPayment,
-      payment: _payment,
-      capital: _capital,
-      contribution: _contribution
-    })
-
-  } while (_monthlyFigures[_monthlyFigures.length-1].capital > 0)
-
-  return _monthlyFigures
-})
+const monthlyFigures = computed(() => monthlyCalcs(bond))
 
 // finalPayment
-const finalPayment = computed(() => {
-  return monthlyFigures.value[monthlyFigures.value.length-1].payment
-})
-
-// // finalYear
-// const finalYear = computed(() => {
-//   return Math.ceil(monthlyFigures.value.length/12) - 1
-// })
+const finalPayment = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].payment)
 
 // duration
-const duration = computed(() => {
-  const _lastMonth = monthlyFigures.value.length - 1
-  if (isNaN(_lastMonth)) {
-    return "?! Something Went Wrong !?"
-  } else {
-    const _years = Math.floor(_lastMonth/12)
-    const _months = _lastMonth%12
-    const _monthTerm = _months ==1 ? "month" : "months"
-    return `${_years} years and ${_months} ${_monthTerm}`
-  }
-})
+const duration = computed(() => calcDuration(monthlyFigures.value.length - 1))
 
 // totalContribution
-const totalContribution = computed(() => {
-  return monthlyFigures.value[monthlyFigures.value.length-1].contribution
-})
+const totalContribution = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].contribution)
 
 const chartData = computed(() => {
   return {
@@ -379,30 +266,29 @@ const chartData = computed(() => {
 
 
 //WATCHERS
-watch(() => actualPayment, (newPayment) => {
-  if (isNaN(newPayment) || newPayment <= minPayment.value || !customPayment.value) {
-    actualPayment.value = minPayment.value
-    customPayment.value = false
+watch(() => bond.actualPayment, (newPayment) => {
+  console.log("actualPayment Watcher")
+  if (isNaN(newPayment) || newPayment <= minPayment.value || !bond.customPayment) {
+    bond.actualPayment = minPayment.value
+    bond.customPayment = false
   } else {
-    customPayment.value = true
+    bond.customPayment = true
   }
 })
 
-watch(() => minPayment, () => {
-  if (isNaN(actualPayment.value) || actualPayment.value <= minPayment.value || !customPayment.value) {
-    actualPayment.value = minPayment.value
-    customPayment.value = false
+watch(() => minPayment.value, () => {
+  console.log("minPaymentWatcher")
+  if (isNaN(bond.actualPayment) || bond.actualPayment <= minPayment.value || !bond.customPayment) {
+    bond.actualPayment = minPayment.value
+    bond.customPayment = false
   }
 })
 
 
 // METHODS
-function dateToMonth(_date) {
-  return _date.toISOString().split("T")[0].split("-").slice(0, 2).join("-")
-}
 
 function buttonPress() {
-  console.log(minPayment.value)
+  console.log(monthlyFigures)
 }
   
 </script>
