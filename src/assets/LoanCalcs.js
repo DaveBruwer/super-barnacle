@@ -6,6 +6,25 @@ export function dateToMonth(_date) {
   return _date.toISOString().split("T")[0].split("-").slice(0, 2).join("-")
 }
 
+const monthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "Septermber",
+  "October",
+  "November",
+  "December"
+]
+
+export function getMonthName(month) {
+  return monthNames[month]
+}
+
 export function calcDuration(totalMonths) {
   if (isNaN(totalMonths)) {
     return "?! Something Went Wrong !?"
@@ -42,7 +61,7 @@ export function monthlyCalcs(bond) {
     let _payment = minPayment
     if (bond.adHocMonthlyPayments[_i]) {
       _payment = bond.adHocMonthlyPayments[_i]
-    } else if (_i === 0 || !isNaN(bond.actualPayment)) {
+    } else if (_i === 0 && !isNaN(bond.actualPayment)) {
       _payment = bond.actualPayment
     } else if (_monthlyFigures[_i-1].capital*(1 + monthlyInterest) < _monthlyFigures[_i-1].payment) {
       _payment = _monthlyFigures[_i-1].capital*(1 + monthlyInterest)

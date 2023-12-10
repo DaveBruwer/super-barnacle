@@ -39,6 +39,7 @@
             <InputNumber v-model.lazy="minPayment" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="minPayment" />
           </div>
           <div class=" block my-2"> Loan will be paid off in <span class="font-bold">{{duration}}</span>.</div>
+          <div class=" block my-2"> Last payment will be on <span class="font-bold">{{finalMonthName}} {{ finalYear }}</span>.</div>
           <div>
             <label for="lastPayment" class=""> Last payment amount will be: </label>
             <InputNumber v-model.lazy="finalPayment" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="lastPayment" />
@@ -72,8 +73,8 @@
           </DataTable>
         </Dialog> -->
 
-        <!-- <Button label="Ad-Hoc Payments (Old)" icon="pi pi-external-link" @click="showAdHocPaymentsOldDialog = true" />
-        <Dialog class="w-11" v-model:visible="showAdHocPaymentsOldDialog" modal header="AD-HOC PAYMENTS" style="max-width: 60rem;" >
+        <Button label="Ad-Hoc Payments (Old)" icon="pi pi-external-link" @click="modals.AdHocPayments = true" />
+        <Dialog class="w-11" v-model:visible="modals.AdHocPayments" modal header="AD-HOC PAYMENTS" style="max-width: 60rem;" >
           <table >
             <thead>
               <tr>
@@ -85,16 +86,17 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="m in bond.finalYear + 1" :key="m">
-                <td>{{ bond.startingDate.getFullYear() + m-1 }}</td>
+              <tr v-for="m in totalYears + 2" :key="m">
+                <td>{{ startingYear + m-1 }}</td>
                 <td v-for="i in 12" :key="i">
-                  <input v-if="(m < 2 && i < bond.startingDate.getMonth()+1) || (m == bond.finalYear + 1 && i > bond.monthlyFigures[bond.monthlyFigures.length-1].date.getMonth())" type="number" disabled="true" style="width: 5em;">
-                  <input v-else type="number" v-model.lazy="bond.adHocPayments[(m-1)*12 + i - bond.startingDate.getMonth()]" placeholder="0" style="width: 5em;">
+                  <!-- <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" type="text" :placeholder="m"> -->
+                  <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
+                  <input v-else type="number" v-model.lazy="bond.adHocPayments[(m-1)*12 + i - startingMonth]" placeholder="0" style="width: 5em;">
                 </td>
               </tr>
             </tbody>
           </table>
-        </Dialog> -->
+        </Dialog>
 
         <!-- <Button label="Interest Rates" icon="pi pi-external-link" @click="showInterestRatesDialog = true" />
         <Dialog class="w-11" v-model:visible="showInterestRatesDialog" modal header="INTEREST RATES" style="max-width: 60rem;" >
@@ -183,13 +185,13 @@
     </div>
   </div>
 
-  <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(monthlyFigures)" />
+  <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(totalYears)" />
   
 </template>
 
 <script setup>
-import { reactive, ref, defineProps, computed, watch } from "vue"
-import { calcMinPayment, monthlyCalcs, calcDuration } from "../assets/LoanCalcs"
+import { reactive, computed, watch } from "vue"
+import { calcMinPayment, monthlyCalcs, calcDuration, getMonthName } from "../assets/LoanCalcs"
 
 // import { bondStore, dateToMonth } from "../Stores/bond"
 import currencies from "../assets/currencies.json"
@@ -202,10 +204,10 @@ import Dropdown from "primevue/dropdown"
 import Calendar from "primevue/calendar"
 import Fieldset from "primevue/fieldset"
 import Dialog from "primevue/dialog"
-import DataTable from "primevue/datatable"
-import Column from "primevue/column"
-import ColumnGroup from "primevue/columngroup"   // optional
-import Row from "primevue/row"                   // optional
+// import DataTable from "primevue/datatable"
+// import Column from "primevue/column"
+// import ColumnGroup from "primevue/columngroup"   // optional
+// import Row from "primevue/row"                   // optional
 
 // COMPONENT VARIABLES
 const bond = reactive({
@@ -228,22 +230,23 @@ const bond = reactive({
   adHocMonthlyPayments: Array.from({length: 60*12+1}, () => null)
 })
 
+const modals = reactive({
+  AdHocPayments: false,
+
+})
+
 //COMPUTED PROPERTIES
-
 const minPayment = computed(() => calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod))
-
-// monthlyFigures
 const monthlyFigures = computed(() => monthlyCalcs(bond))
-
-// finalPayment
 const finalPayment = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].payment)
-
-// duration
 const duration = computed(() => calcDuration(monthlyFigures.value.length - 1))
-
-// totalContribution
 const totalContribution = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].contribution)
-
+const startingYear = computed(() => bond.startingDate.getFullYear())
+const startingMonth = computed(() => bond.startingDate.getMonth())
+const finalMonth = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].date.getMonth())
+const finalMonthName = computed(() => getMonthName(finalMonth.value))
+const finalYear = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].date.getFullYear())
+const totalYears = computed(() => Math.floor(monthlyFigures.value.length/12))
 const chartData = computed(() => {
   return {
     labels: Array.from(monthlyFigures.value, (x) => x.dateString),
@@ -256,11 +259,10 @@ const chartData = computed(() => {
   }
 })
 
-
 //WATCHERS
 watch(() => bond.actualPayment, (newPayment) => {
-  console.log("actualPayment Watcher")
-  if (isNaN(newPayment) || newPayment <= minPayment.value || !bond.customPayment) {
+  console.log("actualPayment Watcher", newPayment)
+  if (isNaN(newPayment) || newPayment <= minPayment.value) {
     bond.actualPayment = minPayment.value
     bond.customPayment = false
   } else {
@@ -276,6 +278,9 @@ watch(() => minPayment.value, () => {
   }
 })
 
+watch(() => totalYears.value, () => {
+  console.log(totalYears.value)
+})
 
 // METHODS
 
