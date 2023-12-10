@@ -183,7 +183,7 @@
     </div>
   </div>
 
-  <Button label="Log Bond" icon="pi pi-external-link" @click="buttonPress" />
+  <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(monthlyFigures)" />
   
 </template>
 
@@ -230,14 +230,6 @@ const bond = reactive({
 
 //COMPUTED PROPERTIES
 
-const monthlyInterest = computed(() => {
-  return bond.interestRate/1200
-})
-
-const periodInMonths = computed(() => {
-  return bond.loanPeriod*12
-})
-
 const minPayment = computed(() => calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod))
 
 // monthlyFigures
@@ -254,11 +246,11 @@ const totalContribution = computed(() => monthlyFigures.value[monthlyFigures.val
 
 const chartData = computed(() => {
   return {
-    labels: Array.from(monthlyFigures, (x) => x.dateString),
+    labels: Array.from(monthlyFigures.value, (x) => x.dateString),
     datasets: [
       {
         label: "Loan Capital",
-        data: Array.from(monthlyFigures, (x) => x.capital),
+        data: Array.from(monthlyFigures.value, (x) => x.capital),
       }
     ]
   }
@@ -287,10 +279,6 @@ watch(() => minPayment.value, () => {
 
 // METHODS
 
-function buttonPress() {
-  console.log(monthlyFigures)
-}
-  
 </script>
 
 <style>
