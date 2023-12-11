@@ -98,8 +98,8 @@
           </table>
         </Dialog>
 
-        <!-- <Button label="Interest Rates" icon="pi pi-external-link" @click="showInterestRatesDialog = true" />
-        <Dialog class="w-11" v-model:visible="showInterestRatesDialog" modal header="INTEREST RATES" style="max-width: 60rem;" >
+        <Button label="Interest Rates" icon="pi pi-external-link" @click="modals.InterestRates = true" />
+        <Dialog class="w-11" v-model:visible="modals.InterestRates" modal header="INTEREST RATES" style="max-width: 60rem;" >
           <table>
             <thead>
               <tr>
@@ -115,19 +115,19 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="m in bondStore.finalYear + 1" :key="m">
-                <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
+              <tr v-for="m in totalYears + 2" :key="m">
+                <td>{{ startingYear + m-1 }}</td>
                 <td v-for="i in 12" :key="i">
-                  <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
-                  <input v-else type="number" v-model.lazy="bondStore.adHocInterest[(m-1)*12 + i]" :placeholder="bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].annualInterest" style="width: 5em;">
+                  <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
+                  <input v-else type="number" v-model.lazy="bond.adHocInterest[(m-1)*12 + i - startingMonth]" :placeholder="monthlyFigures[(m-1)*12 + i - startingMonth - 1].annualInterest" style="width: 5em;">
                 </td>
               </tr>
             </tbody>
           </table>
-        </Dialog> -->
+        </Dialog>
 
-        <!-- <Button label="Bond Repayments" icon="pi pi-external-link" @click="showBondPaymentsDialog = true" />
-        <Dialog class="w-11" v-model:visible="showBondPaymentsDialog" modal header="BOND REPAYMENTS" style="max-width: 60rem;" >
+        <Button label="Bond Repayments" icon="pi pi-external-link" @click="modals.BondRepayments = true" />
+        <Dialog class="w-11" v-model:visible="modals.BondRepayments" modal header="BOND REPAYMENTS" style="max-width: 60rem;" >
           <table>
             <thead>
               <tr>
@@ -143,19 +143,19 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="m in bondStore.finalYear + 1" :key="m">
-                <td>{{ bondStore.dates[0].getFullYear() + m-1 }}</td>
+              <tr v-for="m in totalYears + 2" :key="m">
+                <td>{{ startingYear + m-1 }}</td>
                 <td v-for="i in 12" :key="i">
-                  <input v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" type="number" disabled="true" style="width: 5em;">
-                  <input v-else type="number" v-model.lazy="bondStore.adHocMonthlyPayments[(m-1)*12 + i]" :placeholder="bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].payment" style="width: 5em;">
+                  <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
+                  <input v-else type="number" v-model.lazy="bond.adHocMonthlyPayments[(m-1)*12 + i - startingMonth]" :placeholder="monthlyFigures[(m-1)*12 + i - startingMonth - 1].payment" style="width: 5em;">
                 </td>
               </tr>
             </tbody>
           </table>
-        </Dialog> -->
+        </Dialog>
 
-        <!-- <Button label="Running Capital" icon="pi pi-external-link" @click="showRunningCapitalDialog = true" />
-        <Dialog class="w-11" v-model:visible="showRunningCapitalDialog" modal header="RUNNING CAPITAL" style="max-width: 60rem;" >
+        <Button label="Running Capital" icon="pi pi-external-link" @click="modals.RunningCapital = true" />
+        <Dialog class="w-11" v-model:visible="modals.RunningCapital" modal header="RUNNING CAPITAL" style="max-width: 60rem;" >
           <table>
             <thead>
               <tr>
@@ -171,21 +171,23 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="m in bondStore.finalYear + 1" :key="m">
-                <td>{{ bondStore.dates[0].getFullYear() + m -1 }}</td>
+              <tr v-for="m in totalYears + 2" :key="m">
+                <td>{{ startingYear + m -1 }}</td>
                 <td v-for="i in 12" :key="i">
-                  <div v-if="(m < 2 && i < bondStore.dates[0].getMonth()+1) || (m == bondStore.finalYear + 1 && i > bondStore.dates[bondStore.finalYear*12].getMonth())" style="width: 7em; text-align: center;">-</div>
-                  <div v-else style="width: 7em;">{{bondStore.currency.symbol}}{{ currencyFormatter.format(bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].capital) }}</div>
+                  <!-- <div v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" style="width: 7em; text-align: center;">-</div> -->
+                  <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
+                  <input v-else type="number" :placeholder="monthlyFigures[(m-1)*12 + i - startingMonth - 1].capital" disabled="true" style="width: 5em;">
+                  <!-- <div v-else style="width: 7em;">{{bond.currency.symbol}}{{ currencyFormatter.format(bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].capital) }}</div> -->
                 </td>
               </tr>
             </tbody>
           </table>
-        </Dialog> -->
+        </Dialog>
       </div>
     </div>
   </div>
 
-  <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(totalYears)" />
+  <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(monthlyFigures)" />
   
 </template>
 
@@ -232,6 +234,9 @@ const bond = reactive({
 
 const modals = reactive({
   AdHocPayments: false,
+  InterestRates: false,
+  BondRepayments: false,
+  RunningCapital: false
 
 })
 
