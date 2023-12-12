@@ -99,3 +99,50 @@ export function monthlyCalcs(bond) {
 
   return _monthlyFigures
 }
+
+export function basicCalcs(bond) {
+  const minPayment = calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod)
+
+  let _monthlyFigures = []
+  do {
+    const _i = _monthlyFigures.length
+
+    // calcs go here
+    //date & dateString
+    const tempDate = new Date(bond.startingDate).setMonth(bond.startingDate.getMonth() + _i)
+    const temDateString = dateToMonth(new Date(tempDate))
+    // interests
+    const annualInterest = bond.interestRate
+    const monthlyInterest = annualInterest/1200
+    // this months payment
+    let _payment = minPayment
+    //capital
+    let _capital
+    if (_i === 0) {
+      _capital = bond.loanAmount
+    } else {
+      _capital = _monthlyFigures[_i-1].capital*(1 + monthlyInterest) - _payment
+    }
+    //contribution
+    let _contribution
+    if (_i === 0) {
+      _contribution = 0
+    } else {
+      _contribution = _monthlyFigures[_i-1].contribution + _payment
+    }
+
+    // push all calculated things to array
+    _monthlyFigures.push({
+      date: new Date(tempDate),
+      dateString: temDateString,
+      annualInterest,
+      monthlyInterest,
+      payment: _payment,
+      capital: _capital,
+      contribution: _contribution
+    })
+
+  } while (_monthlyFigures[_monthlyFigures.length-1].capital > 0)
+
+  return _monthlyFigures
+}

@@ -89,7 +89,6 @@
               <tr v-for="m in totalYears + 2" :key="m">
                 <td>{{ startingYear + m-1 }}</td>
                 <td v-for="i in 12" :key="i">
-                  <!-- <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" type="text" :placeholder="m"> -->
                   <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
                   <input v-else type="number" v-model.lazy="bond.adHocPayments[(m-1)*12 + i - startingMonth]" placeholder="0" style="width: 5em;">
                 </td>
@@ -176,7 +175,10 @@
                 <td v-for="i in 12" :key="i">
                   <!-- <div v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" style="width: 7em; text-align: center;">-</div> -->
                   <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
-                  <input v-else type="number" :placeholder="monthlyFigures[(m-1)*12 + i - startingMonth - 1].capital" disabled="true" style="width: 5em;">
+                  <!-- <input v-else type="number" :placeholder="monthlyFigures[(m-1)*12 + i - startingMonth - 1].capital" disabled="true" style="width: 5em;"> -->
+                  <div v-else style="width: 5em;">
+                    <InputNumber v-model.lazy="monthlyFigures[(m-1)*12 + i - startingMonth - 1].capital" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+                  </div>
                   <!-- <div v-else style="width: 7em;">{{bond.currency.symbol}}{{ currencyFormatter.format(bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].capital) }}</div> -->
                 </td>
               </tr>
@@ -193,7 +195,7 @@
 
 <script setup>
 import { reactive, computed, watch } from "vue"
-import { calcMinPayment, monthlyCalcs, calcDuration, getMonthName } from "../assets/LoanCalcs"
+import { calcMinPayment, monthlyCalcs, basicCalcs, calcDuration, getMonthName } from "../assets/LoanCalcs"
 
 // import { bondStore, dateToMonth } from "../Stores/bond"
 import currencies from "../assets/currencies.json"
@@ -243,6 +245,7 @@ const modals = reactive({
 //COMPUTED PROPERTIES
 const minPayment = computed(() => calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod))
 const monthlyFigures = computed(() => monthlyCalcs(bond))
+const defaultFigures = computed(() => basicCalcs(bond))
 const finalPayment = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].payment)
 const duration = computed(() => calcDuration(monthlyFigures.value.length - 1))
 const totalContribution = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].contribution)
@@ -254,11 +257,19 @@ const finalYear = computed(() => monthlyFigures.value[monthlyFigures.value.lengt
 const totalYears = computed(() => Math.floor(monthlyFigures.value.length/12))
 const chartData = computed(() => {
   return {
-    labels: Array.from(monthlyFigures.value, (x) => x.dateString),
+    labels: Array.from(defaultFigures.value, (x) => x.dateString),
     datasets: [
       {
         label: "Loan Capital",
         data: Array.from(monthlyFigures.value, (x) => x.capital),
+      },
+      // {
+      //   label: "Total Contributions",
+      //   data: Array.from(monthlyFigures.value, (x) => x.contribution),
+      // },
+      {
+        label: "Base Loan",
+        data: Array.from(defaultFigures.value, (x) => x.capital),
       }
     ]
   }
