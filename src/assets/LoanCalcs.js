@@ -2,11 +2,7 @@ export function calcMinPayment(loanAmount, interestRate, loanPeriod) {
   return (loanAmount*(interestRate/1200))/(1-1/((1+(interestRate/1200))**(loanPeriod*12)))
 }
 
-export function dateToMonth(_date) {
-  return _date.toISOString().split("T")[0].split("-").slice(0, 2).join("-")
-}
-
-const monthNames = [
+const fullMonthNames = [
   "January",
   "February",
   "March",
@@ -21,8 +17,34 @@ const monthNames = [
   "December"
 ]
 
+const shortlMonthNames = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec"
+]
+
+export function dateToMonth(_date) {
+  return _date.toISOString().split("T")[0].split("-").slice(0, 2).join("-")
+}
+
+export function getDateString(_date) {
+  const _dateArray = _date.toLocaleDateString().split("/")
+  return shortlMonthNames[_dateArray[1]-1] + "-" + _dateArray[2]
+}
+
+
+
 export function getMonthName(month) {
-  return monthNames[month]
+  return fullMonthNames[month]
 }
 
 export function calcDuration(totalMonths) {
@@ -46,7 +68,21 @@ export function monthlyCalcs(bond) {
     // calcs go here
     //date & dateString
     const tempDate = new Date(bond.startingDate).setMonth(bond.startingDate.getMonth() + _i)
-    const temDateString = dateToMonth(new Date(tempDate))
+    const tempDateString = getDateString(new Date(tempDate))
+    
+    // if (_i === 0) {
+    //   console.log("bond.startingDate: ", bond.startingDate)
+    //   console.log("new Date bond.startingDate: ", new Date(bond.startingDate))
+    //   console.log("tempDate: ", tempDate)
+    //   console.log("new Date tempDate: ", new Date(tempDate))
+    //   console.log("tempDate.toISO: ", new Date(tempDate).toISOString())
+    //   console.log("tempDateString: ", tempDateString)
+    //   console.log("tempDate.toLocaleDateString: ", new Date(tempDate).toLocaleDateString())
+    //   console.log("tempDate.split: ", new Date(tempDate).toLocaleDateString().split("/"))
+    //   console.log("getDateString: ", getDateString(new Date(tempDate)))
+
+    // }
+
     // interests
     let annualInterest = bond.interestRate
     if (bond.adHocInterest[_i]) {
@@ -86,7 +122,7 @@ export function monthlyCalcs(bond) {
     // push all calculated things to array
     _monthlyFigures.push({
       date: new Date(tempDate),
-      dateString: temDateString,
+      dateString: tempDateString,
       annualInterest,
       monthlyInterest,
       adHocPayment,
@@ -110,7 +146,7 @@ export function basicCalcs(bond) {
     // calcs go here
     //date & dateString
     const tempDate = new Date(bond.startingDate).setMonth(bond.startingDate.getMonth() + _i)
-    const temDateString = dateToMonth(new Date(tempDate))
+    const tempDateString = getDateString(new Date(tempDate))
     // interests
     const annualInterest = bond.interestRate
     const monthlyInterest = annualInterest/1200
@@ -134,7 +170,7 @@ export function basicCalcs(bond) {
     // push all calculated things to array
     _monthlyFigures.push({
       date: new Date(tempDate),
-      dateString: temDateString,
+      dateString: tempDateString,
       annualInterest,
       monthlyInterest,
       payment: _payment,

@@ -175,10 +175,10 @@
                 <td v-for="i in 12" :key="i">
                   <!-- <div v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" style="width: 7em; text-align: center;">-</div> -->
                   <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
-                  <!-- <input v-else type="number" :placeholder="monthlyFigures[(m-1)*12 + i - startingMonth - 1].capital" disabled="true" style="width: 5em;"> -->
-                  <div v-else style="width: 5em;">
+                  <input v-else type="number" :placeholder="monthlyFigures[(m-1)*12 + i - startingMonth - 1].capital" disabled="true" style="width: 5em;">
+                  <!-- <div v-else style="width: 5em;">
                     <InputNumber v-model.lazy="monthlyFigures[(m-1)*12 + i - startingMonth - 1].capital" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
-                  </div>
+                  </div> -->
                   <!-- <div v-else style="width: 7em;">{{bond.currency.symbol}}{{ currencyFormatter.format(bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].capital) }}</div> -->
                 </td>
               </tr>
