@@ -3,17 +3,10 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 import Chart from "primevue/chart"
 
 const chart = ref()
-
-const reinit = function() {
-  chart.value.reinit()
-}
-const refresh = function() {
-  chart.value.refresh()
-}
 
 const props = defineProps({
   chartData: {
@@ -28,6 +21,11 @@ const chartOptions = {
     fill: true,
     tension: 0.25,
     pointStyle: false,
+    scales: {
+      y: {
+        min: 0
+      }
+    },
     plugins: {
       tooltip: {
         callbacks: {
@@ -47,9 +45,18 @@ const chartOptions = {
   }
 }
 
-defineExpose({
-  reinit,
-  refresh
+const resizeHandler = {
+  timeOut: null,
+  execute: function() {
+    if (this.timeOut) {
+      clearTimeout(this.timeOut)
+    }
+    this.timeOut = setTimeout(chart.value.reinit(), 100)
+  }
+}
+
+onMounted(() => {
+  window.addEventListener("resize", resizeHandler.execute)
 })
 
 </script>

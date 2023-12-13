@@ -270,6 +270,9 @@ const chartData = computed(() => {
       {
         label: "Base Loan",
         data: Array.from(defaultFigures.value, (x) => x.capital),
+        fill: false,
+        borderDash: [2],
+        borderWidth: 2
       }
     ]
   }
