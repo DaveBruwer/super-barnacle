@@ -86,6 +86,7 @@ export function monthlyCalcs(bond) {
     } else if (_i === 0 && !isNaN(bond.actualPayment)) {
       _payment = bond.actualPayment
     } else if (_monthlyFigures[_i-1].capital*(1 + monthlyInterest) < _monthlyFigures[_i-1].payment) {
+      // _payment = _monthlyFigures[_i-1].capital*(1 + monthlyInterest) < 0.005 ? 0: _monthlyFigures[_i-1].capital*(1 + monthlyInterest)
       _payment = _monthlyFigures[_i-1].capital*(1 + monthlyInterest)
     } else {
       _payment = _monthlyFigures[_i-1].payment
@@ -96,6 +97,9 @@ export function monthlyCalcs(bond) {
       _capital = bond.loanAmount
     } else {
       _capital = _monthlyFigures[_i-1].capital*(1 + monthlyInterest) - _payment - adHocPayment
+      if (_capital < 0.005) {
+        _capital = 0
+      }
     }
     //contribution
     let _contribution
@@ -144,6 +148,9 @@ export function basicCalcs(bond) {
       _capital = bond.loanAmount
     } else {
       _capital = _monthlyFigures[_i-1].capital*(1 + monthlyInterest) - _payment
+      if (_capital < 0.005) {
+        _capital = 0
+      }
     }
     //contribution
     let _contribution

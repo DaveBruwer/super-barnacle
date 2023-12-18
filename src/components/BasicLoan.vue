@@ -190,6 +190,7 @@
   </div>
 
   <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(monthlyFigures)" />
+  <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(defaultFigures)" />
   
 </template>
 
@@ -280,7 +281,6 @@ const chartData = computed(() => {
 
 //WATCHERS
 watch(() => bond.actualPayment, (newPayment) => {
-  console.log("actualPayment Watcher", newPayment)
   if (isNaN(newPayment) || newPayment <= minPayment.value) {
     bond.actualPayment = minPayment.value
     bond.customPayment = false
@@ -290,15 +290,10 @@ watch(() => bond.actualPayment, (newPayment) => {
 })
 
 watch(() => minPayment.value, () => {
-  console.log("minPaymentWatcher")
   if (isNaN(bond.actualPayment) || bond.actualPayment <= minPayment.value || !bond.customPayment) {
     bond.actualPayment = minPayment.value
     bond.customPayment = false
   }
-})
-
-watch(() => totalYears.value, () => {
-  console.log(totalYears.value)
 })
 
 // METHODS
