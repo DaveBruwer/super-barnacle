@@ -24,7 +24,7 @@
           <label for="actualPayment" class="font-bold block"> Monthly Payment Amount: {{bond.customPayment ? '' : '*'}}</label>
           <div class="p-inputgroup">
             <InputNumber v-model.lazy="bond.actualPayment" mode="currency" :currency="bond.currency.code" locale="en-US" inputId="actualPayment" :step="100" :min="minPayment"/>
-            <Button icon="pi pi-refresh" @click="bond.actualPayment = minPayment" />
+            <Button icon="pi pi-refresh" @click="bond.actualPayment = minPayment" title="Reset to Min Payment" />
           </div>
         </div>
         <div class="w-14rem m-1">
@@ -54,24 +54,17 @@
         <PrimeChart ref="primaryChart" :chart-data="chartData"/>
       </div>
       <div>
-        <!-- <Button label="Once-Off Payments" icon="pi pi-external-link" @click="showAdHocPaymentsDialog = true" />
-        <Dialog class="w-11" v-model:visible="showAdHocPaymentsDialog" modal header="ONCE-OFF PAYMENTS" style="max-width: 60rem;" >
-          <DataTable >
-            <ColumnGroup type="header">
-              <Row>
-                <Column header="Enter any additional payments which you make into your bond account. Loans from it are entered as negative numbers." :colspan="13" />
-              </Row>
-              <Row>
-                <Column header="Year" :rowspan="2" />
-                <Column header="Month" :colspan="12" />
-              </Row>
-              <Row>
-                <Column v-for="n in 12" :key="n" :header="n" />
-              </Row>
-            </ColumnGroup>
-            
+        <Button label="Once-Off Payments" icon="pi pi-external-link" @click="modals.OnceOffPayments = true" />
+        <Dialog class="w-11" v-model:visible="modals.OnceOffPayments" modal header="MONTHLY DATA" style="max-width: 60rem;" >
+          <DataTable :value="monthlyFiguresArray" tableStyle="min-width: 50rem">
+            <Column field="date" header="Date"></Column>
+            <Column field="onceOffPayment" header="Once-off Payment"></Column>
+            <Column field="payment" header="Monthly Payments"></Column>
+            <Column field="interest" header="Interest Rate"></Column>
+            <Column field="capital" header="Capital"></Column>
+            <Column field="contribution" header="Total Contribution"></Column>
           </DataTable>
-        </Dialog> -->
+        </Dialog>
 
         <Button label="Ad-Hoc Payments (Old)" icon="pi pi-external-link" @click="modals.AdHocPayments = true" />
         <Dialog class="w-11" v-model:visible="modals.AdHocPayments" modal header="AD-HOC PAYMENTS" style="max-width: 60rem;" >
@@ -190,7 +183,7 @@
   </div>
 
   <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(monthlyFigures)" />
-  <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(defaultFigures)" />
+  <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(monthlyFiguresArray)" />
   
 </template>
 
@@ -209,10 +202,10 @@ import Dropdown from "primevue/dropdown"
 import Calendar from "primevue/calendar"
 import Fieldset from "primevue/fieldset"
 import Dialog from "primevue/dialog"
-// import DataTable from "primevue/datatable"
-// import Column from "primevue/column"
-// import ColumnGroup from "primevue/columngroup"   // optional
-// import Row from "primevue/row"                   // optional
+import DataTable from "primevue/datatable"
+import Column from "primevue/column"
+// import ColumnGroup from "primevue/columngroup"
+// import Row from "primevue/row"
 
 // COMPONENT VARIABLES
 const bond = reactive({
@@ -236,6 +229,7 @@ const bond = reactive({
 })
 
 const modals = reactive({
+  OnceOffPayments: false,
   AdHocPayments: false,
   InterestRates: false,
   BondRepayments: false,
@@ -264,12 +258,8 @@ const chartData = computed(() => {
         label: "Loan Capital",
         data: Array.from(monthlyFigures.value, (x) => x.capital),
       },
-      // {
-      //   label: "Total Contributions",
-      //   data: Array.from(monthlyFigures.value, (x) => x.contribution),
-      // },
       {
-        label: "Base Loan",
+        label: "Original Loan",
         data: Array.from(defaultFigures.value, (x) => x.capital),
         fill: false,
         borderDash: [2],
@@ -278,6 +268,16 @@ const chartData = computed(() => {
     ]
   }
 })
+const monthlyFiguresArray = computed(() => Array.from(monthlyFigures.value, (month) => {
+  return {
+    onceOffPayment: month.adHocPayment.toFixed(2),
+    interest: month.annualInterest,
+    capital: month.capital.toFixed(2),
+    contribution: month.contribution.toFixed(2),
+    date: month.dateString,
+    payment: month.payment.toFixed(2)
+  }
+}))
 
 //WATCHERS
 watch(() => bond.actualPayment, (newPayment) => {
