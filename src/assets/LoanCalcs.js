@@ -112,6 +112,9 @@ export function monthlyCalcs(bond) {
     // push all calculated things to array
     _monthlyFigures.push({
       date: new Date(tempDate),
+      year: new Date(tempDate).getFullYear(),
+      month: new Date(tempDate).getMonth(),
+      monthString: shortlMonthNames[new Date(tempDate).getMonth()],
       dateString: tempDateString,
       annualInterest,
       monthlyInterest,

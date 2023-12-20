@@ -182,8 +182,9 @@
     </div>
   </div>
 
-  <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(monthlyFigures)" />
-  <Button label="Log Bond" icon="pi pi-external-link" @click="console.log(monthlyFiguresArray)" />
+  <Button label="Monthly Figures" icon="pi pi-external-link" @click="console.log(monthlyFigures)" />
+  <Button label="Monthly Figures Array" icon="pi pi-external-link" @click="console.log(monthlyFiguresArray)" />
+  <Button label="Data Table Array" icon="pi pi-external-link" @click="console.log(dataTableArray)" />
   
 </template>
 
@@ -278,6 +279,36 @@ const monthlyFiguresArray = computed(() => Array.from(monthlyFigures.value, (mon
     payment: month.payment.toFixed(2)
   }
 }))
+const dataTableArray = computed(() => {
+  let _dataTableArray = []
+  monthlyFigures.value.forEach((month) => {
+    if (_dataTableArray.length > 0 && _dataTableArray[_dataTableArray.length -1].year === month.year) {
+      _dataTableArray[_dataTableArray.length -1].months.push({
+        onceOffPayment: month.adHocPayment.toFixed(2),
+        interest: month.annualInterest,
+        capital: month.capital.toFixed(2),
+        contribution: month.contribution.toFixed(2),
+        date: month.dateString,
+        payment: month.payment.toFixed(2)
+      })
+      _dataTableArray[_dataTableArray.length -1].totalContributions += month.adHocPayment + month.payment
+    } else {
+      _dataTableArray.push({
+        year: month.year,
+        totalContributions: month.adHocPayment + month.payment,
+        months: [{
+          onceOffPayment: month.adHocPayment.toFixed(2),
+          interest: month.annualInterest,
+          capital: month.capital.toFixed(2),
+          contribution: month.contribution.toFixed(2),
+          date: month.dateString,
+          payment: month.payment.toFixed(2)
+        }]
+      })
+    }
+  })
+  return _dataTableArray
+})
 
 //WATCHERS
 watch(() => bond.actualPayment, (newPayment) => {
