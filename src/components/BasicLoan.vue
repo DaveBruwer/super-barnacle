@@ -55,7 +55,7 @@
       </div>
       <div>
         <Button label="Once-Off Payments" icon="pi pi-external-link" @click="modals.OnceOffPayments = true" />
-        <Dialog class="w-11" v-model:visible="modals.OnceOffPayments" modal header="MONTHLY DATA" style="max-width: 60rem;" >
+        <!-- <Dialog class="w-11" v-model:visible="modals.OnceOffPayments" modal header="MONTHLY DATA" style="max-width: 60rem;" >
           <DataTable :value="monthlyFiguresArray" tableStyle="min-width: 50rem">
             <Column field="date" header="Date"></Column>
             <Column field="onceOffPayment" header="Once-off Payment"></Column>
@@ -63,6 +63,25 @@
             <Column field="interest" header="Interest Rate"></Column>
             <Column field="capital" header="Capital"></Column>
             <Column field="contribution" header="Total Contribution"></Column>
+          </DataTable>
+        </Dialog> -->
+        <Dialog class="w-11" v-model:visible="modals.OnceOffPayments" modal header="MONTHLY DATA" style="max-width: 60rem;" >
+          <DataTable v-model:expandedRows="expandedRows" :value="dataTableArray" tableStyle="min-width: 60rem">
+            <Column expander style="width: 5rem"></Column>
+            <Column field="year" header="Year"></Column>
+            <Column field="totalContributions" header="Contributions"></Column>
+            <Column field="startingCapital" header="Starting Capital"></Column>
+            <Column field="endingCapital" header="Ending Capital"></Column>
+            <template #expansion="slotProps">
+              <DataTable :value="slotProps.data.months">
+                <Column field="date" header="Month"></Column>
+                <Column field="onceOffPayment" header="Once-off Payment"></Column>
+                <Column field="payment" header="Monthly Payments"></Column>
+                <Column field="interest" header="Interest Rate"></Column>
+                <Column field="capital" header="Capital"></Column>
+                <Column field="contribution" header="Total Contribution"></Column>
+              </DataTable>
+            </template>
           </DataTable>
         </Dialog>
 
@@ -189,7 +208,7 @@
 </template>
 
 <script setup>
-import { reactive, computed, watch } from "vue"
+import { ref, reactive, computed, watch } from "vue"
 import { calcMinPayment, monthlyCalcs, basicCalcs, calcDuration, getMonthName } from "../assets/LoanCalcs"
 
 // import { bondStore, dateToMonth } from "../Stores/bond"
@@ -208,7 +227,9 @@ import Column from "primevue/column"
 // import ColumnGroup from "primevue/columngroup"
 // import Row from "primevue/row"
 
+
 // COMPONENT VARIABLES
+const expandedRows = ref([])
 const bond = reactive({
   currency: {
     symbol: "$",
@@ -291,11 +312,14 @@ const dataTableArray = computed(() => {
         date: month.dateString,
         payment: month.payment.toFixed(2)
       })
-      _dataTableArray[_dataTableArray.length -1].totalContributions += month.adHocPayment + month.payment
+      _dataTableArray[_dataTableArray.length -1].totalContributions = (Number(_dataTableArray[_dataTableArray.length -1].totalContributions) + month.adHocPayment + month.payment).toFixed(2)
+      _dataTableArray[_dataTableArray.length -1].endingCapital = (month.capital).toFixed(2)
     } else {
       _dataTableArray.push({
         year: month.year,
-        totalContributions: month.adHocPayment + month.payment,
+        totalContributions: (month.adHocPayment + month.payment).toFixed(2),
+        endingCapital: (month.capital).toFixed(2),
+        startingCapital: (month.capital).toFixed(2),
         months: [{
           onceOffPayment: month.adHocPayment.toFixed(2),
           interest: month.annualInterest,
