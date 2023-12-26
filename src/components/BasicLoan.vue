@@ -55,16 +55,6 @@
       </div>
       <div>
         <Button label="Once-Off Payments" icon="pi pi-external-link" @click="modals.OnceOffPayments = true" />
-        <!-- <Dialog class="w-11" v-model:visible="modals.OnceOffPayments" modal header="MONTHLY DATA" style="max-width: 60rem;" >
-          <DataTable :value="monthlyFiguresArray" tableStyle="min-width: 50rem">
-            <Column field="date" header="Date"></Column>
-            <Column field="onceOffPayment" header="Once-off Payment"></Column>
-            <Column field="payment" header="Monthly Payments"></Column>
-            <Column field="interest" header="Interest Rate"></Column>
-            <Column field="capital" header="Capital"></Column>
-            <Column field="contribution" header="Total Contribution"></Column>
-          </DataTable>
-        </Dialog> -->
         <Dialog class="w-11" v-model:visible="modals.OnceOffPayments" modal header="MONTHLY DATA" style="max-width: 60rem;" >
           <DataTable v-model:expandedRows="expandedRows" :value="dataTableArray" tableStyle="min-width: 60rem">
             <Column expander style="width: 5rem"></Column>
@@ -73,11 +63,32 @@
             <Column field="startingCapital" header="Starting Capital"></Column>
             <Column field="endingCapital" header="Ending Capital"></Column>
             <template #expansion="slotProps">
-              <DataTable :value="slotProps.data.months">
+              <DataTable :value="slotProps.data.months" edit-mode="cell" @cell-edit-complete="onCellEdit">
                 <Column field="date" header="Month"></Column>
-                <Column field="onceOffPayment" header="Once-off Payment"></Column>
-                <Column field="payment" header="Monthly Payments"></Column>
-                <Column field="interest" header="Interest Rate"></Column>
+                <Column field="onceOffPayment" header="Once-off Payment">
+                  <template #body="{data, field}">
+                    {{bond.currency.symbol}}{{ data[field] }}
+                  </template>
+                  <template #editor="{data, field}">
+                    <InputNumber v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500" />
+                  </template>
+                </Column>
+                <Column field="payment" header="Monthly Payments">
+                  <template #body="{data, field}">
+                    {{bond.currency.symbol}}{{ data[field] }}
+                  </template>
+                  <template #editor="{data, field}">
+                    <InputNumber v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="100" />
+                  </template>
+                </Column>
+                <Column field="interest" header="Interest Rate">
+                  <template #body="{data, field}">
+                    {{ data[field] }}%
+                  </template>
+                  <template #editor="{data, field}">
+                    <InputNumber v-model="data[field]" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" :step="1" />
+                  </template>
+                </Column>
                 <Column field="capital" header="Capital"></Column>
                 <Column field="contribution" header="Total Contribution"></Column>
               </DataTable>
@@ -302,31 +313,33 @@ const monthlyFiguresArray = computed(() => Array.from(monthlyFigures.value, (mon
 }))
 const dataTableArray = computed(() => {
   let _dataTableArray = []
-  monthlyFigures.value.forEach((month) => {
+  monthlyFigures.value.forEach((month, i) => {
     if (_dataTableArray.length > 0 && _dataTableArray[_dataTableArray.length -1].year === month.year) {
       _dataTableArray[_dataTableArray.length -1].months.push({
-        onceOffPayment: month.adHocPayment.toFixed(2),
+        onceOffPayment: month.adHocPayment,
         interest: month.annualInterest,
-        capital: month.capital.toFixed(2),
-        contribution: month.contribution.toFixed(2),
+        capital: month.capital,
+        contribution: month.contribution,
         date: month.dateString,
-        payment: month.payment.toFixed(2)
+        payment: month.payment,
+        monthIndex: i
       })
-      _dataTableArray[_dataTableArray.length -1].totalContributions = (Number(_dataTableArray[_dataTableArray.length -1].totalContributions) + month.adHocPayment + month.payment).toFixed(2)
-      _dataTableArray[_dataTableArray.length -1].endingCapital = (month.capital).toFixed(2)
+      _dataTableArray[_dataTableArray.length -1].totalContributions = _dataTableArray[_dataTableArray.length -1].totalContributions + month.adHocPayment + month.payment
+      _dataTableArray[_dataTableArray.length -1].endingCapital = month.capital
     } else {
       _dataTableArray.push({
         year: month.year,
-        totalContributions: (month.adHocPayment + month.payment).toFixed(2),
-        endingCapital: (month.capital).toFixed(2),
-        startingCapital: (month.capital).toFixed(2),
+        totalContributions: month.adHocPayment + month.payment,
+        endingCapital: month.capital,
+        startingCapital: month.capital,
         months: [{
-          onceOffPayment: month.adHocPayment.toFixed(2),
+          onceOffPayment: month.adHocPayment,
           interest: month.annualInterest,
-          capital: month.capital.toFixed(2),
-          contribution: month.contribution.toFixed(2),
+          capital: month.capital,
+          contribution: month.contribution,
           date: month.dateString,
-          payment: month.payment.toFixed(2)
+          payment: month.payment,
+          monthIndex: i
         }]
       })
     }
@@ -352,6 +365,25 @@ watch(() => minPayment.value, () => {
 })
 
 // METHODS
+function onCellEdit(event) {
+  let {data, newValue, field} = event
+  const i = data.monthIndex
+
+  switch (field) {
+    case 'payment':
+      bond.adHocMonthlyPayments[i] = newValue
+      break
+    case 'interest':
+      bond.adHocInterest[i] = newValue
+      break
+    case 'onceOffPayment':
+      bond.adHocPayments[i] = newValue
+      break
+    default:
+      console.log('Change field not regocnised: ', field)
+  }
+
+}
 
 </script>
 
