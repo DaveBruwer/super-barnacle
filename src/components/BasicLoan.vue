@@ -63,7 +63,7 @@
             <Column field="startingCapital" header="Starting Capital"></Column>
             <Column field="endingCapital" header="Ending Capital"></Column>
             <template #expansion="slotProps">
-              <DataTable :value="slotProps.data.months" edit-mode="cell" @cell-edit-complete="onCellEdit">
+              <DataTable :value="slotProps.data.months" lazy edit-mode="cell" @cell-edit-complete="onCellEdit">
                 <Column field="date" header="Month"></Column>
                 <Column field="onceOffPayment" header="Once-off Payment">
                   <template #body="{data, field}">
@@ -366,22 +366,28 @@ watch(() => minPayment.value, () => {
 
 // METHODS
 function onCellEdit(event) {
-  let {data, newValue, field} = event
-  const i = data.monthIndex
+  let {data, newData, newValue, value, field} = event
 
-  switch (field) {
-    case 'payment':
-      bond.adHocMonthlyPayments[i] = newValue
-      break
-    case 'interest':
-      bond.adHocInterest[i] = newValue
-      break
-    case 'onceOffPayment':
-      bond.adHocPayments[i] = newValue
-      break
-    default:
-      console.log('Change field not regocnised: ', field)
-  }
+  if (Math.round(value*100)/100 != newValue) {
+    const i = data.monthIndex
+  
+    switch (field) {
+      case 'payment':
+        bond.adHocMonthlyPayments[i] = newValue
+        break
+      case 'interest':
+        bond.adHocInterest[i] = newValue
+        break
+      case 'onceOffPayment':
+        bond.adHocPayments[i] = newValue
+        break
+      default:
+        console.log('Change field not regocnised: ', field)
+      }
+    } else {
+      console.log("no change")
+    }
+
 
 }
 
