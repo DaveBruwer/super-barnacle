@@ -36,17 +36,17 @@
         <div class="m-0">
           <div>
             <label for="minPayment" class=""> Minimum monthly payments: </label>
-            <InputNumber v-model.lazy="minPayment" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="minPayment" />
+            <InputNumber :input-class="blendedInput" v-model.lazy="minPayment" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="minPayment" />
           </div>
-          <div class=" block my-2"> Loan will be paid off in <span class="font-bold">{{duration}}</span>.</div>
-          <div class=" block my-2"> Last payment will be on <span class="font-bold">{{finalMonthName}} {{ finalYear }}</span>.</div>
+          <div class=" block my-2"> Loan will be paid off in {{duration}}.</div>
+          <div class=" block my-2"> Last payment will be on {{finalMonthName}} {{ finalYear }}.</div>
           <div>
             <label for="lastPayment" class=""> Last payment amount will be: </label>
-            <InputNumber v-model.lazy="finalPayment" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="lastPayment" />
+            <InputNumber :input-class="blendedInput" v-model.lazy="finalPayment" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="lastPayment" />
           </div>
           <div>
             <label for="totalPayments" class=""> Total amount paid over the period of the loan: </label>
-            <InputNumber v-model.lazy="totalContribution" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="totalPayments" />
+            <InputNumber :input-class="blendedInput" v-model.lazy="totalContribution" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="totalPayments" />
           </div>
         </div>
       </Fieldset>
@@ -57,40 +57,60 @@
         <Button label="Once-Off Payments" icon="pi pi-external-link" @click="modals.OnceOffPayments = true" />
         <Dialog class="w-11" v-model:visible="modals.OnceOffPayments" modal header="MONTHLY DATA" style="max-width: 60rem;" >
           <DataTable v-model:expandedRows="expandedRows" :value="dataTableArray" tableStyle="min-width: 60rem">
-            <Column expander style="width: 5rem"></Column>
+            <Column expander style="width: 4rem"></Column>
             <Column field="year" header="Year"></Column>
-            <Column field="totalContributions" header="Contributions"></Column>
-            <Column field="startingCapital" header="Starting Capital"></Column>
-            <Column field="endingCapital" header="Ending Capital"></Column>
+            <Column field="totalContributions" header="Contributions">
+              <template #body="{data, field}">
+                <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+              </template>
+            </Column>
+            <Column field="startingCapital" header="Starting Capital">
+              <template #body="{data, field}">
+                <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+              </template>
+            </Column>
+            <Column field="endingCapital" header="Ending Capital">
+              <template #body="{data, field}">
+                <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+              </template>
+            </Column>
             <template #expansion="slotProps">
               <DataTable :value="slotProps.data.months" lazy edit-mode="cell" @cell-edit-complete="onCellEdit">
-                <Column field="date" header="Month"></Column>
+                <Column field="date" header="Month" style="width: 7rem"></Column>
                 <Column field="onceOffPayment" header="Once-off Payment">
                   <template #body="{data, field}">
-                    {{bond.currency.symbol}}{{ data[field] }}
+                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500" />
                   </template>
                   <template #editor="{data, field}">
-                    <InputNumber v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500" />
+                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500"/>
                   </template>
                 </Column>
                 <Column field="payment" header="Monthly Payments">
                   <template #body="{data, field}">
-                    {{bond.currency.symbol}}{{ data[field] }}
+                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" />
                   </template>
                   <template #editor="{data, field}">
-                    <InputNumber v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="100" />
+                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="100" />
                   </template>
                 </Column>
                 <Column field="interest" header="Interest Rate">
                   <template #body="{data, field}">
-                    {{ data[field] }}%
+                    <InputNumber input-class="w-5rem" v-model="data[field]" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" :step="1" />
                   </template>
                   <template #editor="{data, field}">
-                    <InputNumber v-model="data[field]" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" :step="1" />
+                    <InputNumber input-class="w-5rem" v-model="data[field]" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" :step="1" />
                   </template>
                 </Column>
-                <Column field="capital" header="Capital"></Column>
-                <Column field="contribution" header="Total Contribution"></Column>
+                <Column field="capital" header="Capital">
+                  <template #body="{data, field}">
+                    <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+                  </template>
+                </Column>
+                <Column field="contribution" header="Total Contribution">
+                  <template #body="{data, field}">
+                    <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+                  </template>
+                </Column>
               </DataTable>
             </template>
           </DataTable>
@@ -383,13 +403,15 @@ function onCellEdit(event) {
         break
       default:
         console.log('Change field not regocnised: ', field)
-      }
-    } else {
-      console.log("no change")
     }
-
-
+  } else {
+    console.log("no change")
+  }
 }
+
+// CLASSES
+
+const blendedInput = "w-8rem opacity-100 bg-transparent border-transparent"
 
 </script>
 
