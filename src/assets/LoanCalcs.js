@@ -92,14 +92,16 @@ export function monthlyCalcs(bond) {
       _payment = _monthlyFigures[_i-1].payment
     }
     //capital
-    let _capital
+    let startingCap
     if (_i === 0) {
-      _capital = bond.loanAmount
+      startingCap = bond.loanAmount
     } else {
-      _capital = _monthlyFigures[_i-1].capital*(1 + monthlyInterest) - _payment - adHocPayment
-      if (_capital < 0.005) {
-        _capital = 0
-      }
+      startingCap = _monthlyFigures[_i-1].endingCap
+    }
+    let capAfterInterest = startingCap*(1 + monthlyInterest)
+    let endingCap = capAfterInterest - _payment - adHocPayment
+    if (endingCap < 0.005) {
+      endingCap = 0
     }
     //contribution
     let _contribution
@@ -120,11 +122,13 @@ export function monthlyCalcs(bond) {
       monthlyInterest,
       adHocPayment,
       payment: _payment,
-      capital: _capital,
+      startingCap,
+      capAfterInterest,
+      endingCap,
       contribution: _contribution
     })
 
-  } while (_monthlyFigures[_monthlyFigures.length-1].capital > 0)
+  } while (_monthlyFigures[_monthlyFigures.length-1].endingCap > 0)
 
   return _monthlyFigures
 }
@@ -145,6 +149,18 @@ export function basicCalcs(bond) {
     const monthlyInterest = annualInterest/1200
     // this months payment
     let _payment = minPayment
+    //capital
+    let startingCap
+    if (_i === 0) {
+      startingCap = bond.loanAmount
+    } else {
+      startingCap = _monthlyFigures[_i-1].endingCap
+    }
+    let capAfterInterest = startingCap*(1 + monthlyInterest)
+    let endingCap = capAfterInterest - _payment
+    if (endingCap < 0.005) {
+      endingCap = 0
+    }
     //capital
     let _capital
     if (_i === 0) {
@@ -170,11 +186,13 @@ export function basicCalcs(bond) {
       annualInterest,
       monthlyInterest,
       payment: _payment,
-      capital: _capital,
+      startingCap,
+      capAfterInterest,
+      endingCap,
       contribution: _contribution
     })
 
-  } while (_monthlyFigures[_monthlyFigures.length-1].capital > 0)
+  } while (_monthlyFigures[_monthlyFigures.length-1].endingCap > 0)
 
   return _monthlyFigures
 }

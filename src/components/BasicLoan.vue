@@ -64,12 +64,12 @@
                 <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
               </template>
             </Column>
-            <Column field="startingCapital" header="Starting Capital">
+            <Column field="startingCapital" header="Opening Balance">
               <template #body="{data, field}">
                 <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
               </template>
             </Column>
-            <Column field="endingCapital" header="Ending Capital">
+            <Column field="endingCapital" header="Closing Balance">
               <template #body="{data, field}">
                 <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
               </template>
@@ -101,12 +101,12 @@
                     <InputNumber input-class="w-5rem" v-model="data[field]" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" :step="1" />
                   </template>
                 </Column>
-                <Column field="capital" header="Capital">
+                <Column field="startingCap" header="Opening Balance">
                   <template #body="{data, field}">
                     <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
                   </template>
                 </Column>
-                <Column field="contribution" header="Total Contribution">
+                <Column field="endingCap" header="Closing Balance">
                   <template #body="{data, field}">
                     <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
                   </template>
@@ -116,7 +116,7 @@
           </DataTable>
         </Dialog>
 
-        <Button label="Ad-Hoc Payments (Old)" icon="pi pi-external-link" @click="modals.AdHocPayments = true" />
+        <!-- <Button label="Ad-Hoc Payments (Old)" icon="pi pi-external-link" @click="modals.AdHocPayments = true" />
         <Dialog class="w-11" v-model:visible="modals.AdHocPayments" modal header="AD-HOC PAYMENTS" style="max-width: 60rem;" >
           <table >
             <thead>
@@ -216,18 +216,13 @@
               <tr v-for="m in totalYears + 2" :key="m">
                 <td>{{ startingYear + m -1 }}</td>
                 <td v-for="i in 12" :key="i">
-                  <!-- <div v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" style="width: 7em; text-align: center;">-</div> -->
                   <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
                   <input v-else type="number" :placeholder="monthlyFigures[(m-1)*12 + i - startingMonth - 1].capital" disabled="true" style="width: 5em;">
-                  <!-- <div v-else style="width: 5em;">
-                    <InputNumber v-model.lazy="monthlyFigures[(m-1)*12 + i - startingMonth - 1].capital" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
-                  </div> -->
-                  <!-- <div v-else style="width: 7em;">{{bond.currency.symbol}}{{ currencyFormatter.format(bondStore.runningCalcs[(m-1)*12 + i - bondStore.dates[0].getMonth()].capital) }}</div> -->
                 </td>
               </tr>
             </tbody>
           </table>
-        </Dialog>
+        </Dialog> -->
       </div>
     </div>
   </div>
@@ -309,11 +304,11 @@ const chartData = computed(() => {
     datasets: [
       {
         label: "Loan Capital",
-        data: Array.from(monthlyFigures.value, (x) => x.capital),
+        data: Array.from(monthlyFigures.value, (x) => x.endingCap),
       },
       {
         label: "Original Loan",
-        data: Array.from(defaultFigures.value, (x) => x.capital),
+        data: Array.from(defaultFigures.value, (x) => x.endingCap),
         fill: false,
         borderDash: [2],
         borderWidth: 2
@@ -325,7 +320,9 @@ const monthlyFiguresArray = computed(() => Array.from(monthlyFigures.value, (mon
   return {
     onceOffPayment: month.adHocPayment.toFixed(2),
     interest: month.annualInterest,
-    capital: month.capital.toFixed(2),
+    startingCap: month.startingCap.toFixed(2),
+    capAfterInterest: month.capAfterInterest.toFixed(2),
+    endingCap: month.endingCap.toFixed(2),
     contribution: month.contribution.toFixed(2),
     date: month.dateString,
     payment: month.payment.toFixed(2)
@@ -338,24 +335,28 @@ const dataTableArray = computed(() => {
       _dataTableArray[_dataTableArray.length -1].months.push({
         onceOffPayment: month.adHocPayment,
         interest: month.annualInterest,
-        capital: month.capital,
+        startingCap: month.startingCap,
+        capAfterInterest: month.capAfterInterest,
+        endingCap: month.endingCap,
         contribution: month.contribution,
         date: month.dateString,
         payment: month.payment,
         monthIndex: i
       })
       _dataTableArray[_dataTableArray.length -1].totalContributions = _dataTableArray[_dataTableArray.length -1].totalContributions + month.adHocPayment + month.payment
-      _dataTableArray[_dataTableArray.length -1].endingCapital = month.capital
+      _dataTableArray[_dataTableArray.length -1].endingCapital = month.endingCap
     } else {
       _dataTableArray.push({
         year: month.year,
         totalContributions: month.adHocPayment + month.payment,
-        endingCapital: month.capital,
-        startingCapital: month.capital,
+        endingCapital: month.endingCap,
+        startingCapital: month.startingCap,
         months: [{
           onceOffPayment: month.adHocPayment,
           interest: month.annualInterest,
-          capital: month.capital,
+          startingCap: month.startingCap,
+          capAfterInterest: month.capAfterInterest,
+          endingCap: month.endingCap,
           contribution: month.contribution,
           date: month.dateString,
           payment: month.payment,
