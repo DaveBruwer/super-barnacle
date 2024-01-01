@@ -32,7 +32,7 @@
           <Calendar v-model.lazy="bond.startingDate" view="month" dateFormat="MM yy" showIcon />
         </div>
       </div>
-      <Fieldset class="m-3 flex justify-content-center" legend="Basic Loan Info" :toggleable="true" :collapsed="true">
+      <Fieldset class="m-3 flex justify-content-center" legend="Basic Loan Stats" :toggleable="true" :collapsed="true">
         <div class="m-0">
           <div>
             <label for="minPayment" class=""> Minimum monthly payments: </label>
@@ -53,7 +53,67 @@
       <div class="w-full card align-self-center" >
         <PrimeChart ref="primaryChart" :chart-data="chartData"/>
       </div>
-      <div>
+      <Fieldset class="m-3 flex justify-content-center" legend="Month by Month" :toggleable="true" :collapsed="true">
+        <DataTable v-model:expandedRows="expandedRows" :value="dataTableArray" tableStyle="min-width: 60rem">
+          <Column expander style="width: 4rem"></Column>
+          <Column field="year" header="Year"></Column>
+          <Column field="totalContributions" header="Contributions">
+            <template #body="{data, field}">
+              <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+            </template>
+          </Column>
+          <Column field="startingCapital" header="Opening Balance">
+            <template #body="{data, field}">
+              <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+            </template>
+          </Column>
+          <Column field="endingCapital" header="Closing Balance">
+            <template #body="{data, field}">
+              <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+            </template>
+          </Column>
+          <template #expansion="slotProps">
+            <DataTable :value="slotProps.data.months" lazy edit-mode="cell" @cell-edit-complete="onCellEdit">
+              <Column field="date" header="Month" style="width: 7rem"></Column>
+              <Column field="onceOffPayment" header="Once-off Payment">
+                <template #body="{data, field}">
+                  <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500" />
+                </template>
+                <template #editor="{data, field}">
+                  <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500"/>
+                </template>
+              </Column>
+              <Column field="payment" header="Monthly Payments">
+                <template #body="{data, field}">
+                  <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" />
+                </template>
+                <template #editor="{data, field}">
+                  <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="100" />
+                </template>
+              </Column>
+              <Column field="interest" header="Interest Rate">
+                <template #body="{data, field}">
+                  <InputNumber input-class="w-5rem" v-model="data[field]" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" :step="1" />
+                </template>
+                <template #editor="{data, field}">
+                  <InputNumber input-class="w-5rem" v-model="data[field]" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" :step="1" />
+                </template>
+              </Column>
+              <Column field="startingCap" header="Opening Balance">
+                <template #body="{data, field}">
+                  <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+                </template>
+              </Column>
+              <Column field="endingCap" header="Closing Balance">
+                <template #body="{data, field}">
+                  <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+                </template>
+              </Column>
+            </DataTable>
+          </template>
+        </DataTable>
+      </Fieldset>
+      <!-- <div>
         <Button label="Once-Off Payments" icon="pi pi-external-link" @click="modals.OnceOffPayments = true" />
         <Dialog class="w-11" v-model:visible="modals.OnceOffPayments" modal header="MONTHLY DATA" style="max-width: 60rem;" >
           <DataTable v-model:expandedRows="expandedRows" :value="dataTableArray" tableStyle="min-width: 60rem">
@@ -115,115 +175,7 @@
             </template>
           </DataTable>
         </Dialog>
-
-        <!-- <Button label="Ad-Hoc Payments (Old)" icon="pi pi-external-link" @click="modals.AdHocPayments = true" />
-        <Dialog class="w-11" v-model:visible="modals.AdHocPayments" modal header="AD-HOC PAYMENTS" style="max-width: 60rem;" >
-          <table >
-            <thead>
-              <tr>
-                <th colspan="13">Enter any additional payments which you make into your bond account. Loans from it are entered as negative numbers.</th>
-              </tr>
-              <tr>
-                <th>Month:</th>
-                <th v-for="n in 12" :key="n">{{n}}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="m in totalYears + 2" :key="m">
-                <td>{{ startingYear + m-1 }}</td>
-                <td v-for="i in 12" :key="i">
-                  <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
-                  <input v-else type="number" v-model.lazy="bond.adHocPayments[(m-1)*12 + i - startingMonth]" placeholder="0" style="width: 5em;">
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </Dialog>
-
-        <Button label="Interest Rates" icon="pi pi-external-link" @click="modals.InterestRates = true" />
-        <Dialog class="w-11" v-model:visible="modals.InterestRates" modal header="INTEREST RATES" style="max-width: 60rem;" >
-          <table>
-            <thead>
-              <tr>
-                <th colspan="13">Fill in the new interest rate in the month in which it changes.</th>
-              </tr>
-              <tr>
-                <th></th>
-                <th colspan="12">Months</th>
-              </tr>
-              <tr>
-                <th>Years</th>
-                <th v-for="n in 12" :key="n">{{n}}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="m in totalYears + 2" :key="m">
-                <td>{{ startingYear + m-1 }}</td>
-                <td v-for="i in 12" :key="i">
-                  <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
-                  <input v-else type="number" v-model.lazy="bond.adHocInterest[(m-1)*12 + i - startingMonth]" :placeholder="monthlyFigures[(m-1)*12 + i - startingMonth - 1].annualInterest" style="width: 5em;">
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </Dialog>
-
-        <Button label="Bond Repayments" icon="pi pi-external-link" @click="modals.BondRepayments = true" />
-        <Dialog class="w-11" v-model:visible="modals.BondRepayments" modal header="BOND REPAYMENTS" style="max-width: 60rem;" >
-          <table>
-            <thead>
-              <tr>
-                <th colspan="13">Fill in the new bond repayment amount in the month in which it changes.</th>
-              </tr>
-              <tr>
-                <th></th>
-                <th colspan="12">Months</th>
-              </tr>
-              <tr>
-                <th>Years</th>
-                <th v-for="n in 12" :key="n">{{n}}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="m in totalYears + 2" :key="m">
-                <td>{{ startingYear + m-1 }}</td>
-                <td v-for="i in 12" :key="i">
-                  <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
-                  <input v-else type="number" v-model.lazy="bond.adHocMonthlyPayments[(m-1)*12 + i - startingMonth]" :placeholder="monthlyFigures[(m-1)*12 + i - startingMonth - 1].payment" style="width: 5em;">
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </Dialog>
-
-        <Button label="Running Capital" icon="pi pi-external-link" @click="modals.RunningCapital = true" />
-        <Dialog class="w-11" v-model:visible="modals.RunningCapital" modal header="RUNNING CAPITAL" style="max-width: 60rem;" >
-          <table>
-            <thead>
-              <tr>
-                <th colspan="13">Figures represent the remaining capital at the end of each month.</th>
-              </tr>
-              <tr>
-                <th></th>
-                <th colspan="12">Months</th>
-              </tr>
-              <tr>
-                <th>Years</th>
-                <th v-for="n in 12" :key="n">{{n}}</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="m in totalYears + 2" :key="m">
-                <td>{{ startingYear + m -1 }}</td>
-                <td v-for="i in 12" :key="i">
-                  <input v-if="!monthlyFigures[(m-1)*12 + i - startingMonth - 1]" placeholder="-" type="number" disabled="true" style="width: 5em;">
-                  <input v-else type="number" :placeholder="monthlyFigures[(m-1)*12 + i - startingMonth - 1].capital" disabled="true" style="width: 5em;">
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </Dialog> -->
-      </div>
+      </div> -->
     </div>
   </div>
 
@@ -290,7 +242,7 @@ const minPayment = computed(() => calcMinPayment(bond.loanAmount, bond.interestR
 const monthlyFigures = computed(() => monthlyCalcs(bond))
 const defaultFigures = computed(() => basicCalcs(bond))
 const finalPayment = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].payment)
-const duration = computed(() => calcDuration(monthlyFigures.value.length - 1))
+const duration = computed(() => calcDuration(monthlyFigures.value.length))
 const totalContribution = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].contribution)
 const startingYear = computed(() => bond.startingDate.getFullYear())
 const startingMonth = computed(() => bond.startingDate.getMonth())

@@ -58,7 +58,7 @@ export function calcDuration(totalMonths) {
 }
 
 export function monthlyCalcs(bond) {
-  const minPayment = calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod)
+  // const minPayment = calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod)
 
   let _monthlyFigures = []
   do {
@@ -68,7 +68,14 @@ export function monthlyCalcs(bond) {
     //date & dateString
     const tempDate = new Date(bond.startingDate).setMonth(bond.startingDate.getMonth() + _i)
     const tempDateString = getDateString(new Date(tempDate))
-    
+
+    // Starting Capital
+    let startingCap
+    if (_i === 0) {
+      startingCap = bond.loanAmount
+    } else {
+      startingCap = _monthlyFigures[_i-1].endingCap
+    }    
     // interests
     let annualInterest = bond.interestRate
     if (bond.adHocInterest[_i]) {
@@ -77,28 +84,30 @@ export function monthlyCalcs(bond) {
       annualInterest = _monthlyFigures[_i-1].annualInterest
     }
     const monthlyInterest = annualInterest/1200
+    // Capital After Interest
+    let capAfterInterest = startingCap*(1 + monthlyInterest)
+    // minPayment
+    const minPayment = calcMinPayment(startingCap, annualInterest, (bond.loanPeriod*12 - _i)/12)
+    // console.log((bond.loanPeriod*12 - _i)/12, (bond.loanPeriod*12 - _i), minPayment)
     // ad hoc payment
     const adHocPayment = bond.adHocPayments[_i]
     // this months payment
-    let _payment = minPayment
-    if (bond.adHocMonthlyPayments[_i]) {
+    let _payment
+    console.log(bond.adHocMonthlyPayments[_i])
+    if (bond.adHocMonthlyPayments[_i] && bond.adHocMonthlyPayments[_i] >= minPayment) {
       _payment = bond.adHocMonthlyPayments[_i]
-    } else if (_i === 0 && !isNaN(bond.actualPayment)) {
+    } else if (_i === 0 && !isNaN(bond.actualPayment) && bond.actualPayment >= minPayment) {
       _payment = bond.actualPayment
-    } else if (_monthlyFigures[_i-1].capital*(1 + monthlyInterest) < _monthlyFigures[_i-1].payment) {
-      // _payment = _monthlyFigures[_i-1].capital*(1 + monthlyInterest) < 0.005 ? 0: _monthlyFigures[_i-1].capital*(1 + monthlyInterest)
-      _payment = _monthlyFigures[_i-1].capital*(1 + monthlyInterest)
-    } else {
+    } else if (_monthlyFigures[_i-1].payment >= minPayment) {
       _payment = _monthlyFigures[_i-1].payment
-    }
-    //capital
-    let startingCap
-    if (_i === 0) {
-      startingCap = bond.loanAmount
     } else {
-      startingCap = _monthlyFigures[_i-1].endingCap
+      _payment = minPayment
     }
-    let capAfterInterest = startingCap*(1 + monthlyInterest)
+
+    if (capAfterInterest < _payment) {
+      _payment = capAfterInterest
+    }
+    // Ending Capital
     let endingCap = capAfterInterest - _payment - adHocPayment
     if (endingCap < 0.005) {
       endingCap = 0
@@ -160,16 +169,6 @@ export function basicCalcs(bond) {
     let endingCap = capAfterInterest - _payment
     if (endingCap < 0.005) {
       endingCap = 0
-    }
-    //capital
-    let _capital
-    if (_i === 0) {
-      _capital = bond.loanAmount
-    } else {
-      _capital = _monthlyFigures[_i-1].capital*(1 + monthlyInterest) - _payment
-      if (_capital < 0.005) {
-        _capital = 0
-      }
     }
     //contribution
     let _contribution
