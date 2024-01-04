@@ -57,8 +57,8 @@ export function calcDuration(totalMonths) {
   }
 }
 
-export function monthlyCalcs(bond) {
-  // const minPayment = calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod)
+export function monthlyCalcs(bond, customPayments) {
+  console.log("monthlyCalcs Triggered")
 
   let _monthlyFigures = []
   do {
@@ -88,19 +88,25 @@ export function monthlyCalcs(bond) {
     let capAfterInterest = startingCap*(1 + monthlyInterest)
     // minPayment
     const minPayment = calcMinPayment(startingCap, annualInterest, (bond.loanPeriod*12 - _i)/12)
-    // console.log((bond.loanPeriod*12 - _i)/12, (bond.loanPeriod*12 - _i), minPayment)
     // ad hoc payment
     const adHocPayment = bond.adHocPayments[_i]
     // this months payment
     let _payment
-    console.log(bond.adHocMonthlyPayments[_i])
     if (bond.adHocMonthlyPayments[_i] && bond.adHocMonthlyPayments[_i] >= minPayment) {
+      console.log("1")
       _payment = bond.adHocMonthlyPayments[_i]
-    } else if (_i === 0 && !isNaN(bond.actualPayment) && bond.actualPayment >= minPayment) {
+      // modRange(customPayments, 1, _i)
+      // customPayments.fill(1, _i)
+    } else if (_i === 0 && !isNaN(bond.actualPayment) && bond.actualPayment > minPayment) {
+      console.log("2")
       _payment = bond.actualPayment
-    } else if (_monthlyFigures[_i-1].payment >= minPayment) {
+      // modRange(customPayments, 1, _i)
+      // customPayments.fill(1, _i)
+    } else if (customPayments[_i] && _monthlyFigures[_i-1].payment >= minPayment) {
+      console.log("3")
       _payment = _monthlyFigures[_i-1].payment
     } else {
+      console.log("4")
       _payment = minPayment
     }
 
@@ -127,6 +133,7 @@ export function monthlyCalcs(bond) {
       month: new Date(tempDate).getMonth(),
       monthString: shortlMonthNames[new Date(tempDate).getMonth()],
       dateString: tempDateString,
+      minPayment,
       annualInterest,
       monthlyInterest,
       adHocPayment,
@@ -194,4 +201,27 @@ export function basicCalcs(bond) {
   } while (_monthlyFigures[_monthlyFigures.length-1].endingCap > 0)
 
   return _monthlyFigures
+}
+
+export function resetMonthlyPayment(adHocMonthlyPayments, customPayments, month) {
+  adHocMonthlyPayments[month] = null
+  // bond.customPayments[month] = 0
+      modRange(customPayments, 0, month)
+      // customPayments.fill(0, month)
+  // bond.customPayments = bond.customPayments
+  // console.log(month)
+  console.log(customPayments)
+  console.log(adHocMonthlyPayments)
+  // console.log(bond)
+}
+
+function modRange(arrayToMutate, newVal, startingIndex, endingIndex = null) {
+  console.log("modRage")
+  if (endingIndex == null) {
+    endingIndex = arrayToMutate.length - 1
+  }
+
+  for (let i = startingIndex; i <= endingIndex; i++) {
+    arrayToMutate[i] = newVal
+  }
 }

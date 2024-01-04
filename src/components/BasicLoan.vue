@@ -22,10 +22,10 @@
       <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around">
         <div class="w-14rem m-1">
           <label for="actualPayment" class="font-bold block"> Monthly Payment Amount: {{bond.customPayment ? '' : '*'}}</label>
-          <div class="p-inputgroup">
+          <InputGroup>
             <InputNumber v-model.lazy="bond.actualPayment" mode="currency" :currency="bond.currency.code" locale="en-US" inputId="actualPayment" :step="100" :min="minPayment"/>
             <Button icon="pi pi-refresh" @click="bond.actualPayment = minPayment" title="Reset to Min Payment" />
-          </div>
+          </InputGroup>
         </div>
         <div class="w-14rem m-1">
           <label for="startDate" class="font-bold block"> First Payment Month: </label>
@@ -77,18 +77,30 @@
               <Column field="date" header="Month" style="width: 7rem"></Column>
               <Column field="onceOffPayment" header="Once-off Payment">
                 <template #body="{data, field}">
-                  <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500" />
+                  <InputGroup class="w-8rem" >
+                    <InputNumber v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500" />
+                    <Button icon="pi pi-undo" @click="resetOnceOffPayment(data.monthIndex)" title="Reset" />
+                  </InputGroup>
                 </template>
                 <template #editor="{data, field}">
-                  <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500"/>
+                  <InputGroup class="w-8rem" >
+                    <InputNumber v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500"/>
+                    <Button icon="pi pi-undo" @click="resetOnceOffPayment(data.monthIndex)" title="Reset" />
+                  </InputGroup>
                 </template>
               </Column>
               <Column field="payment" header="Monthly Payments">
                 <template #body="{data, field}">
-                  <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" />
+                  <InputGroup class="w-8rem" >
+                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" />
+                    <Button icon="pi pi-undo" @click="resetMonthlyPayment(bond.adHocMonthlyPayments, customPayments, data.monthIndex)" title="Reset" />
+                  </InputGroup>
                 </template>
                 <template #editor="{data, field}">
-                  <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="100" />
+                  <InputGroup class="w-8rem" >
+                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="100" />
+                    <Button icon="pi pi-undo" @click="resetMonthlyPayment(bond.adHocMonthlyPayments, customPayments, data.monthIndex)" title="Reset" />
+                  </InputGroup>
                 </template>
               </Column>
               <Column field="interest" header="Interest Rate">
@@ -180,14 +192,14 @@
   </div>
 
   <Button label="Monthly Figures" icon="pi pi-external-link" @click="console.log(monthlyFigures)" />
-  <Button label="Monthly Figures Array" icon="pi pi-external-link" @click="console.log(monthlyFiguresArray)" />
-  <Button label="Data Table Array" icon="pi pi-external-link" @click="console.log(dataTableArray)" />
+  <Button label="customPayments" icon="pi pi-external-link" @click="console.log(customPayments)" />
+  <Button label="adHocMonthlyPayments" icon="pi pi-external-link" @click="console.log(bond.adHocMonthlyPayments)" />
   
 </template>
 
 <script setup>
 import { ref, reactive, computed, watch } from "vue"
-import { calcMinPayment, monthlyCalcs, basicCalcs, calcDuration, getMonthName } from "../assets/LoanCalcs"
+import { calcMinPayment, monthlyCalcs, basicCalcs, calcDuration, getMonthName, resetMonthlyPayment } from "../assets/LoanCalcs"
 
 // import { bondStore, dateToMonth } from "../Stores/bond"
 import currencies from "../assets/currencies.json"
@@ -195,6 +207,7 @@ import PrimeChart from "../components/PrimeChart.vue"
 
 // PrimeVue imports...
 import InputNumber from "primevue/inputnumber"
+import InputGroup from "primevue/inputgroup"
 import Button from "primevue/button"
 import Dropdown from "primevue/dropdown"
 import Calendar from "primevue/calendar"
@@ -208,6 +221,7 @@ import Column from "primevue/column"
 
 // COMPONENT VARIABLES
 const expandedRows = ref([])
+const customPayments = ref(Array.from({length: 60*12+1}, () => 0))
 const bond = reactive({
   currency: {
     symbol: "$",
@@ -224,6 +238,7 @@ const bond = reactive({
   customPayment: false,
   startingDate: new Date(),
   adHocPayments: Array.from({length: 60*12+1}, () => 0),
+  // customPayments: Array.from({length: 60*12+1}, () => 0),
   adHocInterest: Array.from({length: 60*12+1}, () => null),
   adHocMonthlyPayments: Array.from({length: 60*12+1}, () => null)
 })
@@ -239,7 +254,7 @@ const modals = reactive({
 
 //COMPUTED PROPERTIES
 const minPayment = computed(() => calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod))
-const monthlyFigures = computed(() => monthlyCalcs(bond))
+const monthlyFigures = computed(() => monthlyCalcs(bond, customPayments.value))
 const defaultFigures = computed(() => basicCalcs(bond))
 const finalPayment = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].payment)
 const duration = computed(() => calcDuration(monthlyFigures.value.length))
@@ -293,7 +308,8 @@ const dataTableArray = computed(() => {
         contribution: month.contribution,
         date: month.dateString,
         payment: month.payment,
-        monthIndex: i
+        monthIndex: i,
+        minPayment: month.minPayment
       })
       _dataTableArray[_dataTableArray.length -1].totalContributions = _dataTableArray[_dataTableArray.length -1].totalContributions + month.adHocPayment + month.payment
       _dataTableArray[_dataTableArray.length -1].endingCapital = month.endingCap
@@ -312,7 +328,8 @@ const dataTableArray = computed(() => {
           contribution: month.contribution,
           date: month.dateString,
           payment: month.payment,
-          monthIndex: i
+          monthIndex: i,
+          minPayment: month.minPayment
         }]
       })
     }
@@ -325,6 +342,7 @@ watch(() => bond.actualPayment, (newPayment) => {
   if (isNaN(newPayment) || newPayment <= minPayment.value) {
     bond.actualPayment = minPayment.value
     bond.customPayment = false
+    customPayments.value.fill(1, 0)
   } else {
     bond.customPayment = true
   }
@@ -334,6 +352,7 @@ watch(() => minPayment.value, () => {
   if (isNaN(bond.actualPayment) || bond.actualPayment <= minPayment.value || !bond.customPayment) {
     bond.actualPayment = minPayment.value
     bond.customPayment = false
+    customPayments.value.fill(0, 0)
   }
 })
 
@@ -347,6 +366,7 @@ function onCellEdit(event) {
     switch (field) {
       case 'payment':
         bond.adHocMonthlyPayments[i] = newValue
+        customPayments.value.fill(1, i)
         break
       case 'interest':
         bond.adHocInterest[i] = newValue
@@ -361,6 +381,20 @@ function onCellEdit(event) {
     console.log("no change")
   }
 }
+
+function resetOnceOffPayment(month) {
+  bond.adHocPayments[month] = 0
+}
+
+// function resetMonthlyPayment(month) {
+//   // bond.adHocMonthlyPayments[month] = 0
+//   bond.customPayments[month] = 0
+//   // bond.customPayments.fill(0, month)
+//   // bond.customPayments = bond.customPayments
+//   console.log(month)
+//   console.log(bond.customPayments)
+//   console.log(bond)
+// }
 
 // CLASSES
 
