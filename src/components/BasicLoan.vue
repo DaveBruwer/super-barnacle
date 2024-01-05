@@ -79,13 +79,13 @@
                 <template #body="{data, field}">
                   <InputGroup class="w-8rem" >
                     <InputNumber v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500" />
-                    <Button icon="pi pi-undo" @click="resetOnceOffPayment(data.monthIndex)" title="Reset" />
+                    <Button icon="pi pi-undo" @click="resetOnceOffPayment(bond.adHocPayments, data.monthIndex)" title="Reset" />
                   </InputGroup>
                 </template>
                 <template #editor="{data, field}">
                   <InputGroup class="w-8rem" >
                     <InputNumber v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500"/>
-                    <Button icon="pi pi-undo" @click="resetOnceOffPayment(data.monthIndex)" title="Reset" />
+                    <Button icon="pi pi-undo" @click="resetOnceOffPayment(bond.adHocPayments, data.monthIndex)" title="Reset" />
                   </InputGroup>
                 </template>
               </Column>
@@ -93,13 +93,13 @@
                 <template #body="{data, field}">
                   <InputGroup class="w-8rem" >
                     <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" />
-                    <Button icon="pi pi-undo" @click="resetMonthlyPayment(bond.adHocMonthlyPayments, customPayments, data.monthIndex)" title="Reset" />
+                    <Button icon="pi pi-undo" @click="resetMonthlyPayment(bond.adHocMonthlyPayments, bond.customPayments, data.monthIndex)" title="Reset" />
                   </InputGroup>
                 </template>
                 <template #editor="{data, field}">
                   <InputGroup class="w-8rem" >
                     <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="100" />
-                    <Button icon="pi pi-undo" @click="resetMonthlyPayment(bond.adHocMonthlyPayments, customPayments, data.monthIndex)" title="Reset" />
+                    <Button icon="pi pi-undo" @click="resetMonthlyPayment(bond.adHocMonthlyPayments, bond.customPayments, data.monthIndex)" title="Reset" />
                   </InputGroup>
                 </template>
               </Column>
@@ -199,7 +199,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch } from "vue"
-import { calcMinPayment, monthlyCalcs, basicCalcs, calcDuration, getMonthName, resetMonthlyPayment } from "../assets/LoanCalcs"
+import { calcMinPayment, monthlyCalcs, basicCalcs, calcDuration, getMonthName, resetOnceOffPayment, resetMonthlyPayment } from "../assets/LoanCalcs"
 
 // import { bondStore, dateToMonth } from "../Stores/bond"
 import currencies from "../assets/currencies.json"
@@ -238,7 +238,7 @@ const bond = reactive({
   customPayment: false,
   startingDate: new Date(),
   adHocPayments: Array.from({length: 60*12+1}, () => 0),
-  // customPayments: Array.from({length: 60*12+1}, () => 0),
+  customPayments: Array.from({length: 60*12+1}, () => 0),
   adHocInterest: Array.from({length: 60*12+1}, () => null),
   adHocMonthlyPayments: Array.from({length: 60*12+1}, () => null)
 })
@@ -254,7 +254,7 @@ const modals = reactive({
 
 //COMPUTED PROPERTIES
 const minPayment = computed(() => calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod))
-const monthlyFigures = computed(() => monthlyCalcs(bond, customPayments.value))
+const monthlyFigures = computed(() => monthlyCalcs(bond))
 const defaultFigures = computed(() => basicCalcs(bond))
 const finalPayment = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].payment)
 const duration = computed(() => calcDuration(monthlyFigures.value.length))
@@ -342,9 +342,11 @@ watch(() => bond.actualPayment, (newPayment) => {
   if (isNaN(newPayment) || newPayment <= minPayment.value) {
     bond.actualPayment = minPayment.value
     bond.customPayment = false
-    customPayments.value.fill(1, 0)
+    bond.customPayments.fill(1, 0)
   } else {
     bond.customPayment = true
+    bond.adHocMonthlyPayments[0] = newPayment
+    bond.customPayments.fill(0, 0)
   }
 })
 
@@ -352,7 +354,7 @@ watch(() => minPayment.value, () => {
   if (isNaN(bond.actualPayment) || bond.actualPayment <= minPayment.value || !bond.customPayment) {
     bond.actualPayment = minPayment.value
     bond.customPayment = false
-    customPayments.value.fill(0, 0)
+    bond.customPayments.fill(0, 0)
   }
 })
 
@@ -366,7 +368,7 @@ function onCellEdit(event) {
     switch (field) {
       case 'payment':
         bond.adHocMonthlyPayments[i] = newValue
-        customPayments.value.fill(1, i)
+        bond.customPayments.fill(1, i)
         break
       case 'interest':
         bond.adHocInterest[i] = newValue
@@ -381,20 +383,6 @@ function onCellEdit(event) {
     console.log("no change")
   }
 }
-
-function resetOnceOffPayment(month) {
-  bond.adHocPayments[month] = 0
-}
-
-// function resetMonthlyPayment(month) {
-//   // bond.adHocMonthlyPayments[month] = 0
-//   bond.customPayments[month] = 0
-//   // bond.customPayments.fill(0, month)
-//   // bond.customPayments = bond.customPayments
-//   console.log(month)
-//   console.log(bond.customPayments)
-//   console.log(bond)
-// }
 
 // CLASSES
 
