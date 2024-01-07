@@ -1,205 +1,380 @@
 <template>
- <div class=" m-2 flex justify-content-center align-content-center">
-    <div class="w-full flex flex-column justify-content-center" style="max-width: 60rem;" >
-      <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around">
+  <div class="m-2 flex justify-content-center align-content-center">
+    <div
+      class="w-full flex flex-column justify-content-center"
+      style="max-width: 60rem"
+    >
+      <div
+        class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
+      >
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
           <label for="currencies" class="font-bold block"> Currency: </label>
-          <Dropdown v-model.lazy="bond.currency" :options="Object.values(currencies)" optionLabel="code" inputId="currencies" class="w-full md:w-14rem" />
+          <Dropdown
+            v-model.lazy="bond.currency"
+            :options="Object.values(currencies)"
+            optionLabel="code"
+            inputId="currencies"
+            class="w-full md:w-14rem"
+          />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
-          <label for="loan-amount" class="font-bold block"> Loan Amount: </label>
-          <InputNumber v-model.lazy="bond.loanAmount" inputId="loan-amount" mode="currency" :currency="bond.currency.code" locale="en-US" :step="50000" />
+          <label for="loan-amount" class="font-bold block">
+            Loan Amount:
+          </label>
+          <InputNumber
+            v-model.lazy="bond.loanAmount"
+            inputId="loan-amount"
+            mode="currency"
+            :currency="bond.currency.code"
+            locale="en-US"
+            :step="50000"
+          />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
-          <label for="interestRate" class="font-bold block"> Interest Rate: </label>
-          <InputNumber style="width: 10rem;" v-model.lazy="bond.interestRate" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" />
+          <label for="interestRate" class="font-bold block">
+            Interest Rate:
+          </label>
+          <InputNumber
+            style="width: 10rem"
+            v-model.lazy="bond.interestRate"
+            mode="decimal"
+            :minFractionDigits="2"
+            :min="0"
+            inputId="interestRate"
+            suffix="%"
+          />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
           <label for="loanPeriod" class="font-bold block"> Loan Period: </label>
-          <InputNumber v-model.lazy="bond.loanPeriod" mode="decimal" :minFractionDigits="0"  inputId="loanPeriod" suffix=" Yrs" :step="5" />
+          <InputNumber
+            v-model.lazy="bond.loanPeriod"
+            mode="decimal"
+            :minFractionDigits="0"
+            inputId="loanPeriod"
+            suffix=" Yrs"
+            :step="5"
+          />
         </div>
       </div>
-      <div class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around">
+      <div
+        class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
+      >
         <div class="w-14rem m-1">
-          <label for="actualPayment" class="font-bold block"> Monthly Payment Amount: {{bond.customPayment ? '' : '*'}}</label>
+          <label for="actualPayment" class="font-bold block">
+            Monthly Payment Amount: {{ bond.customPayment ? "" : "*" }}</label
+          >
           <InputGroup>
-            <InputNumber v-model.lazy="bond.actualPayment" mode="currency" :currency="bond.currency.code" locale="en-US" inputId="actualPayment" :step="100" :min="minPayment"/>
-            <Button icon="pi pi-refresh" @click="bond.actualPayment = minPayment" title="Reset to Min Payment" />
+            <InputNumber
+              v-model.lazy="bond.actualPayment"
+              mode="currency"
+              :currency="bond.currency.code"
+              locale="en-US"
+              inputId="actualPayment"
+              :step="100"
+              :min="minPayment"
+            />
+            <Button
+              icon="pi pi-refresh"
+              @click="bond.actualPayment = minPayment"
+              title="Reset to Min Payment"
+            />
           </InputGroup>
         </div>
         <div class="w-14rem m-1">
-          <label for="startDate" class="font-bold block"> First Payment Month: </label>
-          <Calendar v-model.lazy="bond.startingDate" view="month" dateFormat="MM yy" showIcon />
+          <label for="startDate" class="font-bold block">
+            First Payment Month:
+          </label>
+          <Calendar
+            v-model.lazy="bond.startingDate"
+            view="month"
+            dateFormat="MM yy"
+            showIcon
+          />
         </div>
       </div>
-      <Fieldset class="m-3 flex justify-content-center" legend="Basic Loan Stats" :toggleable="true" :collapsed="true">
+      <Fieldset
+        class="m-3 flex justify-content-center"
+        legend="Basic Loan Stats"
+        :toggleable="true"
+        :collapsed="true"
+      >
         <div class="m-0">
           <div>
             <label for="minPayment" class=""> Minimum monthly payments: </label>
-            <InputNumber :input-class="blendedInput" v-model.lazy="minPayment" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="minPayment" />
+            <InputNumber
+              :input-class="blendedInput"
+              v-model.lazy="minPayment"
+              mode="currency"
+              :currency="bond.currency.code"
+              locale="en-US"
+              disabled
+              inputId="minPayment"
+            />
           </div>
-          <div class=" block my-2"> Loan will be paid off in {{duration}}.</div>
-          <div class=" block my-2"> Last payment will be on {{finalMonthName}} {{ finalYear }}.</div>
-          <div>
-            <label for="lastPayment" class=""> Last payment amount will be: </label>
-            <InputNumber :input-class="blendedInput" v-model.lazy="finalPayment" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="lastPayment" />
+          <div class="block my-2">Loan will be paid off in {{ duration }}.</div>
+          <div class="block my-2">
+            Last payment will be on {{ finalMonthName }} {{ finalYear }}.
           </div>
           <div>
-            <label for="totalPayments" class=""> Total amount paid over the period of the loan: </label>
-            <InputNumber :input-class="blendedInput" v-model.lazy="totalContribution" mode="currency" :currency="bond.currency.code" locale="en-US" disabled inputId="totalPayments" />
+            <label for="lastPayment" class="">
+              Last payment amount will be:
+            </label>
+            <InputNumber
+              :input-class="blendedInput"
+              v-model.lazy="finalPayment"
+              mode="currency"
+              :currency="bond.currency.code"
+              locale="en-US"
+              disabled
+              inputId="lastPayment"
+            />
+          </div>
+          <div>
+            <label for="totalPayments" class="">
+              Total amount paid over the period of the loan:
+            </label>
+            <InputNumber
+              :input-class="blendedInput"
+              v-model.lazy="totalContribution"
+              mode="currency"
+              :currency="bond.currency.code"
+              locale="en-US"
+              disabled
+              inputId="totalPayments"
+            />
           </div>
         </div>
       </Fieldset>
-      <div class="w-full card align-self-center" >
-        <PrimeChart ref="primaryChart" :chart-data="chartData"/>
+      <div class="w-full card align-self-center">
+        <PrimeChart ref="primaryChart" :chart-data="chartData" />
       </div>
-      <Fieldset class="m-3 flex justify-content-center" legend="Month by Month" :toggleable="true" :collapsed="true">
-        <DataTable v-model:expandedRows="expandedRows" :value="dataTableArray" tableStyle="min-width: 60rem">
+      <Fieldset
+        class="m-3 flex justify-content-center"
+        legend="Month by Month"
+        :toggleable="true"
+        :collapsed="true"
+      >
+        <DataTable
+          v-model:expandedRows="expandedRows"
+          :value="dataTableArray"
+          tableStyle="min-width: 60rem"
+        >
           <Column expander style="width: 4rem"></Column>
           <Column field="year" header="Year"></Column>
           <Column field="totalContributions" header="Contributions">
-            <template #body="{data, field}">
-              <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+            <template #body="{ data, field }">
+              <InputNumber
+                :input-class="blendedInput"
+                v-model.lazy="data[field]"
+                mode="currency"
+                :currency="bond.currency.code"
+                locale="en-US"
+                disabled
+              />
             </template>
           </Column>
           <Column field="startingCapital" header="Opening Balance">
-            <template #body="{data, field}">
-              <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+            <template #body="{ data, field }">
+              <InputNumber
+                :input-class="blendedInput"
+                v-model.lazy="data[field]"
+                mode="currency"
+                :currency="bond.currency.code"
+                locale="en-US"
+                disabled
+              />
             </template>
           </Column>
           <Column field="endingCapital" header="Closing Balance">
-            <template #body="{data, field}">
-              <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+            <template #body="{ data, field }">
+              <InputNumber
+                :input-class="blendedInput"
+                v-model.lazy="data[field]"
+                mode="currency"
+                :currency="bond.currency.code"
+                locale="en-US"
+                disabled
+              />
             </template>
           </Column>
           <template #expansion="slotProps">
-            <DataTable :value="slotProps.data.months" lazy edit-mode="cell" @cell-edit-complete="onCellEdit">
+            <DataTable
+              :value="slotProps.data.months"
+              lazy
+              edit-mode="cell"
+              @cell-edit-complete="onCellEdit"
+            >
               <Column field="date" header="Month" style="width: 7rem"></Column>
               <Column field="onceOffPayment" header="Once-off Payment">
-                <template #body="{data, field}">
-                  <InputGroup class="w-8rem" >
-                    <InputNumber v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500" />
-                    <Button icon="pi pi-undo" @click="resetOnceOffPayment(bond.adHocPayments, data.monthIndex)" title="Reset" />
+                <template #body="{ data, field }">
+                  <InputGroup class="w-8rem">
+                    <InputNumber
+                      v-model.lazy="data[field]"
+                      mode="currency"
+                      :currency="bond.currency.code"
+                      locale="en-US"
+                      :step="500"
+                    />
+                    <Button
+                      icon="pi pi-undo"
+                      @click="
+                        resetOnceOffPayment(bond.adHocPayments, data.monthIndex)
+                      "
+                      title="Reset"
+                    />
                   </InputGroup>
                 </template>
-                <template #editor="{data, field}">
-                  <InputGroup class="w-8rem" >
-                    <InputNumber v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500"/>
-                    <Button icon="pi pi-undo" @click="resetOnceOffPayment(bond.adHocPayments, data.monthIndex)" title="Reset" />
+                <template #editor="{ data, field }">
+                  <InputGroup class="w-8rem">
+                    <InputNumber
+                      v-model.lazy="data[field]"
+                      mode="currency"
+                      :currency="bond.currency.code"
+                      locale="en-US"
+                      :step="500"
+                    />
+                    <Button
+                      icon="pi pi-undo"
+                      @click="
+                        resetOnceOffPayment(bond.adHocPayments, data.monthIndex)
+                      "
+                      title="Reset"
+                    />
                   </InputGroup>
                 </template>
               </Column>
               <Column field="payment" header="Monthly Payments">
-                <template #body="{data, field}">
-                  <InputGroup class="w-8rem" >
-                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" />
-                    <Button icon="pi pi-undo" @click="resetMonthlyPayment(bond.adHocMonthlyPayments, bond.customPayments, data.monthIndex)" title="Reset" />
+                <template #body="{ data, field }">
+                  <InputGroup class="w-8rem">
+                    <InputNumber
+                      input-class="w-6rem"
+                      v-model.lazy="data[field]"
+                      mode="currency"
+                      :currency="bond.currency.code"
+                      locale="en-US"
+                    />
+                    <Button
+                      icon="pi pi-undo"
+                      @click="
+                        resetMonthlyPayment(
+                          bond.adHocMonthlyPayments,
+                          bond.customPayments,
+                          data.monthIndex
+                        )
+                      "
+                      title="Reset"
+                    />
                   </InputGroup>
                 </template>
-                <template #editor="{data, field}">
-                  <InputGroup class="w-8rem" >
-                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="100" />
-                    <Button icon="pi pi-undo" @click="resetMonthlyPayment(bond.adHocMonthlyPayments, bond.customPayments, data.monthIndex)" title="Reset" />
+                <template #editor="{ data, field }">
+                  <InputGroup class="w-8rem">
+                    <InputNumber
+                      input-class="w-6rem"
+                      v-model.lazy="data[field]"
+                      mode="currency"
+                      :currency="bond.currency.code"
+                      locale="en-US"
+                      :step="100"
+                    />
+                    <Button
+                      icon="pi pi-undo"
+                      @click="
+                        resetMonthlyPayment(
+                          bond.adHocMonthlyPayments,
+                          bond.customPayments,
+                          data.monthIndex
+                        )
+                      "
+                      title="Reset"
+                    />
                   </InputGroup>
                 </template>
               </Column>
               <Column field="interest" header="Interest Rate">
-                <template #body="{data, field}">
-                  <InputNumber input-class="w-5rem" v-model="data[field]" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" :step="1" />
+                <template #body="{ data, field }">
+                  <InputNumber
+                    input-class="w-5rem"
+                    v-model="data[field]"
+                    mode="decimal"
+                    :minFractionDigits="2"
+                    :min="0"
+                    inputId="interestRate"
+                    suffix="%"
+                    :step="1"
+                  />
                 </template>
-                <template #editor="{data, field}">
-                  <InputNumber input-class="w-5rem" v-model="data[field]" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" :step="1" />
+                <template #editor="{ data, field }">
+                  <InputNumber
+                    input-class="w-5rem"
+                    v-model="data[field]"
+                    mode="decimal"
+                    :minFractionDigits="2"
+                    :min="0"
+                    inputId="interestRate"
+                    suffix="%"
+                    :step="1"
+                  />
                 </template>
               </Column>
               <Column field="startingCap" header="Opening Balance">
-                <template #body="{data, field}">
-                  <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+                <template #body="{ data, field }">
+                  <InputNumber
+                    :input-class="blendedInput"
+                    v-model.lazy="data[field]"
+                    mode="currency"
+                    :currency="bond.currency.code"
+                    locale="en-US"
+                    disabled
+                  />
                 </template>
               </Column>
               <Column field="endingCap" header="Closing Balance">
-                <template #body="{data, field}">
-                  <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
+                <template #body="{ data, field }">
+                  <InputNumber
+                    :input-class="blendedInput"
+                    v-model.lazy="data[field]"
+                    mode="currency"
+                    :currency="bond.currency.code"
+                    locale="en-US"
+                    disabled
+                  />
                 </template>
               </Column>
             </DataTable>
           </template>
         </DataTable>
       </Fieldset>
-      <!-- <div>
-        <Button label="Once-Off Payments" icon="pi pi-external-link" @click="modals.OnceOffPayments = true" />
-        <Dialog class="w-11" v-model:visible="modals.OnceOffPayments" modal header="MONTHLY DATA" style="max-width: 60rem;" >
-          <DataTable v-model:expandedRows="expandedRows" :value="dataTableArray" tableStyle="min-width: 60rem">
-            <Column expander style="width: 4rem"></Column>
-            <Column field="year" header="Year"></Column>
-            <Column field="totalContributions" header="Contributions">
-              <template #body="{data, field}">
-                <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
-              </template>
-            </Column>
-            <Column field="startingCapital" header="Opening Balance">
-              <template #body="{data, field}">
-                <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
-              </template>
-            </Column>
-            <Column field="endingCapital" header="Closing Balance">
-              <template #body="{data, field}">
-                <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
-              </template>
-            </Column>
-            <template #expansion="slotProps">
-              <DataTable :value="slotProps.data.months" lazy edit-mode="cell" @cell-edit-complete="onCellEdit">
-                <Column field="date" header="Month" style="width: 7rem"></Column>
-                <Column field="onceOffPayment" header="Once-off Payment">
-                  <template #body="{data, field}">
-                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500" />
-                  </template>
-                  <template #editor="{data, field}">
-                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="500"/>
-                  </template>
-                </Column>
-                <Column field="payment" header="Monthly Payments">
-                  <template #body="{data, field}">
-                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" />
-                  </template>
-                  <template #editor="{data, field}">
-                    <InputNumber input-class="w-6rem" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" :step="100" />
-                  </template>
-                </Column>
-                <Column field="interest" header="Interest Rate">
-                  <template #body="{data, field}">
-                    <InputNumber input-class="w-5rem" v-model="data[field]" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" :step="1" />
-                  </template>
-                  <template #editor="{data, field}">
-                    <InputNumber input-class="w-5rem" v-model="data[field]" mode="decimal" :minFractionDigits="2" :min="0"  inputId="interestRate" suffix="%" :step="1" />
-                  </template>
-                </Column>
-                <Column field="startingCap" header="Opening Balance">
-                  <template #body="{data, field}">
-                    <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
-                  </template>
-                </Column>
-                <Column field="endingCap" header="Closing Balance">
-                  <template #body="{data, field}">
-                    <InputNumber :input-class="blendedInput" v-model.lazy="data[field]" mode="currency" :currency="bond.currency.code" locale="en-US" disabled/>
-                  </template>
-                </Column>
-              </DataTable>
-            </template>
-          </DataTable>
-        </Dialog>
-      </div> -->
     </div>
   </div>
 
-  <Button label="Monthly Figures" icon="pi pi-external-link" @click="console.log(monthlyFigures)" />
-  <Button label="customPayments" icon="pi pi-external-link" @click="console.log(customPayments)" />
-  <Button label="adHocMonthlyPayments" icon="pi pi-external-link" @click="console.log(bond.adHocMonthlyPayments)" />
-  
+  <Button
+    label="Monthly Figures"
+    icon="pi pi-external-link"
+    @click="console.log(monthlyFigures)"
+  />
+  <Button
+    label="customPayments"
+    icon="pi pi-external-link"
+    @click="console.log(customPayments)"
+  />
+  <Button
+    label="adHocMonthlyPayments"
+    icon="pi pi-external-link"
+    @click="console.log(bond.adHocMonthlyPayments)"
+  />
 </template>
 
 <script setup>
 import { ref, reactive, computed, watch } from "vue"
-import { calcMinPayment, monthlyCalcs, basicCalcs, calcDuration, getMonthName, resetOnceOffPayment, resetMonthlyPayment } from "../assets/LoanCalcs"
+import {
+  calcMinPayment,
+  monthlyCalcs,
+  basicCalcs,
+  calcDuration,
+  getMonthName,
+  resetOnceOffPayment,
+  resetMonthlyPayment,
+} from "../assets/LoanCalcs"
 
 // import { bondStore, dateToMonth } from "../Stores/bond"
 import currencies from "../assets/currencies.json"
@@ -212,16 +387,15 @@ import Button from "primevue/button"
 import Dropdown from "primevue/dropdown"
 import Calendar from "primevue/calendar"
 import Fieldset from "primevue/fieldset"
-import Dialog from "primevue/dialog"
+// import Dialog from "primevue/dialog"
 import DataTable from "primevue/datatable"
 import Column from "primevue/column"
 // import ColumnGroup from "primevue/columngroup"
 // import Row from "primevue/row"
 
-
 // COMPONENT VARIABLES
 const expandedRows = ref([])
-const customPayments = ref(Array.from({length: 60*12+1}, () => 0))
+const customPayments = ref(Array.from({ length: 60 * 12 + 1 }, () => 0))
 const bond = reactive({
   currency: {
     symbol: "$",
@@ -229,7 +403,7 @@ const bond = reactive({
     decimal_digits: 2,
     rounding: 0,
     code: "USD",
-    name_plural: "US dollars"
+    name_plural: "US dollars",
   },
   loanAmount: 500000,
   interestRate: 7,
@@ -237,34 +411,43 @@ const bond = reactive({
   actualPayment: calcMinPayment(500000, 7, 30),
   customPayment: false,
   startingDate: new Date(),
-  adHocPayments: Array.from({length: 60*12+1}, () => 0),
-  customPayments: Array.from({length: 60*12+1}, () => 0),
-  adHocInterest: Array.from({length: 60*12+1}, () => null),
-  adHocMonthlyPayments: Array.from({length: 60*12+1}, () => null)
+  adHocPayments: Array.from({ length: 60 * 12 + 1 }, () => 0),
+  customPayments: Array.from({ length: 60 * 12 + 1 }, () => 0),
+  adHocInterest: Array.from({ length: 60 * 12 + 1 }, () => null),
+  adHocMonthlyPayments: Array.from({ length: 60 * 12 + 1 }, () => null),
 })
 
-const modals = reactive({
-  OnceOffPayments: false,
-  AdHocPayments: false,
-  InterestRates: false,
-  BondRepayments: false,
-  RunningCapital: false
-
-})
+// const modals = reactive({
+//   OnceOffPayments: false,
+//   AdHocPayments: false,
+//   InterestRates: false,
+//   BondRepayments: false,
+//   RunningCapital: false,
+// })
 
 //COMPUTED PROPERTIES
-const minPayment = computed(() => calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod))
+const minPayment = computed(() =>
+  calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod)
+)
 const monthlyFigures = computed(() => monthlyCalcs(bond))
 const defaultFigures = computed(() => basicCalcs(bond))
-const finalPayment = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].payment)
+const finalPayment = computed(
+  () => monthlyFigures.value[monthlyFigures.value.length - 1].payment
+)
 const duration = computed(() => calcDuration(monthlyFigures.value.length))
-const totalContribution = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].contribution)
-const startingYear = computed(() => bond.startingDate.getFullYear())
-const startingMonth = computed(() => bond.startingDate.getMonth())
-const finalMonth = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].date.getMonth())
+const totalContribution = computed(
+  () => monthlyFigures.value[monthlyFigures.value.length - 1].contribution
+)
+// const startingYear = computed(() => bond.startingDate.getFullYear())
+// const startingMonth = computed(() => bond.startingDate.getMonth())
+const finalMonth = computed(() =>
+  monthlyFigures.value[monthlyFigures.value.length - 1].date.getMonth()
+)
 const finalMonthName = computed(() => getMonthName(finalMonth.value))
-const finalYear = computed(() => monthlyFigures.value[monthlyFigures.value.length-1].date.getFullYear())
-const totalYears = computed(() => Math.floor(monthlyFigures.value.length/12))
+const finalYear = computed(() =>
+  monthlyFigures.value[monthlyFigures.value.length - 1].date.getFullYear()
+)
+// const totalYears = computed(() => Math.floor(monthlyFigures.value.length / 12))
 const chartData = computed(() => {
   return {
     labels: Array.from(defaultFigures.value, (x) => x.dateString),
@@ -278,28 +461,33 @@ const chartData = computed(() => {
         data: Array.from(defaultFigures.value, (x) => x.endingCap),
         fill: false,
         borderDash: [2],
-        borderWidth: 2
-      }
-    ]
+        borderWidth: 2,
+      },
+    ],
   }
 })
-const monthlyFiguresArray = computed(() => Array.from(monthlyFigures.value, (month) => {
-  return {
-    onceOffPayment: month.adHocPayment.toFixed(2),
-    interest: month.annualInterest,
-    startingCap: month.startingCap.toFixed(2),
-    capAfterInterest: month.capAfterInterest.toFixed(2),
-    endingCap: month.endingCap.toFixed(2),
-    contribution: month.contribution.toFixed(2),
-    date: month.dateString,
-    payment: month.payment.toFixed(2)
-  }
-}))
+// const monthlyFiguresArray = computed(() =>
+//   Array.from(monthlyFigures.value, (month) => {
+//     return {
+//       onceOffPayment: month.adHocPayment.toFixed(2),
+//       interest: month.annualInterest,
+//       startingCap: month.startingCap.toFixed(2),
+//       capAfterInterest: month.capAfterInterest.toFixed(2),
+//       endingCap: month.endingCap.toFixed(2),
+//       contribution: month.contribution.toFixed(2),
+//       date: month.dateString,
+//       payment: month.payment.toFixed(2),
+//     }
+//   })
+// )
 const dataTableArray = computed(() => {
   let _dataTableArray = []
   monthlyFigures.value.forEach((month, i) => {
-    if (_dataTableArray.length > 0 && _dataTableArray[_dataTableArray.length -1].year === month.year) {
-      _dataTableArray[_dataTableArray.length -1].months.push({
+    if (
+      _dataTableArray.length > 0 &&
+      _dataTableArray[_dataTableArray.length - 1].year === month.year
+    ) {
+      _dataTableArray[_dataTableArray.length - 1].months.push({
         onceOffPayment: month.adHocPayment,
         interest: month.annualInterest,
         startingCap: month.startingCap,
@@ -309,28 +497,34 @@ const dataTableArray = computed(() => {
         date: month.dateString,
         payment: month.payment,
         monthIndex: i,
-        minPayment: month.minPayment
+        minPayment: month.minPayment,
       })
-      _dataTableArray[_dataTableArray.length -1].totalContributions = _dataTableArray[_dataTableArray.length -1].totalContributions + month.adHocPayment + month.payment
-      _dataTableArray[_dataTableArray.length -1].endingCapital = month.endingCap
+      _dataTableArray[_dataTableArray.length - 1].totalContributions =
+        _dataTableArray[_dataTableArray.length - 1].totalContributions +
+        month.adHocPayment +
+        month.payment
+      _dataTableArray[_dataTableArray.length - 1].endingCapital =
+        month.endingCap
     } else {
       _dataTableArray.push({
         year: month.year,
         totalContributions: month.adHocPayment + month.payment,
         endingCapital: month.endingCap,
         startingCapital: month.startingCap,
-        months: [{
-          onceOffPayment: month.adHocPayment,
-          interest: month.annualInterest,
-          startingCap: month.startingCap,
-          capAfterInterest: month.capAfterInterest,
-          endingCap: month.endingCap,
-          contribution: month.contribution,
-          date: month.dateString,
-          payment: month.payment,
-          monthIndex: i,
-          minPayment: month.minPayment
-        }]
+        months: [
+          {
+            onceOffPayment: month.adHocPayment,
+            interest: month.annualInterest,
+            startingCap: month.startingCap,
+            capAfterInterest: month.capAfterInterest,
+            endingCap: month.endingCap,
+            contribution: month.contribution,
+            date: month.dateString,
+            payment: month.payment,
+            monthIndex: i,
+            minPayment: month.minPayment,
+          },
+        ],
       })
     }
   })
@@ -338,46 +532,55 @@ const dataTableArray = computed(() => {
 })
 
 //WATCHERS
-watch(() => bond.actualPayment, (newPayment) => {
-  if (isNaN(newPayment) || newPayment <= minPayment.value) {
-    bond.actualPayment = minPayment.value
-    bond.customPayment = false
-    bond.customPayments.fill(1, 0)
-  } else {
-    bond.customPayment = true
-    bond.adHocMonthlyPayments[0] = newPayment
-    bond.customPayments.fill(0, 0)
+watch(
+  () => bond.actualPayment,
+  (newPayment) => {
+    if (isNaN(newPayment) || newPayment <= minPayment.value) {
+      bond.actualPayment = minPayment.value
+      bond.customPayment = false
+      bond.customPayments.fill(0, 0)
+    } else {
+      bond.customPayment = true
+      bond.adHocMonthlyPayments[0] = newPayment
+      bond.customPayments.fill(1, 0)
+    }
   }
-})
+)
 
-watch(() => minPayment.value, () => {
-  if (isNaN(bond.actualPayment) || bond.actualPayment <= minPayment.value || !bond.customPayment) {
-    bond.actualPayment = minPayment.value
-    bond.customPayment = false
-    bond.customPayments.fill(0, 0)
+watch(
+  () => minPayment.value,
+  () => {
+    if (
+      isNaN(bond.actualPayment) ||
+      bond.actualPayment <= minPayment.value ||
+      !bond.customPayment
+    ) {
+      bond.actualPayment = minPayment.value
+      bond.customPayment = false
+    }
   }
-})
+)
 
 // METHODS
 function onCellEdit(event) {
-  let {data, newData, newValue, value, field} = event
+  let { data, newValue, value, field } = event
 
-  if (Math.round(value*100)/100 != newValue) {
+  if (Math.round(value * 100) / 100 != newValue) {
     const i = data.monthIndex
-  
+
     switch (field) {
-      case 'payment':
+      case "payment":
         bond.adHocMonthlyPayments[i] = newValue
         bond.customPayments.fill(1, i)
         break
-      case 'interest':
+      case "interest":
         bond.adHocInterest[i] = newValue
         break
-      case 'onceOffPayment':
+      case "onceOffPayment":
         bond.adHocPayments[i] = newValue
         break
       default:
-        console.log('Change field not regocnised: ', field)
+        console.log("Change field not regocnised: ", field)
     }
   } else {
     console.log("no change")
@@ -387,9 +590,6 @@ function onCellEdit(event) {
 // CLASSES
 
 const blendedInput = "w-8rem opacity-100 bg-transparent border-transparent"
-
 </script>
 
-<style>
-  
-</style>
+<style></style>

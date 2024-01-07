@@ -1,5 +1,8 @@
 export function calcMinPayment(loanAmount, interestRate, loanPeriod) {
-  return (loanAmount*(interestRate/1200))/(1-1/((1+(interestRate/1200))**(loanPeriod*12)))
+  return (
+    (loanAmount * (interestRate / 1200)) /
+    (1 - 1 / (1 + interestRate / 1200) ** (loanPeriod * 12))
+  )
 }
 
 const fullMonthNames = [
@@ -14,7 +17,7 @@ const fullMonthNames = [
   "Septermber",
   "October",
   "November",
-  "December"
+  "December",
 ]
 
 const shortlMonthNames = [
@@ -29,7 +32,7 @@ const shortlMonthNames = [
   "Sep",
   "Oct",
   "Nov",
-  "Dec"
+  "Dec",
 ]
 
 export function dateToMonth(_date) {
@@ -50,22 +53,23 @@ export function calcDuration(totalMonths) {
   if (isNaN(totalMonths)) {
     return "?! Something Went Wrong !?"
   } else {
-    const _years = Math.floor(totalMonths/12)
-    const _months = totalMonths%12
-    const _monthTerm = _months ==1 ? "month" : "months"
+    const _years = Math.floor(totalMonths / 12)
+    const _months = totalMonths % 12
+    const _monthTerm = _months == 1 ? "month" : "months"
     return `${_years} years and ${_months} ${_monthTerm}`
   }
 }
 
 export function monthlyCalcs(bond) {
-
   let _monthlyFigures = []
   do {
     const _i = _monthlyFigures.length
 
     // calcs go here
     //date & dateString
-    const tempDate = new Date(bond.startingDate).setMonth(bond.startingDate.getMonth() + _i)
+    const tempDate = new Date(bond.startingDate).setMonth(
+      bond.startingDate.getMonth() + _i
+    )
     const tempDateString = getDateString(new Date(tempDate))
 
     // Starting Capital
@@ -73,30 +77,44 @@ export function monthlyCalcs(bond) {
     if (_i === 0) {
       startingCap = bond.loanAmount
     } else {
-      startingCap = _monthlyFigures[_i-1].endingCap
-    }    
+      startingCap = _monthlyFigures[_i - 1].endingCap
+    }
     // interests
     let annualInterest = bond.interestRate
     if (bond.adHocInterest[_i]) {
       annualInterest = bond.adHocInterest[_i]
     } else if (_i > 0) {
-      annualInterest = _monthlyFigures[_i-1].annualInterest
+      annualInterest = _monthlyFigures[_i - 1].annualInterest
     }
-    const monthlyInterest = annualInterest/1200
+    const monthlyInterest = annualInterest / 1200
     // Capital After Interest
-    let capAfterInterest = startingCap*(1 + monthlyInterest)
+    let capAfterInterest = startingCap * (1 + monthlyInterest)
     // minPayment
-    const minPayment = calcMinPayment(startingCap, annualInterest, (bond.loanPeriod*12 - _i)/12)
+    const minPayment = calcMinPayment(
+      startingCap,
+      annualInterest,
+      (bond.loanPeriod * 12 - _i) / 12
+    )
     // ad hoc payment
     const adHocPayment = bond.adHocPayments[_i]
     // this months payment
     let _payment
-    if (bond.adHocMonthlyPayments[_i] && bond.adHocMonthlyPayments[_i] >= minPayment) {
+    if (
+      bond.adHocMonthlyPayments[_i] &&
+      bond.adHocMonthlyPayments[_i] >= minPayment
+    ) {
       _payment = bond.adHocMonthlyPayments[_i]
-    } else if (_i === 0 && !isNaN(bond.actualPayment) && bond.actualPayment > minPayment) {
+    } else if (
+      _i === 0 &&
+      !isNaN(bond.actualPayment) &&
+      bond.actualPayment > minPayment
+    ) {
       _payment = bond.actualPayment
-    } else if (bond.customPayments[_i] && _monthlyFigures[_i-1].payment >= minPayment) {
-      _payment = _monthlyFigures[_i-1].payment
+    } else if (
+      bond.customPayments[_i] &&
+      _monthlyFigures[_i - 1].payment >= minPayment
+    ) {
+      _payment = _monthlyFigures[_i - 1].payment
     } else {
       _payment = minPayment
     }
@@ -114,7 +132,8 @@ export function monthlyCalcs(bond) {
     if (_i === 0) {
       _contribution = 0
     } else {
-      _contribution = _monthlyFigures[_i-1].contribution + _payment + adHocPayment
+      _contribution =
+        _monthlyFigures[_i - 1].contribution + _payment + adHocPayment
     }
 
     // push all calculated things to array
@@ -132,16 +151,19 @@ export function monthlyCalcs(bond) {
       startingCap,
       capAfterInterest,
       endingCap,
-      contribution: _contribution
+      contribution: _contribution,
     })
-
-  } while (_monthlyFigures[_monthlyFigures.length-1].endingCap > 0)
+  } while (_monthlyFigures[_monthlyFigures.length - 1].endingCap > 0)
 
   return _monthlyFigures
 }
 
 export function basicCalcs(bond) {
-  const minPayment = calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod)
+  const minPayment = calcMinPayment(
+    bond.loanAmount,
+    bond.interestRate,
+    bond.loanPeriod
+  )
 
   let _monthlyFigures = []
   do {
@@ -149,11 +171,13 @@ export function basicCalcs(bond) {
 
     // calcs go here
     //date & dateString
-    const tempDate = new Date(bond.startingDate).setMonth(bond.startingDate.getMonth() + _i)
+    const tempDate = new Date(bond.startingDate).setMonth(
+      bond.startingDate.getMonth() + _i
+    )
     const tempDateString = getDateString(new Date(tempDate))
     // interests
     const annualInterest = bond.interestRate
-    const monthlyInterest = annualInterest/1200
+    const monthlyInterest = annualInterest / 1200
     // this months payment
     let _payment = minPayment
     //capital
@@ -161,9 +185,9 @@ export function basicCalcs(bond) {
     if (_i === 0) {
       startingCap = bond.loanAmount
     } else {
-      startingCap = _monthlyFigures[_i-1].endingCap
+      startingCap = _monthlyFigures[_i - 1].endingCap
     }
-    let capAfterInterest = startingCap*(1 + monthlyInterest)
+    let capAfterInterest = startingCap * (1 + monthlyInterest)
     let endingCap = capAfterInterest - _payment
     if (endingCap < 0.005) {
       endingCap = 0
@@ -173,7 +197,7 @@ export function basicCalcs(bond) {
     if (_i === 0) {
       _contribution = 0
     } else {
-      _contribution = _monthlyFigures[_i-1].contribution + _payment
+      _contribution = _monthlyFigures[_i - 1].contribution + _payment
     }
 
     // push all calculated things to array
@@ -186,10 +210,9 @@ export function basicCalcs(bond) {
       startingCap,
       capAfterInterest,
       endingCap,
-      contribution: _contribution
+      contribution: _contribution,
     })
-
-  } while (_monthlyFigures[_monthlyFigures.length-1].endingCap > 0)
+  } while (_monthlyFigures[_monthlyFigures.length - 1].endingCap > 0)
 
   return _monthlyFigures
 }
@@ -198,17 +221,11 @@ export function resetOnceOffPayment(adHocPayments, month) {
   adHocPayments[month] = 0
 }
 
-export function resetMonthlyPayment(adHocMonthlyPayments, customPayments, month) {
+export function resetMonthlyPayment(
+  adHocMonthlyPayments,
+  customPayments,
+  month
+) {
   adHocMonthlyPayments[month] = null
   customPayments.fill(0, month)
-}
-
-function modRange(arrayToMutate, newVal, startingIndex, endingIndex = null) {
-  if (endingIndex == null) {
-    endingIndex = arrayToMutate.length - 1
-  }
-
-  for (let i = startingIndex; i <= endingIndex; i++) {
-    arrayToMutate[i] = newVal
-  }
 }
