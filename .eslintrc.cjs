@@ -13,7 +13,7 @@ module.exports = {
   plugins: ["vue"],
   rules: {
     indent: ["error", 2, { SwitchCase: 1 }],
-    "linebreak-style": ["error", "windows"],
+    "linebreak-style": ["error", "unix"],
     quotes: ["error", "double"],
     semi: ["error", "never"],
   },
