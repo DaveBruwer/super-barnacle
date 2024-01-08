@@ -376,7 +376,6 @@ import {
   resetMonthlyPayment,
 } from "../assets/LoanCalcs"
 
-// import { bondStore, dateToMonth } from "../Stores/bond"
 import currencies from "../assets/currencies.json"
 import PrimeChart from "../components/PrimeChart.vue"
 
@@ -387,11 +386,8 @@ import Button from "primevue/button"
 import Dropdown from "primevue/dropdown"
 import Calendar from "primevue/calendar"
 import Fieldset from "primevue/fieldset"
-// import Dialog from "primevue/dialog"
 import DataTable from "primevue/datatable"
 import Column from "primevue/column"
-// import ColumnGroup from "primevue/columngroup"
-// import Row from "primevue/row"
 
 // COMPONENT VARIABLES
 const expandedRows = ref([])
@@ -417,14 +413,6 @@ const bond = reactive({
   adHocMonthlyPayments: Array.from({ length: 60 * 12 + 1 }, () => null),
 })
 
-// const modals = reactive({
-//   OnceOffPayments: false,
-//   AdHocPayments: false,
-//   InterestRates: false,
-//   BondRepayments: false,
-//   RunningCapital: false,
-// })
-
 //COMPUTED PROPERTIES
 const minPayment = computed(() =>
   calcMinPayment(bond.loanAmount, bond.interestRate, bond.loanPeriod)
@@ -438,8 +426,6 @@ const duration = computed(() => calcDuration(monthlyFigures.value.length))
 const totalContribution = computed(
   () => monthlyFigures.value[monthlyFigures.value.length - 1].contribution
 )
-// const startingYear = computed(() => bond.startingDate.getFullYear())
-// const startingMonth = computed(() => bond.startingDate.getMonth())
 const finalMonth = computed(() =>
   monthlyFigures.value[monthlyFigures.value.length - 1].date.getMonth()
 )
@@ -447,7 +433,6 @@ const finalMonthName = computed(() => getMonthName(finalMonth.value))
 const finalYear = computed(() =>
   monthlyFigures.value[monthlyFigures.value.length - 1].date.getFullYear()
 )
-// const totalYears = computed(() => Math.floor(monthlyFigures.value.length / 12))
 const chartData = computed(() => {
   return {
     labels: Array.from(defaultFigures.value, (x) => x.dateString),
@@ -466,20 +451,7 @@ const chartData = computed(() => {
     ],
   }
 })
-// const monthlyFiguresArray = computed(() =>
-//   Array.from(monthlyFigures.value, (month) => {
-//     return {
-//       onceOffPayment: month.adHocPayment.toFixed(2),
-//       interest: month.annualInterest,
-//       startingCap: month.startingCap.toFixed(2),
-//       capAfterInterest: month.capAfterInterest.toFixed(2),
-//       endingCap: month.endingCap.toFixed(2),
-//       contribution: month.contribution.toFixed(2),
-//       date: month.dateString,
-//       payment: month.payment.toFixed(2),
-//     }
-//   })
-// )
+
 const dataTableArray = computed(() => {
   let _dataTableArray = []
   monthlyFigures.value.forEach((month, i) => {
