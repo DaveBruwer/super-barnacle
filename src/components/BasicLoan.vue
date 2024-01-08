@@ -146,7 +146,11 @@
         </div>
       </Fieldset>
       <div class="w-full card align-self-center">
-        <PrimeChart ref="primaryChart" :chart-data="chartData" />
+        <PrimeChart
+          ref="primaryChart"
+          :chart-data="chartData"
+          :currency-symbol="bond.currency.symbol"
+        />
       </div>
       <Fieldset
         class="m-3 flex justify-content-center"
@@ -438,11 +442,11 @@ const chartData = computed(() => {
     labels: Array.from(defaultFigures.value, (x) => x.dateString),
     datasets: [
       {
-        label: "Loan Capital",
+        label: "Loan Balance",
         data: Array.from(monthlyFigures.value, (x) => x.endingCap),
       },
       {
-        label: "Original Loan",
+        label: "Original Loan Balance",
         data: Array.from(defaultFigures.value, (x) => x.endingCap),
         fill: false,
         borderDash: [2],
