@@ -4,6 +4,7 @@
       class="w-full flex flex-column justify-content-center"
       style="max-width: 60rem"
     >
+      <Divider align="left"> Loan </Divider>
       <div
         class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
       >
@@ -14,7 +15,7 @@
             :options="Object.values(currencies)"
             optionLabel="code"
             inputId="currencies"
-            class="w-full md:w-14rem"
+            class="w-14rem"
           />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
@@ -56,6 +57,7 @@
           />
         </div>
       </div>
+      <Divider align="left"> Repayments </Divider>
       <div
         class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
       >
@@ -92,59 +94,56 @@
           />
         </div>
       </div>
-      <Fieldset
-        class="m-3 flex justify-content-center"
-        legend="Basic Loan Stats"
-        :toggleable="true"
-        :collapsed="true"
-      >
-        <div class="m-0">
-          <div>
-            <label for="minPayment" class=""> Minimum monthly payments: </label>
-            <InputNumber
-              :input-class="blendedInput"
-              v-model.lazy="minPayment"
-              mode="currency"
-              :currency="bond.currency.code"
-              locale="en-US"
-              disabled
-              inputId="minPayment"
-            />
-          </div>
-          <div class="block my-2">Loan will be paid off in {{ duration }}.</div>
-          <div class="block my-2">
-            Last payment will be on {{ finalMonthName }} {{ finalYear }}.
-          </div>
-          <div>
-            <label for="lastPayment" class="">
-              Last payment amount will be:
-            </label>
-            <InputNumber
-              :input-class="blendedInput"
-              v-model.lazy="finalPayment"
-              mode="currency"
-              :currency="bond.currency.code"
-              locale="en-US"
-              disabled
-              inputId="lastPayment"
-            />
-          </div>
-          <div>
-            <label for="totalPayments" class="">
-              Total amount paid over the period of the loan:
-            </label>
-            <InputNumber
-              :input-class="blendedInput"
-              v-model.lazy="totalContribution"
-              mode="currency"
-              :currency="bond.currency.code"
-              locale="en-US"
-              disabled
-              inputId="totalPayments"
-            />
-          </div>
+      <Divider align="left"> Insights </Divider>
+      <div class="m-0 flex justify-content-evenly flex-wrap">
+        <div class="mx-2">
+          <label for="minPayment" class=""> Minimum monthly repayments: </label>
+          <InputNumber
+            :input-class="boldBlendedInput"
+            v-model.lazy="minPayment"
+            mode="currency"
+            :currency="bond.currency.code"
+            locale="en-US"
+            disabled
+            inputId="minPayment"
+          />
         </div>
-      </Fieldset>
+        <div class="mx-2 my-2">
+          Loan will be paid off in <b> {{ duration }} </b>.
+        </div>
+        <div class="mx-2 my-2">
+          Last payment will be on <b> {{ finalMonthName }} {{ finalYear }} </b>.
+        </div>
+        <div class="mx-2">
+          <label for="lastPayment" class="">
+            Last payment amount will be:
+          </label>
+          <InputNumber
+            :input-class="boldBlendedInput"
+            v-model.lazy="finalPayment"
+            mode="currency"
+            :currency="bond.currency.code"
+            locale="en-US"
+            disabled
+            inputId="lastPayment"
+          />
+        </div>
+        <div class="mx-2">
+          <label for="totalPayments" class="">
+            Total amount paid over the period of the loan:
+          </label>
+          <InputNumber
+            :input-class="boldBlendedInput"
+            v-model.lazy="totalContribution"
+            mode="currency"
+            :currency="bond.currency.code"
+            locale="en-US"
+            disabled
+            inputId="totalPayments"
+          />
+        </div>
+      </div>
+      <Divider align="left"> Balance </Divider>
       <div class="w-full card align-self-center">
         <PrimeChart
           ref="primaryChart"
@@ -154,7 +153,7 @@
       </div>
       <Fieldset
         class="m-3 flex justify-content-center"
-        legend="Month by Month"
+        legend="Advanced"
         :toggleable="true"
         :collapsed="true"
       >
@@ -392,6 +391,7 @@ import Calendar from "primevue/calendar"
 import Fieldset from "primevue/fieldset"
 import DataTable from "primevue/datatable"
 import Column from "primevue/column"
+import Divider from "primevue/divider"
 
 // COMPONENT VARIABLES
 const expandedRows = ref([])
@@ -566,6 +566,7 @@ function onCellEdit(event) {
 // CLASSES
 
 const blendedInput = "w-8rem opacity-100 bg-transparent border-transparent"
+const boldBlendedInput = blendedInput + " font-bold"
 </script>
 
 <style></style>
