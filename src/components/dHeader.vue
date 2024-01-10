@@ -31,14 +31,18 @@
         </a>
       </template>
       <template #end>
-        <Button
-          icon="pi pi-phone"
-          severity="info"
-          rounded
-          aria-label="Contact"
-          class="mx-2"
-        />
-        <Button icon="pi pi-user" severity="info" rounded aria-label="User" />
+        <router-link to="Contact">
+          <Button
+            icon="pi pi-phone"
+            severity="info"
+            rounded
+            aria-label="Contact"
+            class="mx-2"
+          />
+        </router-link>
+        <router-link to="Account">
+          <Button icon="pi pi-user" severity="info" rounded aria-label="User" />
+        </router-link>
       </template>
     </Menubar>
   </div>
@@ -62,10 +66,12 @@ const items = ref([
       {
         label: "Home Loan",
         icon: "pi pi-home",
+        route: "/HomeLoan",
       },
       {
         label: "Car Loan",
         icon: "pi pi-car",
+        route: "/CarLoan",
       },
     ],
   },
@@ -76,10 +82,12 @@ const items = ref([
       {
         label: "Home",
         icon: "pi pi-home",
+        route: "/HomeCost",
       },
       {
         label: "Car",
         icon: "pi pi-car",
+        route: "/CarCost",
       },
     ],
   },
@@ -90,14 +98,17 @@ const items = ref([
       {
         label: "Rental Property",
         icon: "pi pi-home",
+        route: "/RentalProperty",
       },
       {
         label: "House Flip",
         icon: "pi pi-wrench",
+        route: "/HouseFlip",
       },
       {
         label: "Property Development",
         icon: "pi pi-building",
+        route: "/PropDev",
       },
     ],
   },
