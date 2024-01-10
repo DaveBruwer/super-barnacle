@@ -229,3 +229,13 @@ export function resetMonthlyPayment(
   adHocMonthlyPayments[month] = null
   customPayments.fill(0, month)
 }
+
+export function matchMonthlyPayment(
+  adHocMonthlyPayments,
+  customPayments,
+  month,
+  amount
+) {
+  adHocMonthlyPayments[month] = amount
+  customPayments.fill(1, month)
+}

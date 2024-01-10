@@ -219,11 +219,11 @@
                       :step="500"
                     />
                     <Button
-                      icon="pi pi-undo"
+                      icon="pi pi-delete-left"
                       @click="
                         resetOnceOffPayment(bond.adHocPayments, data.monthIndex)
                       "
-                      title="Reset"
+                      title="Clear Payment"
                     />
                   </InputGroup>
                 </template>
@@ -235,20 +235,21 @@
                       :currency="bond.currency.code"
                       locale="en-US"
                       :step="500"
+                      highlightOnFocus="true"
                     />
                     <Button
-                      icon="pi pi-undo"
+                      icon="pi pi-delete-left"
                       @click="
                         resetOnceOffPayment(bond.adHocPayments, data.monthIndex)
                       "
-                      title="Reset"
+                      title="Clear Payment"
                     />
                   </InputGroup>
                 </template>
               </Column>
               <Column field="payment" header="Monthly Payments">
                 <template #body="{ data, field }">
-                  <InputGroup class="w-8rem">
+                  <InputGroup class="w-10rem">
                     <InputNumber
                       input-class="w-6rem"
                       v-model.lazy="data[field]"
@@ -257,7 +258,7 @@
                       locale="en-US"
                     />
                     <Button
-                      icon="pi pi-undo"
+                      icon="pi pi-sort-down"
                       @click="
                         resetMonthlyPayment(
                           bond.adHocMonthlyPayments,
@@ -265,12 +266,24 @@
                           data.monthIndex
                         )
                       "
-                      title="Reset"
+                      title="Match Minimum Payment"
+                    />
+                    <Button
+                      icon="pi pi-sort-up"
+                      @click="
+                        matchMonthlyPayment(
+                          bond.adHocMonthlyPayments,
+                          bond.customPayments,
+                          data.monthIndex,
+                          monthlyFigures[data.monthIndex - 1].payment
+                        )
+                      "
+                      title="Match Previous Payment"
                     />
                   </InputGroup>
                 </template>
                 <template #editor="{ data, field }">
-                  <InputGroup class="w-8rem">
+                  <InputGroup class="w-10rem">
                     <InputNumber
                       input-class="w-6rem"
                       v-model.lazy="data[field]"
@@ -278,9 +291,10 @@
                       :currency="bond.currency.code"
                       locale="en-US"
                       :step="100"
+                      highlightOnFocus="true"
                     />
                     <Button
-                      icon="pi pi-undo"
+                      icon="pi pi-sort-down"
                       @click="
                         resetMonthlyPayment(
                           bond.adHocMonthlyPayments,
@@ -288,7 +302,19 @@
                           data.monthIndex
                         )
                       "
-                      title="Reset"
+                      title="Match Minimum Payment"
+                    />
+                    <Button
+                      icon="pi pi-sort-up"
+                      @click="
+                        matchMonthlyPayment(
+                          bond.adHocMonthlyPayments,
+                          bond.customPayments,
+                          data.monthIndex,
+                          monthlyFigures[data.monthIndex - 1].payment
+                        )
+                      "
+                      title="Match Previous Payment"
                     />
                   </InputGroup>
                 </template>
@@ -315,6 +341,7 @@
                     :min="0"
                     inputId="interestRate"
                     suffix="%"
+                    highlightOnFocus="true"
                     :step="1"
                   />
                 </template>
@@ -377,6 +404,7 @@ import {
   getMonthName,
   resetOnceOffPayment,
   resetMonthlyPayment,
+  matchMonthlyPayment,
 } from "../assets/LoanCalcs"
 
 import currencies from "../assets/currencies.json"
