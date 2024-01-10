@@ -31,6 +31,13 @@
         </a>
       </template>
       <template #end>
+        <Button
+          icon="pi pi-phone"
+          severity="info"
+          rounded
+          aria-label="Contact"
+          class="mx-2"
+        />
         <Button icon="pi pi-user" severity="info" rounded aria-label="User" />
       </template>
     </Menubar>
@@ -44,9 +51,55 @@ import Button from "primevue/button"
 
 const items = ref([
   {
-    label: "Basic Loan",
+    label: "Loan Calculators",
     icon: "pi pi-chart-line",
-    route: "/Basic",
+    items: [
+      {
+        label: "Basic Loan",
+        icon: "pi pi-chart-line",
+        route: "/Basic",
+      },
+      {
+        label: "Home Loan",
+        icon: "pi pi-home",
+      },
+      {
+        label: "Car Loan",
+        icon: "pi pi-car",
+      },
+    ],
+  },
+  {
+    label: "Cost of Ownership",
+    icon: "pi pi-dollar",
+    items: [
+      {
+        label: "Home",
+        icon: "pi pi-home",
+      },
+      {
+        label: "Car",
+        icon: "pi pi-car",
+      },
+    ],
+  },
+  {
+    label: "Cashflow Calculator",
+    icon: "pi pi-dollar",
+    items: [
+      {
+        label: "Rental Property",
+        icon: "pi pi-home",
+      },
+      {
+        label: "House Flip",
+        icon: "pi pi-wrench",
+      },
+      {
+        label: "Property Development",
+        icon: "pi pi-building",
+      },
+    ],
   },
 ])
 </script>
