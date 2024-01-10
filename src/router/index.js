@@ -8,6 +8,11 @@ const routes = [
     name: "Home",
     component: BasicLoan,
   },
+  {
+    path: "/Basic",
+    name: "Basic",
+    component: BasicLoan,
+  },
 ]
 
 const router = createRouter({
