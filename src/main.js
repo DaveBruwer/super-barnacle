@@ -5,16 +5,7 @@ import PrimeVue from "primevue/config"
 import "primeflex/primeflex.css"
 import "primeicons/primeicons.css"
 
-import "primevue/resources/themes/vela-blue/theme.css"
-
-const app = createApp(App)
-
-app.use(router)
-app.use(PrimeVue, {ripple: true})
-
-
-app.mount("#app")
-
+// import "primevue/resources/themes/vela-blue/theme.css"
 
 // import "primevue/resources/themes/bootstrap4-light-blue/theme.css"
 // import "primevue/resources/themes/bootstrap4-light-purple/theme.css"
@@ -47,7 +38,7 @@ app.mount("#app")
 // import "primevue/resources/themes/saga-green/theme.css"
 // import "primevue/resources/themes/saga-orange/theme.css"
 // import "primevue/resources/themes/saga-purple/theme.css"
-// import "primevue/resources/themes/vela-blue/theme.css"
+import "primevue/resources/themes/vela-blue/theme.css"
 // import "primevue/resources/themes/vela-green/theme.css"
 // import "primevue/resources/themes/vela-orange/theme.css"
 // import "primevue/resources/themes/vela-purple/theme.css"
@@ -55,3 +46,10 @@ app.mount("#app")
 // import "primevue/resources/themes/arya-green/theme.css"
 // import "primevue/resources/themes/arya-orange/theme.css"
 // import "primevue/resources/themes/arya-purple/theme.css"
+
+const app = createApp(App)
+
+app.use(router)
+app.use(PrimeVue, { ripple: true })
+
+app.mount("#app")
