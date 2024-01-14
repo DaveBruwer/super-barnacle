@@ -31,6 +31,15 @@
         </a>
       </template>
       <template #end>
+        <label for="themeSelector">Theme</label>
+        <SelectButton
+          id="themeSelector"
+          v-model="currentTheme"
+          :options="themeOptions"
+          optionLabel="name"
+          optionValue="value"
+          aria-labelledby="basic"
+        />
         <router-link to="Contact">
           <Button
             icon="pi pi-phone"
@@ -49,9 +58,30 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
+import { ref, watch } from "vue"
 import Menubar from "primevue/menubar"
 import Button from "primevue/button"
+import SelectButton from "primevue/selectbutton"
+import { usePrimeVue } from "primevue/config"
+
+const currentTheme = ref("vela-blue")
+
+const PrimeVue = usePrimeVue()
+
+const themeOptions = ref([
+  {
+    name: "Auto",
+    value: "auto",
+  },
+  {
+    name: "Light",
+    value: "saga-blue",
+  },
+  {
+    name: "Dark",
+    value: "vela-blue",
+  },
+])
 
 const items = ref([
   {
@@ -113,4 +143,21 @@ const items = ref([
     ],
   },
 ])
-</script>
+
+watch(currentTheme, (newTheme, _oldTheme) => {
+  let oldTheme = _oldTheme
+
+  if (newTheme === "saga-blue") {
+    oldTheme = "vela-blue"
+  } else if (newTheme === "vela-blue") {
+    oldTheme = "saga-blue"
+  } else {
+    oldTheme = ""
+  }
+
+  if (newTheme != "auto") {
+    PrimeVue.changeTheme(oldTheme, newTheme, "theme-link", () => {})
+  } else {
+    console.log("auto theme selected")
+  }
+})
