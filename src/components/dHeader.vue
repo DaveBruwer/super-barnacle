@@ -58,13 +58,13 @@
 </template>
 
 <script setup>
-import { ref, watch, watchEffect } from "vue"
+import { ref, watch } from "vue"
 import Menubar from "primevue/menubar"
 import Button from "primevue/button"
 import SelectButton from "primevue/selectbutton"
 import { usePrimeVue } from "primevue/config"
 
-const currentTheme = ref("vela-blue")
+const currentTheme = ref("auto")
 
 const PrimeVue = usePrimeVue()
 
@@ -144,76 +144,43 @@ const items = ref([
   },
 ])
 
-const darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)")
+let darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)")
+darkThemeMq.addEventListener("change", autoChangeTheme)
 
-watchEffect(() => {
-  console.log(currentTheme.value)
-  if (currentTheme.value === "auto") {
-    darkThemeMq.addEventListener("change", autoChangeTheme(darkThemeMq.matches))
-  } else if (currentTheme.value === "vela-blue") {
-    darkThemeMq.removeEventListener(
-      "change",
-      autoChangeTheme(darkThemeMq.matches)
-    )
-    PrimeVue.changeTheme("saga-blue", "vela-blue", "theme-link", () => {})
-    // currentTheme.value = "vela-blue"
-  } else if (currentTheme.value === "saga-blue") {
-    darkThemeMq.removeEventListener(
-      "change",
-      autoChangeTheme(darkThemeMq.matches)
-    )
-    PrimeVue.changeTheme("vela-blue", "saga-blue", "theme-link", () => {})
-    // currentTheme.value = "saga-blue"
-  } else {
-    console.log("Theme change not recognised: ", currentTheme.value)
-    darkThemeMq.addEventListener("change", autoChangeTheme(darkThemeMq.matches))
-  }
-})
-
-// watch(currentTheme, (newTheme, _oldTheme) => {
-//   let oldTheme = _oldTheme
-
-//   if (newTheme === "saga-blue") {
-//     oldTheme = "vela-blue"
-//   } else if (newTheme === "vela-blue") {
-//     oldTheme = "saga-blue"
-//   } else {
-//     oldTheme = ""
-//   }
-
-//   if (newTheme != "auto") {
-//     PrimeVue.changeTheme(oldTheme, newTheme, "theme-link", () => {})
-//   } else {
-//     console.log("auto theme selected")
-//   }
-// })
-
-function autoChangeTheme(isDarkTheme) {
+function autoChangeTheme() {
+  const isDarkTheme = darkThemeMq.matches
   console.log(isDarkTheme)
-  if (isDarkTheme) {
+  console.log(currentTheme.value)
+  if (currentTheme.value === "auto" && isDarkTheme) {
     PrimeVue.changeTheme("saga-blue", "vela-blue", "theme-link", () => {})
-    // currentTheme.value = "vela-blue"
-  } else {
+  } else if (currentTheme.value === "auto" && !isDarkTheme) {
     PrimeVue.changeTheme("vela-blue", "saga-blue", "theme-link", () => {})
-    // currentTheme.value = "saga-blue"
   }
 }
 
-// darkThemeMq.addEventListener("change", (event) => {
-//   console.log(event.matches)
-//   if (event.matches) {
-//     currentTheme.value = "vela-blue"
-//   } else {
-//     currentTheme.value = "saga-blue"
-//   }
-// })
-// darkThemeMq.addListener((e) => {
-//   if (e.matches) {
-//     console.log("Dark Theme")
-//   } else {
-//     console.log("Light Theme")
-//   }
-// })
+watch(
+  () => currentTheme.value,
+  (newVal, oldVal) => {
+    console.log(newVal, oldVal)
+    if (newVal === "auto") {
+      console.log("Auto theme")
+      if (darkThemeMq.matches) {
+        PrimeVue.changeTheme("saga-blue", "vela-blue", "theme-link", () => {})
+      } else {
+        PrimeVue.changeTheme("vela-blue", "saga-blue", "theme-link", () => {})
+      }
+    } else if (newVal === "vela-blue") {
+      console.log("Dark Theme")
+      PrimeVue.changeTheme("saga-blue", "vela-blue", "theme-link", () => {})
+    } else if (newVal === "saga-blue") {
+      console.log("Light theme")
+      PrimeVue.changeTheme("vela-blue", "saga-blue", "theme-link", () => {})
+    } else {
+      console.log("Theme change not recognised: ", newVal)
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <style></style>
