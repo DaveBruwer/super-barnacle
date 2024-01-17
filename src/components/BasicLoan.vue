@@ -376,22 +376,6 @@
       </Fieldset>
     </div>
   </div>
-
-  <Button
-    label="Monthly Figures"
-    icon="pi pi-external-link"
-    @click="console.log(monthlyFigures)"
-  />
-  <Button
-    label="customPayments"
-    icon="pi pi-external-link"
-    @click="console.log(customPayments)"
-  />
-  <Button
-    label="adHocMonthlyPayments"
-    icon="pi pi-external-link"
-    @click="console.log(bond.adHocMonthlyPayments)"
-  />
 </template>
 
 <script setup>
@@ -423,7 +407,6 @@ import Divider from "primevue/divider"
 
 // COMPONENT VARIABLES
 const expandedRows = ref([])
-const customPayments = ref(Array.from({ length: 60 * 12 + 1 }, () => 0))
 const bond = reactive({
   currency: {
     symbol: "$",

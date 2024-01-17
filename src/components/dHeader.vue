@@ -31,27 +31,36 @@
         </a>
       </template>
       <template #end>
-        <label for="themeSelector">Theme</label>
-        <SelectButton
-          id="themeSelector"
-          v-model="currentTheme"
-          :options="themeOptions"
-          optionLabel="name"
-          optionValue="value"
-          aria-labelledby="basic"
-        />
-        <router-link to="Contact">
-          <Button
-            icon="pi pi-phone"
-            severity="info"
-            rounded
-            aria-label="Contact"
-            class="mx-2"
-          />
-        </router-link>
-        <router-link to="Account">
-          <Button icon="pi pi-user" severity="info" rounded aria-label="User" />
-        </router-link>
+        <div>
+          <SelectButton
+            id="themeSelector"
+            v-model="currentTheme"
+            :options="themeOptions"
+            optionValue="value"
+            aria-labelledby="basic"
+          >
+            <template #option="slotProps">
+              <i :class="slotProps.option.icon"></i>
+            </template>
+          </SelectButton>
+          <router-link to="Contact">
+            <Button
+              icon="pi pi-phone"
+              severity="info"
+              rounded
+              aria-label="Contact"
+              class="mx-2"
+            />
+          </router-link>
+          <router-link to="Account">
+            <Button
+              icon="pi pi-user"
+              severity="info"
+              rounded
+              aria-label="User"
+            />
+          </router-link>
+        </div>
       </template>
     </Menubar>
   </div>
@@ -64,21 +73,23 @@ import Button from "primevue/button"
 import SelectButton from "primevue/selectbutton"
 import { usePrimeVue } from "primevue/config"
 
-const currentTheme = ref("auto")
+const currentTheme = ref(
+  window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "vela-blue"
+    : "saga-blue"
+)
 
 const PrimeVue = usePrimeVue()
 
 const themeOptions = ref([
   {
-    name: "Auto",
-    value: "auto",
-  },
-  {
     name: "Light",
+    icon: "pi pi-sun",
     value: "saga-blue",
   },
   {
     name: "Dark",
+    icon: "pi pi-moon",
     value: "vela-blue",
   },
 ])
@@ -144,36 +155,12 @@ const items = ref([
   },
 ])
 
-let darkThemeMq = window.matchMedia("(prefers-color-scheme: dark)")
-darkThemeMq.addEventListener("change", autoChangeTheme)
-
-function autoChangeTheme() {
-  const isDarkTheme = darkThemeMq.matches
-  console.log(isDarkTheme)
-  console.log(currentTheme.value)
-  if (currentTheme.value === "auto" && isDarkTheme) {
-    PrimeVue.changeTheme("saga-blue", "vela-blue", "theme-link", () => {})
-  } else if (currentTheme.value === "auto" && !isDarkTheme) {
-    PrimeVue.changeTheme("vela-blue", "saga-blue", "theme-link", () => {})
-  }
-}
-
 watch(
   () => currentTheme.value,
-  (newVal, oldVal) => {
-    console.log(newVal, oldVal)
-    if (newVal === "auto") {
-      console.log("Auto theme")
-      if (darkThemeMq.matches) {
-        PrimeVue.changeTheme("saga-blue", "vela-blue", "theme-link", () => {})
-      } else {
-        PrimeVue.changeTheme("vela-blue", "saga-blue", "theme-link", () => {})
-      }
-    } else if (newVal === "vela-blue") {
-      console.log("Dark Theme")
+  (newVal) => {
+    if (newVal === "vela-blue") {
       PrimeVue.changeTheme("saga-blue", "vela-blue", "theme-link", () => {})
     } else if (newVal === "saga-blue") {
-      console.log("Light theme")
       PrimeVue.changeTheme("vela-blue", "saga-blue", "theme-link", () => {})
     } else {
       console.log("Theme change not recognised: ", newVal)
