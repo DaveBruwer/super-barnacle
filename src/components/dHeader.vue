@@ -31,7 +31,7 @@
         </a>
       </template>
       <template #end>
-        <div>
+        <div class="flex justify-content-between">
           <SelectButton
             id="themeSelector"
             v-model="currentTheme"
@@ -83,12 +83,10 @@ const PrimeVue = usePrimeVue()
 
 const themeOptions = ref([
   {
-    name: "Light",
     icon: "pi pi-sun",
     value: "saga-blue",
   },
   {
-    name: "Dark",
     icon: "pi pi-moon",
     value: "vela-blue",
   },
