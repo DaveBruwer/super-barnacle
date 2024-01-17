@@ -4,7 +4,7 @@
       class="w-full flex flex-column justify-content-center"
       style="max-width: 60rem"
     >
-      <Divider align="left"> Loan </Divider>
+      <h1><i class="pi pi-chart-line" style="font-size: 2rem" /> Basic Loan</h1>
       <div
         class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
       >
