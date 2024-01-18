@@ -3,7 +3,7 @@
     <Menubar :model="items">
       <template #start>
         <router-link to="/">
-          <img alt="logo" src="/SBicon.png" height="40" class="mr-2" />
+          <img alt="logo" src="/LoanSim_Icon3.svg" height="40" class="mr-2" />
         </router-link>
       </template>
       <template #item="{ label, item, props, root, hasSubmenu }">
