@@ -1,0 +1,139 @@
+<template>
+  <div
+    class="m-4 h-screen flex flex-column justify-content-start align-content-center align-items-center"
+  >
+    <img
+      alt="LoanSim"
+      src="/LoanSim_Logo1.svg"
+      class="mr-2 w-full max-w-30rem"
+    />
+    <h2 class="w-auto">
+      Forecast, Understand, and Track your loans in one place!
+    </h2>
+    <Divider align="left"
+      ><i class="pi pi-chart-line" /> Loan Simulators
+    </Divider>
+    <div
+      class="flex flex-wrap justify-content-around align-content-around gap-3"
+    >
+      <router-link to="/Basic">
+        <Card style="width: 20em">
+          <template #title
+            ><i class="pi pi-chart-line" style="font-size: 2rem" /> Basic Loan
+          </template>
+          <template #content>
+            <p class="m-0">
+              Like a basic loan repayment calculator, but much more powerfull!
+              Change the interest rate, monthly payment, or add a once-off
+              payment at any month during the loan period to see how it affects
+              the overall loan.
+            </p>
+          </template>
+        </Card>
+      </router-link>
+      <router-link to="/HomeLoan">
+        <Card style="width: 20em">
+          <template #title
+            ><i class="pi pi-home" style="font-size: 2rem" /> Home Loan
+          </template>
+          <template #content>
+            <p class="m-0">
+              A loan simulator specifically for Home Loans! Track the value of
+              the property vs. the loan balance and see the amount of equity in
+              the property!
+            </p>
+          </template>
+        </Card>
+      </router-link>
+      <router-link to="/CarLoan">
+        <Card style="width: 20em">
+          <template #title
+            ><i class="pi pi-car" style="font-size: 2rem" /> Car Loan
+          </template>
+          <template #content>
+            <p class="m-0">
+              A loan simulator specifically for Car Loans! Track the value of
+              the car vs. the loan balance and see the amount of equity in the
+              asset.
+            </p>
+          </template>
+        </Card>
+      </router-link>
+    </div>
+    <Divider align="left"
+      ><i class="pi pi-dollar" /> Cost of Ownership
+    </Divider>
+    <div
+      class="flex flex-wrap justify-content-around align-content-around gap-3"
+    >
+      <router-link to="/HomeCost">
+        <Card style="width: 20em">
+          <template #title
+            ><i class="pi pi-home" style="font-size: 2rem" /> Home
+          </template>
+          <template #content>
+            <p class="m-0">
+              Understand the total cost of buying that dream property. Mortgage
+              repayments, rates & takes, upkeep, etc.
+            </p>
+          </template>
+        </Card>
+      </router-link>
+      <router-link to="/CarCost">
+        <Card style="width: 20em">
+          <template #title
+            ><i class="pi pi-home" style="font-size: 2rem" /> Car
+          </template>
+          <template #content>
+            <p class="m-0">
+              Understand the total cost of buying that dream car. Loan
+              repayments, insurance, upkeep, etc.
+            </p>
+          </template>
+        </Card>
+      </router-link>
+    </div>
+    <Divider align="left"><i class="pi pi-dollar" /> Cashflow </Divider>
+    <div
+      class="flex flex-wrap justify-content-around align-content-around gap-3"
+    >
+      <router-link to="/RentalProperty">
+        <Card style="width: 20em">
+          <template #title
+            ><i class="pi pi-home" style="font-size: 2rem" /> Rental Property
+          </template>
+          <template #content>
+            <p class="m-0">
+              Keep track of any rental property! Compare the mortgage repayments
+              with rental income, vacancy rate, etc.
+            </p>
+          </template>
+        </Card>
+      </router-link>
+      <router-link to="/HouseFlip">
+        <Card style="width: 20em">
+          <template #title
+            ><i class="pi pi-home" style="font-size: 2rem" /> House Flip
+          </template>
+          <template #content>
+            <p class="m-0">
+              Easily calculate what needs to be done to flip that property for a
+              profit. Renovation costs, comp. prices, etc.
+            </p>
+          </template>
+        </Card>
+      </router-link>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import Card from "primevue/card"
+import Divider from "primevue/divider"
+</script>
+
+<style>
+a {
+  text-decoration: none;
+}
+</style>

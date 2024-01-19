@@ -1,5 +1,5 @@
 <template>
-  <div class="card relative z-2">
+  <div class="w-full card relative z-2">
     <Menubar :model="items">
       <template #start>
         <router-link to="/">
@@ -94,7 +94,7 @@ const themeOptions = ref([
 
 const items = ref([
   {
-    label: "Loan Calculators",
+    label: "Loan Simulators",
     icon: "pi pi-chart-line",
     items: [
       {
@@ -131,7 +131,7 @@ const items = ref([
     ],
   },
   {
-    label: "Cashflow Calculator",
+    label: "Cashflow Calculators",
     icon: "pi pi-dollar",
     items: [
       {

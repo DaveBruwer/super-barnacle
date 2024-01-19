@@ -1,4 +1,5 @@
 // router
+import LandingPage from "../components/LandingPage.vue"
 import BasicLoan from "../components/BasicLoan.vue"
 import ComingSoon from "../components/ComingSoon.vue"
 import { createRouter, createWebHistory } from "vue-router"
@@ -7,7 +8,7 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: BasicLoan,
+    component: LandingPage,
   },
   {
     path: "/Basic",
