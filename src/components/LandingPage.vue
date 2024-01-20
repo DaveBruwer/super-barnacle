@@ -17,7 +17,7 @@
       class="flex flex-wrap justify-content-around align-content-around gap-3"
     >
       <router-link to="/Basic">
-        <Card style="width: 20em">
+        <Card class="mycard">
           <template #title
             ><i class="pi pi-chart-line" style="font-size: 2rem" /> Basic Loan
           </template>
@@ -32,7 +32,7 @@
         </Card>
       </router-link>
       <router-link to="/HomeLoan">
-        <Card style="width: 20em">
+        <Card class="mycard">
           <template #title
             ><i class="pi pi-home" style="font-size: 2rem" /> Home Loan
           </template>
@@ -46,7 +46,7 @@
         </Card>
       </router-link>
       <router-link to="/CarLoan">
-        <Card style="width: 20em">
+        <Card class="mycard">
           <template #title
             ><i class="pi pi-car" style="font-size: 2rem" /> Car Loan
           </template>
@@ -67,7 +67,7 @@
       class="flex flex-wrap justify-content-around align-content-around gap-3"
     >
       <router-link to="/HomeCost">
-        <Card style="width: 20em">
+        <Card class="mycard">
           <template #title
             ><i class="pi pi-home" style="font-size: 2rem" /> Home
           </template>
@@ -80,7 +80,7 @@
         </Card>
       </router-link>
       <router-link to="/CarCost">
-        <Card style="width: 20em">
+        <Card class="mycard">
           <template #title
             ><i class="pi pi-home" style="font-size: 2rem" /> Car
           </template>
@@ -98,7 +98,7 @@
       class="flex flex-wrap justify-content-around align-content-around gap-3"
     >
       <router-link to="/RentalProperty">
-        <Card style="width: 20em">
+        <Card class="mycard">
           <template #title
             ><i class="pi pi-home" style="font-size: 2rem" /> Rental Property
           </template>
@@ -111,7 +111,7 @@
         </Card>
       </router-link>
       <router-link to="/HouseFlip">
-        <Card style="width: 20em">
+        <Card class="mycard">
           <template #title
             ><i class="pi pi-home" style="font-size: 2rem" /> House Flip
           </template>
@@ -135,5 +135,14 @@ import Divider from "primevue/divider"
 <style>
 a {
   text-decoration: none;
+}
+
+.mycard {
+  width: 20em;
+  height: 15em;
+  border-radius: 5%;
+  background-color: #245a7fff;
+  border: solid 4px #318dccff;
+  color: white;
 }
 </style>
