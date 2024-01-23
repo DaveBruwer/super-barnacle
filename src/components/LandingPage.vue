@@ -142,7 +142,7 @@ a {
   height: 15em;
   border-radius: 5%;
   background-color: #245a7fff;
-  border: solid 4px #318dccff;
+  border: dashed 4px #318dccff;
   color: white;
 }
 </style>
