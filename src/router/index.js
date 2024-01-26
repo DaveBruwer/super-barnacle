@@ -2,6 +2,7 @@
 import LandingPage from "../components/LandingPage.vue"
 import BasicLoan from "../components/BasicLoan.vue"
 import ComingSoon from "../components/ComingSoon.vue"
+import Register from "../components/Register.vue"
 import { createRouter, createWebHistory } from "vue-router"
 
 const routes = [
@@ -58,7 +59,7 @@ const routes = [
   {
     path: "/Account",
     name: "Account",
-    component: ComingSoon,
+    component: Register,
   },
 ]
 
