@@ -74,7 +74,7 @@
         class="w-6"
         @click="registerNewUser(registrationData)"
       />
-      <RouterLink to="/"><a>Log in</a></RouterLink>
+      <RouterLink to="/Login"><a>Log in</a></RouterLink>
     </form>
   </Fieldset>
 </template>
