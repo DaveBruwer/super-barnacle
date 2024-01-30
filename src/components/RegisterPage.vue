@@ -87,7 +87,6 @@ import { RouterLink } from "vue-router"
 import { auth } from "../firebase"
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
 import { useRouter } from "vue-router"
-import { authStore } from "../stores/authStore"
 
 const router = useRouter()
 
@@ -145,10 +144,6 @@ async function registerNewUser(registrationData) {
       })
     // Navigate to /Account if user logged in.
     if (auth.currentUser) {
-      authStore.user = auth.currentUser
-
-      console.log(authStore.user)
-
       router.push("/Account")
     }
   }
