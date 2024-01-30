@@ -61,7 +61,7 @@
         class="w-6"
         @click="registerNewUser(registrationData)"
       />
-      <RouterLink to="/Login"><a>Log in</a></RouterLink>
+      <RouterLink to="/Login"><a>Sign in</a></RouterLink>
     </form>
   </Fieldset>
 
@@ -134,9 +134,6 @@ async function registerNewUser(registrationData) {
         updateProfile(auth.currentUser, {
           displayName: registrationData.name,
         })
-      })
-      .then(() => {
-        console.log(auth.currentUser)
       })
       .catch((error) => {
         console.log("Error during registration:")

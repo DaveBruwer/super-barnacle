@@ -1,7 +1,14 @@
 <template>
-  <h2 v-if="authStore.user">Welcome {{ authStore.user.displayName }}!</h2>
-  <h2 v-else>Welcome Guest!</h2>
-  <Button icon="pi pi-sign-out" label="Sign Out" @click="signOutUser" />
+  <div v-if="authStore.user">
+    <h2>Welcome {{ authStore.user.displayName }}!</h2>
+    <Button icon="pi pi-sign-out" label="Sign Out" @click="signOutUser" />
+  </div>
+  <div v-else>
+    <h2>Welcome!</h2>
+    <RouterLink to="/Login">
+      <Button icon="pi pi-sign-in" label="Sign In" @click="signOutUser" />
+    </RouterLink>
+  </div>
 </template>
 
 <script setup>
