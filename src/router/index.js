@@ -6,6 +6,7 @@ import Register from "../components/RegisterPage.vue"
 import Login from "../components/LoginPage.vue"
 import Account from "../components/AccountPage.vue"
 import { createRouter, createWebHistory } from "vue-router"
+import { auth } from "../firebase"
 
 const routes = [
   {
@@ -62,16 +63,43 @@ const routes = [
     path: "/Account",
     name: "Account",
     component: Account,
+    beforeEnter: async (to, from, next) => {
+      await auth.authStateReady().then(() => {
+        if (!auth.currentUser) {
+          next({ name: "Login" })
+        } else {
+          next()
+        }
+      })
+    },
   },
   {
     path: "/Login",
     name: "Login",
     component: Login,
+    beforeEnter: async (to, from, next) => {
+      await auth.authStateReady().then(() => {
+        if (auth.currentUser) {
+          next({ name: "Account" })
+        } else {
+          next()
+        }
+      })
+    },
   },
   {
     path: "/Register",
     name: "Register",
     component: Register,
+    beforeEnter: async (to, from, next) => {
+      await auth.authStateReady().then(() => {
+        if (auth.currentUser) {
+          next({ name: "Account" })
+        } else {
+          next()
+        }
+      })
+    },
   },
 ]
 

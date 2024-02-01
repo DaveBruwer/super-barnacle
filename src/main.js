@@ -4,7 +4,16 @@ import router from "./router"
 import PrimeVue from "primevue/config"
 import "primeflex/primeflex.css"
 import "primeicons/primeicons.css"
+import "./firebase/index.js"
 
+const app = createApp(App)
+
+app.use(router)
+app.use(PrimeVue, { ripple: true })
+
+app.mount("#app")
+
+// Themes
 // import "primevue/resources/themes/vela-blue/theme.css"
 
 // import "primevue/resources/themes/bootstrap4-light-blue/theme.css"
@@ -46,10 +55,4 @@ import "primeicons/primeicons.css"
 // import "primevue/resources/themes/arya-green/theme.css"
 // import "primevue/resources/themes/arya-orange/theme.css"
 // import "primevue/resources/themes/arya-purple/theme.css"
-
-const app = createApp(App)
-
-app.use(router)
-app.use(PrimeVue, { ripple: true })
-
-app.mount("#app")
+//

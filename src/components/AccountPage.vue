@@ -17,16 +17,10 @@ import { authStore } from "../stores/authStore"
 import { ref, onMounted } from "vue"
 import { auth } from "../firebase"
 import { signOut } from "firebase/auth"
-import { useRouter } from "vue-router"
-
-const router = useRouter()
 
 const signOutEnabled = ref(false)
 
 onMounted(() => {
-  if (!authStore.user) {
-    router.push("/Login")
-  }
   signOutEnabled.value = true
 })
 
