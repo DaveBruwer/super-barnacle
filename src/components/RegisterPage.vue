@@ -112,7 +112,7 @@ async function registerNewUser(registrationData) {
   disableSubmit.value = true
   miscStore.progressSpinnerActive = true
 
-  const isDataValid = await this.v$.$validate()
+  const isDataValid = await v$.value.$validate()
 
   if (isDataValid) {
     await createUserWithEmailAndPassword(

@@ -86,7 +86,7 @@ async function logInNewUser(loginData) {
   disableSubmit.value = true
   miscStore.progressSpinnerActive = true
 
-  const isDataValid = await this.v$.$validate()
+  const isDataValid = await v$.value.$validate()
 
   if (isDataValid) {
     await signInWithEmailAndPassword(
