@@ -42,14 +42,6 @@
       <RouterLink to="/Register"><a>Register</a></RouterLink>
     </form>
   </Fieldset>
-
-  <dialog ref="progressSpinnerModal" class="w-auto h-auto border-none">
-    <div
-      class="flex justify-content-center align-itmes-center align-content-center w-full h-full"
-    >
-      <ProgressSpinner class="h-auto" />
-    </div>
-  </dialog>
 </template>
 
 <script setup>
@@ -58,7 +50,6 @@ import InputText from "primevue/inputtext"
 import Password from "primevue/password"
 import Button from "primevue/button"
 import Message from "primevue/message"
-import ProgressSpinner from "primevue/progressspinner"
 import { reactive, ref, onMounted } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { required, email } from "@vuelidate/validators"
@@ -66,10 +57,9 @@ import { RouterLink } from "vue-router"
 import { auth } from "../firebase"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { useRouter } from "vue-router"
+import { miscStore } from "../stores/miscStore"
 
 const router = useRouter()
-
-const progressSpinnerModal = ref(null)
 
 const loginData = reactive({
   email: "",
@@ -94,7 +84,7 @@ onMounted(() => {
 
 async function logInNewUser(loginData) {
   disableSubmit.value = true
-  progressSpinnerModal.value.showModal()
+  miscStore.progressSpinnerActive = true
 
   const isDataValid = await this.v$.$validate()
 
@@ -119,7 +109,7 @@ async function logInNewUser(loginData) {
   }
 
   disableSubmit.value = false
-  progressSpinnerModal.value.close()
+  miscStore.progressSpinnerActive = false
 }
 </script>
 

@@ -17,6 +17,10 @@ import { authStore } from "../stores/authStore"
 import { ref, onMounted } from "vue"
 import { auth } from "../firebase"
 import { signOut } from "firebase/auth"
+import { useRouter } from "vue-router"
+import { miscStore } from "../stores/miscStore"
+
+const router = useRouter()
 
 const signOutEnabled = ref(false)
 
@@ -25,13 +29,17 @@ onMounted(() => {
 })
 
 async function signOutUser() {
+  signOutEnabled.value = false
+  miscStore.progressSpinnerActive = true
   await signOut(auth)
     .then(() => {
       console.log("Sign Out Successful")
+      router.push("/Login")
     })
     .catch((error) => {
       console.log("error signing out:")
       console.log(error)
+      signOutEnabled.value = true
     })
 }
 </script>

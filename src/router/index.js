@@ -7,6 +7,7 @@ import Login from "../components/LoginPage.vue"
 import Account from "../components/AccountPage.vue"
 import { createRouter, createWebHistory } from "vue-router"
 import { auth } from "../firebase"
+import { miscStore } from "../stores/miscStore"
 
 const routes = [
   {
@@ -106,6 +107,17 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+router.beforeEach((to, from, next) => {
+  miscStore.progressSpinnerActive = true
+  setTimeout(() => {
+    next()
+  }, 50)
+})
+
+router.afterEach(() => {
+  miscStore.progressSpinnerActive = false
 })
 
 export default router
