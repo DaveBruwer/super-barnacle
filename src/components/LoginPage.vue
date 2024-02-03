@@ -40,6 +40,7 @@
         @click="logInNewUser(loginData)"
       />
       <RouterLink to="/Register"><a>Register</a></RouterLink>
+      <RouterLink to="/ResetPassword"><a>Forgot Password</a></RouterLink>
     </form>
   </Fieldset>
 </template>
@@ -112,14 +113,3 @@ async function logInNewUser(loginData) {
   miscStore.progressSpinnerActive = false
 }
 </script>
-
-<style>
-dialog {
-  background-color: transparent;
-}
-
-dialog::backdrop {
-  background-color: black;
-  opacity: 0.5;
-}
-</style>

@@ -4,6 +4,7 @@ import BasicLoan from "../components/BasicLoan.vue"
 import ComingSoon from "../components/ComingSoon.vue"
 import Register from "../components/RegisterPage.vue"
 import Login from "../components/LoginPage.vue"
+import ResetPassword from "../components/ResetPasswordPage.vue"
 import Account from "../components/AccountPage.vue"
 import { createRouter, createWebHistory } from "vue-router"
 import { auth } from "../firebase"
@@ -92,6 +93,20 @@ const routes = [
     path: "/Register",
     name: "Register",
     component: Register,
+    beforeEnter: async (to, from, next) => {
+      await auth.authStateReady().then(() => {
+        if (auth.currentUser) {
+          next({ name: "Account" })
+        } else {
+          next()
+        }
+      })
+    },
+  },
+  {
+    path: "/ResetPassword",
+    name: "ResetPassword",
+    component: ResetPassword,
     beforeEnter: async (to, from, next) => {
       await auth.authStateReady().then(() => {
         if (auth.currentUser) {
