@@ -56,6 +56,7 @@
       </div>
 
       <Button
+        type="submit"
         :disabled="disableSubmit"
         label="Submit"
         class="w-6"
