@@ -161,6 +161,10 @@
           v-model:expandedRows="expandedRows"
           :value="dataTableArray"
           tableStyle="min-width: 60rem"
+          :loading="loadingRowGroup"
+          @row-expand="onRowExpand"
+          @row-collapse="onRowCollapse"
+          @update:expanded-rows="onRowClick"
         >
           <Column expander style="width: 4rem"></Column>
           <Column field="year" header="Year"></Column>
@@ -205,6 +209,7 @@
               :value="slotProps.data.months"
               lazy
               edit-mode="cell"
+              :loading="loadingRowGroup"
               @cell-edit-complete="onCellEdit"
             >
               <Column field="date" header="Month" style="width: 7rem"></Column>
@@ -407,6 +412,7 @@ import Divider from "primevue/divider"
 
 // COMPONENT VARIABLES
 const expandedRows = ref([])
+const loadingRowGroup = ref(false)
 const bond = reactive({
   currency: {
     symbol: "$",
@@ -578,6 +584,21 @@ function onCellEdit(event) {
 
 const blendedInput = "w-8rem opacity-100 bg-transparent border-transparent"
 const boldBlendedInput = blendedInput + " font-bold"
+
+function onRowExpand() {
+  // console.log("row-expand")
+  loadingRowGroup.value = false
+}
+
+function onRowCollapse() {
+  // console.log("row-collapse")
+  loadingRowGroup.value = false
+}
+
+function onRowClick() {
+  // console.log("rowClick")
+  loadingRowGroup.value = true
+}
 </script>
 
 <style></style>
