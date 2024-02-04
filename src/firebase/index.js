@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app"
 // import { getAnalytics } from "firebase/analytics"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
+import { getFirestore, doc, getDoc } from "firebase/firestore"
 import { authStore } from "../stores/authStore"
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -23,12 +24,29 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig)
 // const analytics = getAnalytics(app)
 export const auth = getAuth(app)
+export const db = getFirestore(app)
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
+    console.log(user.uid)
     // User is signed in, see docs for a list of available properties
     // https://firebase.google.com/docs/reference/js/auth.user
-    authStore.user = user
+    await getDoc(doc(db, "Users", user.uid))
+      .then((userData) => {
+        console.log(userData.exists())
+        console.log(userData.data())
+        if (userData.exists()) {
+          authStore.user = userData.data()
+        } else {
+          throw new Error(
+            "User logged in but user record not found in database."
+          )
+        }
+      })
+      .catch((error) => {
+        console.log("Error during doc retrieval:")
+        console.log(error)
+      })
     // ...
   } else {
     authStore.user = null

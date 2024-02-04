@@ -1,6 +1,6 @@
 <template>
   <div v-if="authStore.user">
-    <h2>Welcome {{ authStore.user.displayName }}!</h2>
+    <h2>Welcome {{ authStore.user.name }}!</h2>
     <Button icon="pi pi-sign-out" label="Sign Out" @click="signOutUser" />
   </div>
   <div v-else>

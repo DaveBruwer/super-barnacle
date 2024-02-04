@@ -76,8 +76,9 @@ import { reactive, ref, computed, onMounted } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { required, email, sameAs, minLength } from "@vuelidate/validators"
 import { RouterLink } from "vue-router"
-import { auth } from "../firebase"
+import { auth, db } from "../firebase"
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
+import { doc, setDoc } from "firebase/firestore"
 import { useRouter } from "vue-router"
 import { miscStore } from "../stores/miscStore"
 
@@ -124,6 +125,14 @@ async function registerNewUser(registrationData) {
       .then(() => {
         updateProfile(auth.currentUser, {
           displayName: registrationData.name,
+        })
+      })
+      .then(async () => {
+        await setDoc(doc(db, "Users", auth.currentUser.uid), {
+          name: registrationData.name,
+          email: registrationData.email,
+          profilePhoto: auth.currentUser.photoURL,
+          defaultCurrency: "USD",
         })
       })
       .catch((error) => {
