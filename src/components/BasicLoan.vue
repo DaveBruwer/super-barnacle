@@ -161,7 +161,6 @@
           v-model:expandedRows="expandedRows"
           :value="dataTableArray"
           tableStyle="min-width: 60rem"
-          :loading="loadingRowGroup"
           @row-expand="onRowExpand"
           @row-collapse="onRowCollapse"
           @update:expanded-rows="onRowClick"
@@ -556,6 +555,7 @@ watch(
 
 // METHODS
 function onCellEdit(event) {
+  loadingRowGroup.value = true
   let { data, newValue, value, field } = event
 
   if (Math.round(value * 100) / 100 != newValue) {
@@ -578,6 +578,8 @@ function onCellEdit(event) {
   } else {
     console.log("no change")
   }
+
+  removeLoadingRowGroup()
 }
 
 // CLASSES
@@ -587,12 +589,18 @@ const boldBlendedInput = blendedInput + " font-bold"
 
 function onRowExpand() {
   // console.log("row-expand")
-  loadingRowGroup.value = false
+  removeLoadingRowGroup()
 }
 
 function onRowCollapse() {
   // console.log("row-collapse")
-  loadingRowGroup.value = false
+  removeLoadingRowGroup()
+}
+
+function removeLoadingRowGroup() {
+  setTimeout(() => {
+    loadingRowGroup.value = false
+  }, 0)
 }
 
 function onRowClick() {
