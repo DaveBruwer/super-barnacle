@@ -74,7 +74,13 @@ import Password from "primevue/password"
 import Button from "primevue/button"
 import { reactive, ref, computed, onMounted } from "vue"
 import { useVuelidate } from "@vuelidate/core"
-import { required, email, sameAs, minLength } from "@vuelidate/validators"
+import {
+  required,
+  email,
+  sameAs,
+  minLength,
+  maxLength,
+} from "@vuelidate/validators"
 import { RouterLink } from "vue-router"
 import { auth, db } from "../firebase"
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
@@ -94,7 +100,7 @@ const registrationData = reactive({
 const disableSubmit = ref(true)
 
 const rules = {
-  name: { required },
+  name: { required, minLength: minLength(4), maxLength: maxLength(30) },
   email: { required, email },
   password: { required, minLength: minLength(8) },
   confirmPass: {
@@ -132,7 +138,14 @@ async function registerNewUser(registrationData) {
           name: registrationData.name,
           email: registrationData.email,
           profilePhoto: auth.currentUser.photoURL,
-          defaultCurrency: "USD",
+          defaultCurrency: {
+            symbol: "$",
+            name: "US Dollar",
+            decimal_digits: 2,
+            rounding: 0,
+            code: "USD",
+            name_plural: "US dollars",
+          },
         })
       })
       .catch((error) => {
