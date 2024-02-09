@@ -379,7 +379,8 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from "vue"
+import { ref, reactive, computed, watch, onMounted } from "vue"
+import { authStore } from "../stores/authStore"
 import {
   calcMinPayment,
   monthlyCalcs,
@@ -393,6 +394,18 @@ import {
 
 import currencies from "../assets/currencies.json"
 import PrimeChart from "../components/PrimeChart.vue"
+
+onMounted(async () => {
+  watch(
+    () => authStore.user,
+    () => {
+      if (authStore.user) {
+        bond.currency = authStore.user.defaultCurrency
+      }
+    },
+    { immediate: true }
+  )
+})
 
 // PrimeVue imports...
 import InputNumber from "primevue/inputnumber"

@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app"
-// import { getAnalytics } from "firebase/analytics"
+import { getAnalytics } from "firebase/analytics"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
 import { getFirestore, doc, getDoc } from "firebase/firestore"
 import { authStore } from "../stores/authStore"
@@ -22,35 +22,34 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig)
-// const analytics = getAnalytics(app)
+export const analytics = getAnalytics(app)
 export const auth = getAuth(app)
 export const db = getFirestore(app)
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    console.log(user.uid)
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/auth.user
-    await getDoc(doc(db, "Users", user.uid))
-      .then((userData) => {
-        console.log(userData.exists())
-        console.log(userData.data())
-        if (userData.exists()) {
-          authStore.user = userData.data()
-        } else {
-          throw new Error(
-            "User logged in but user record not found in database."
-          )
-        }
-      })
-      .catch((error) => {
-        console.log("Error during doc retrieval:")
-        console.log(error)
-      })
-    // ...
-  } else {
-    authStore.user = null
-    // User is signed out
-    // ...
-  }
+onAuthStateChanged(auth, async () => {
+  await fetchUserInfo()
 })
+
+export function fetchUserInfo() {
+  return new Promise((resolve, reject) => {
+    auth.authStateReady().then(() => {
+      if (auth.currentUser) {
+        getDoc(doc(db, "Users", auth.currentUser.uid))
+          .then((userData) => {
+            if (userData.exists()) {
+              authStore.user = userData.data()
+              resolve("User data successfully retrieved.")
+            } else {
+              reject("User logged in but user record not found in database.")
+            }
+          })
+          .catch((error) => {
+            reject(`Error during doc retrieval: ${error}`)
+          })
+      } else {
+        authStore.user = null
+        resolve("No user logged in.")
+      }
+    })
+  })
+}

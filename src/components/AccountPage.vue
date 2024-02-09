@@ -1,9 +1,9 @@
 <template>
-  <div v-if="authStore.user">
+  <div v-if="authStore.user" class="w-21rem max-w-21rem m-2">
     <h2>Welcome {{ authStore.user.name }}!</h2>
-    <Fieldset legend="Accound Details">
+    <Fieldset legend="Accound Details" class="my-2" :toggleable="true">
       <form
-        @submit="registerNewUser(userData)"
+        @submit.prevent="updateUser(userData)"
         class="flex flex-column m-4 justify-content-center align-items-center gap-4"
       >
         <div class="flex flex-column gap-2">
@@ -31,19 +31,36 @@
             {{ error.$message }}
           </small>
         </div>
+        <Button
+          type="submit"
+          :disabled="disableUpdate"
+          label="Update"
+          class="w-6"
+        />
       </form>
     </Fieldset>
-    <Button icon="pi pi-sign-out" label="Sign Out" @click="signOutUser" />
-    <Button
-      icon="pi pi-sign-out"
-      label="Press Me!"
-      @click="() => console.log(authStore)"
-    />
+    <div class="flex justify-content-between">
+      <Button icon="pi pi-sign-out" label="Sign Out" @click="signOutUser" />
+      <Button
+        icon="pi pi-key"
+        label="Reset Password"
+        @click="sendResetPasswordEmail"
+        :disabled="disableResetPassword"
+      />
+    </div>
+    <Message
+      v-if="resetPasswordError"
+      :closable="false"
+      severity="error"
+      :sticky="false"
+      :life="3000"
+      >{{ resetPasswordError }}</Message
+    >
   </div>
   <div v-else>
     <h2>Welcome!</h2>
     <RouterLink to="/Login">
-      <Button icon="pi pi-sign-in" label="Sign In" @click="signOutUser" />
+      <Button icon="pi pi-sign-in" label="Sign In" />
     </RouterLink>
   </div>
 </template>
@@ -54,10 +71,12 @@ import InputText from "primevue/inputtext"
 import Dropdown from "primevue/dropdown"
 import Button from "primevue/button"
 import Fieldset from "primevue/fieldset"
+import Message from "primevue/message"
 import { authStore } from "../stores/authStore"
-import { reactive, ref, onMounted } from "vue"
-import { auth } from "../firebase"
-import { signOut } from "firebase/auth"
+import { reactive, ref, onMounted, watch } from "vue"
+import { auth, db } from "../firebase"
+import { doc, updateDoc } from "firebase/firestore"
+import { signOut, updateProfile, sendPasswordResetEmail } from "firebase/auth"
 import { useRouter } from "vue-router"
 import { miscStore } from "../stores/miscStore"
 import { useVuelidate } from "@vuelidate/core"
@@ -77,7 +96,7 @@ const userData = reactive({
   name: "",
 })
 
-const updateEnabled = ref(true)
+const disableUpdate = ref(false)
 
 const rules = {
   defaultCurrency: { required },
@@ -87,15 +106,21 @@ const rules = {
 const v$ = useVuelidate(rules, userData)
 
 const signOutEnabled = ref(false)
+const disableResetPassword = ref(false)
+const resetPasswordError = ref("")
 
 onMounted(async () => {
-  await auth.authStateReady().then(() => {
-    if (authStore.user) {
-      userData.name = authStore.user.name
-      userData.defaultCurrency = authStore.user.defaultCurrency
-    }
-    signOutEnabled.value = true
-  })
+  watch(
+    () => authStore.user,
+    () => {
+      if (authStore.user) {
+        userData.name = authStore.user.name
+        userData.defaultCurrency = authStore.user.defaultCurrency
+      }
+    },
+    { immediate: true }
+  )
+  signOutEnabled.value = true
 })
 
 async function signOutUser() {
@@ -111,5 +136,58 @@ async function signOutUser() {
       console.log(error)
       signOutEnabled.value = true
     })
+}
+
+async function updateUser(userData) {
+  disableUpdate.value = true
+  miscStore.progressSpinnerActive = true
+
+  const isDataValid = await v$.value.$validate()
+
+  if (isDataValid) {
+    await updateProfile(auth.currentUser, {
+      displayName: userData.name,
+    })
+      .then(() => {
+        console.log("User auth profile updated.")
+        updateDoc(doc(db, "Users", auth.currentUser.uid), {
+          name: userData.name,
+          defaultCurrency: userData.defaultCurrency,
+        })
+        console.log("User data updated in firestore.")
+      })
+      .then(() => {
+        authStore.user.name = userData.name
+        authStore.user.defaultCurrency = userData.defaultCurrency
+        console.log("User data updated locally.")
+      })
+      .catch((error) => {
+        console.log("Error during user Update:")
+        console.log(error)
+      })
+  }
+  disableUpdate.value = false
+  miscStore.progressSpinnerActive = false
+}
+
+async function sendResetPasswordEmail() {
+  disableResetPassword.value = true
+  miscStore.progressSpinnerActive = true
+
+  await sendPasswordResetEmail(auth, auth.currentUser.email)
+    .then(() => {
+      resetPasswordError.value = `A password reset email has been sent to ${auth.currentUser.email}`
+    })
+    .catch((error) => {
+      console.log("Error:")
+      console.log(error.code)
+      if (error.code === "auth/invalid-credential") {
+        resetPasswordError.value = `Error! ${auth.currentUser.email} is not associated with a LoanSim account.`
+      } else {
+        resetPasswordError.value = "An unexpected error occured!"
+      }
+    })
+
+  miscStore.progressSpinnerActive = false
 }
 </script>
