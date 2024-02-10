@@ -34,7 +34,7 @@
         <div class="flex justify-content-between">
           <SelectButton
             id="themeSelector"
-            v-model="currentTheme"
+            v-model="miscStore.currentTheme"
             :options="themeOptions"
             optionValue="value"
             aria-labelledby="basic"
@@ -72,12 +72,10 @@ import Menubar from "primevue/menubar"
 import Button from "primevue/button"
 import SelectButton from "primevue/selectbutton"
 import { usePrimeVue } from "primevue/config"
-
-const currentTheme = ref(
-  window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "vela-blue"
-    : "saga-blue"
-)
+import { miscStore } from "../stores/miscStore"
+import { auth, db } from "../firebase"
+import { doc, updateDoc } from "firebase/firestore"
+import { authStore } from "../stores/authStore"
 
 const PrimeVue = usePrimeVue()
 
@@ -154,8 +152,21 @@ const items = ref([
 ])
 
 watch(
-  () => currentTheme.value,
-  (newVal) => {
+  () => miscStore.currentTheme,
+  async (newVal) => {
+    if (authStore.user && newVal != authStore.user.theme) {
+      authStore.user.theme = newVal
+      updateDoc(doc(db, "Users", auth.currentUser.uid), {
+        theme: newVal,
+      })
+        .then(() => {
+          console.log(`User theme saved as ${newVal}.`)
+        })
+        .catch((error) => {
+          console.log("Error during user Update:")
+          console.log(error)
+        })
+    }
     if (newVal === "vela-blue") {
       PrimeVue.changeTheme("saga-blue", "vela-blue", "theme-link", () => {})
     } else if (newVal === "saga-blue") {

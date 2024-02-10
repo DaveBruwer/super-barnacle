@@ -4,6 +4,7 @@ import { getAnalytics } from "firebase/analytics"
 import { getAuth, onAuthStateChanged } from "firebase/auth"
 import { getFirestore, doc, getDoc } from "firebase/firestore"
 import { authStore } from "../stores/authStore"
+import { miscStore } from "../stores/miscStore"
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -38,6 +39,7 @@ export function fetchUserInfo() {
           .then((userData) => {
             if (userData.exists()) {
               authStore.user = userData.data()
+              miscStore.currentTheme = authStore.user.theme
               resolve("User data successfully retrieved.")
             } else {
               reject("User logged in but user record not found in database.")

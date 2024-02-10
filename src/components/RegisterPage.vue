@@ -146,6 +146,7 @@ async function registerNewUser(registrationData) {
             code: "USD",
             name_plural: "US dollars",
           },
+          theme: miscStore.currentTheme,
         })
       })
       .catch((error) => {
