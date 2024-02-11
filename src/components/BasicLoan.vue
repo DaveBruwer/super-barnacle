@@ -409,6 +409,10 @@ import currencies from "../assets/currencies.json"
 import PrimeChart from "../components/PrimeChart.vue"
 
 const props = defineProps({
+  route: {
+    type: String,
+    default: "/Basic",
+  },
   saved: {
     type: Boolean,
     default: false,
