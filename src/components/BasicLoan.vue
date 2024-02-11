@@ -4,7 +4,20 @@
       class="w-full flex flex-column justify-content-center"
       style="max-width: 60rem"
     >
-      <h1><i class="pi pi-chart-line" style="font-size: 2rem" /> Basic Loan</h1>
+      <div
+        class="flex justify-content-between align-items-center align-content-center"
+      >
+        <h1>
+          <i class="pi pi-chart-line" style="font-size: 2rem" />
+          {{ props.name }}
+        </h1>
+        <Button
+          :disabled="unSaved"
+          icon="pi pi-save"
+          aria-label="Save"
+          class="h-2rem"
+        />
+      </div>
       <div
         class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
       >
@@ -379,7 +392,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted } from "vue"
+import { ref, reactive, computed, watch, onMounted, defineProps } from "vue"
 import { authStore } from "../stores/authStore"
 import {
   calcMinPayment,
@@ -395,11 +408,47 @@ import {
 import currencies from "../assets/currencies.json"
 import PrimeChart from "../components/PrimeChart.vue"
 
+const props = defineProps({
+  name: {
+    type: String,
+    default: "Basic Loan",
+  },
+  saved: {
+    type: Boolean,
+    default: false,
+  },
+  bond: {
+    type: Object,
+    default() {
+      return {
+        currency: {
+          symbol: "$",
+          name: "US Dollar",
+          decimal_digits: 2,
+          rounding: 0,
+          code: "USD",
+          name_plural: "US dollars",
+        },
+        loanAmount: 500000,
+        interestRate: 7,
+        loanPeriod: 30,
+        actualPayment: calcMinPayment(500000, 7, 30),
+        customPayment: false,
+        startingDate: new Date(),
+        adHocPayments: Array.from({ length: 60 * 12 + 1 }, () => 0),
+        customPayments: Array.from({ length: 60 * 12 + 1 }, () => 0),
+        adHocInterest: Array.from({ length: 60 * 12 + 1 }, () => null),
+        adHocMonthlyPayments: Array.from({ length: 60 * 12 + 1 }, () => null),
+      }
+    },
+  },
+})
+
 onMounted(async () => {
   watch(
     () => authStore.user,
     () => {
-      if (authStore.user) {
+      if (props.saved === false && authStore.user) {
         bond.currency = authStore.user.defaultCurrency
       }
     },
@@ -420,26 +469,7 @@ import Divider from "primevue/divider"
 
 // COMPONENT VARIABLES
 const expandedRows = ref([])
-const bond = reactive({
-  currency: {
-    symbol: "$",
-    name: "US Dollar",
-    decimal_digits: 2,
-    rounding: 0,
-    code: "USD",
-    name_plural: "US dollars",
-  },
-  loanAmount: 500000,
-  interestRate: 7,
-  loanPeriod: 30,
-  actualPayment: calcMinPayment(500000, 7, 30),
-  customPayment: false,
-  startingDate: new Date(),
-  adHocPayments: Array.from({ length: 60 * 12 + 1 }, () => 0),
-  customPayments: Array.from({ length: 60 * 12 + 1 }, () => 0),
-  adHocInterest: Array.from({ length: 60 * 12 + 1 }, () => null),
-  adHocMonthlyPayments: Array.from({ length: 60 * 12 + 1 }, () => null),
-})
+const bond = reactive({ ...props.bond })
 
 //COMPUTED PROPERTIES
 const minPayment = computed(() =>
@@ -529,6 +559,13 @@ const dataTableArray = computed(() => {
     }
   })
   return _dataTableArray
+})
+
+const unSaved = computed(() => {
+  if (props.bond != bond) {
+    return true
+  }
+  return false
 })
 
 //WATCHERS
