@@ -9,7 +9,7 @@
       >
         <h1>
           <i class="pi pi-chart-line" style="font-size: 2rem" />
-          {{ props.name }}
+          {{ props.bond.name }}
         </h1>
         <Button
           :disabled="unSaved"
@@ -409,10 +409,6 @@ import currencies from "../assets/currencies.json"
 import PrimeChart from "../components/PrimeChart.vue"
 
 const props = defineProps({
-  name: {
-    type: String,
-    default: "Basic Loan",
-  },
   saved: {
     type: Boolean,
     default: false,
@@ -421,6 +417,7 @@ const props = defineProps({
     type: Object,
     default() {
       return {
+        name: "Basic Loan",
         currency: {
           symbol: "$",
           name: "US Dollar",
