@@ -565,7 +565,11 @@ const dataTableArray = computed(() => {
 })
 
 const unSaved = computed(() => {
-  if (initBond != bond) {
+  const initBondJSON = JSON.stringify(initBond)
+  console.log(initBondJSON)
+  const bondJSON = JSON.stringify(bond)
+  console.log(bondJSON)
+  if (initBondJSON != bondJSON) {
     return true
   }
   return false
@@ -635,9 +639,10 @@ function deepCloneBond(_object) {
 
 function saveLoan() {
   initBond = deepCloneBond(bond)
-  console.log(initBond)
-  console.log(bond)
+  console.log(initBond.startingDate)
+  console.log(bond.startingDate)
   console.log(unSaved.value)
+  console.log(initBond.startingDate == bond.startingDate)
 }
 
 // CLASSES
