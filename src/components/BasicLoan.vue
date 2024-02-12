@@ -471,7 +471,8 @@ import Divider from "primevue/divider"
 
 // COMPONENT VARIABLES
 const expandedRows = ref([])
-let initBond = reactive(structuredClone(props.bond))
+const initBond = ref(null)
+initBond.value = reactive(structuredClone(props.bond))
 const bond = reactive(structuredClone(props.bond))
 
 //COMPUTED PROPERTIES
@@ -565,14 +566,13 @@ const dataTableArray = computed(() => {
 })
 
 const unSaved = computed(() => {
-  const initBondJSON = JSON.stringify(initBond)
-  console.log(initBondJSON)
+  const initBondJSON = JSON.stringify(initBond.value)
   const bondJSON = JSON.stringify(bond)
-  console.log(bondJSON)
-  if (initBondJSON != bondJSON) {
-    return true
+
+  if (initBondJSON === bondJSON) {
+    return false
   }
-  return false
+  return true
 })
 
 //WATCHERS
@@ -633,16 +633,14 @@ function onCellEdit(event) {
 
 function deepCloneBond(_object) {
   const _clone = JSON.parse(JSON.stringify(_object))
-  _clone.startingDate = new Date(_clone.startingDate)
+  if (_clone.startingDate) {
+    _clone.startingDate = new Date(_clone.startingDate)
+  }
   return _clone
 }
 
 function saveLoan() {
-  initBond = deepCloneBond(bond)
-  console.log(initBond.startingDate)
-  console.log(bond.startingDate)
-  console.log(unSaved.value)
-  console.log(initBond.startingDate == bond.startingDate)
+  initBond.value = deepCloneBond(bond)
 }
 
 // CLASSES
