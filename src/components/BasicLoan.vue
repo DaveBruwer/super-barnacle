@@ -12,7 +12,8 @@
           {{ props.bond.name }}
         </h1>
         <Button
-          :disabled="unSaved"
+          @click="saveLoan"
+          :disabled="!unSaved"
           icon="pi pi-save"
           aria-label="Save"
           class="h-2rem"
@@ -470,7 +471,8 @@ import Divider from "primevue/divider"
 
 // COMPONENT VARIABLES
 const expandedRows = ref([])
-const bond = reactive({ ...props.bond })
+let initBond = reactive(structuredClone(props.bond))
+const bond = reactive(structuredClone(props.bond))
 
 //COMPUTED PROPERTIES
 const minPayment = computed(() =>
@@ -563,7 +565,7 @@ const dataTableArray = computed(() => {
 })
 
 const unSaved = computed(() => {
-  if (props.bond != bond) {
+  if (initBond != bond) {
     return true
   }
   return false
@@ -623,6 +625,19 @@ function onCellEdit(event) {
   } else {
     console.log("no change")
   }
+}
+
+function deepCloneBond(_object) {
+  const _clone = JSON.parse(JSON.stringify(_object))
+  _clone.startingDate = new Date(_clone.startingDate)
+  return _clone
+}
+
+function saveLoan() {
+  initBond = deepCloneBond(bond)
+  console.log(initBond)
+  console.log(bond)
+  console.log(unSaved.value)
 }
 
 // CLASSES
