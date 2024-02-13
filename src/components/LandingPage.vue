@@ -8,7 +8,7 @@
       class="mr-2 w-full max-w-30rem"
     />
     <h2 class="w-auto">
-      Forecast, Understand, and Track your loans in one place!
+      Understand, Forecast, and Track your loans in one place!
     </h2>
     <Divider align="left"
       ><i class="pi pi-chart-line" /> Loan Simulators

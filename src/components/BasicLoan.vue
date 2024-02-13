@@ -7,10 +7,49 @@
       <div
         class="flex justify-content-between align-items-center align-content-center"
       >
-        <h1>
-          <i class="pi pi-chart-line" style="font-size: 2rem" />
-          {{ props.bond.name }}
-        </h1>
+        <div>
+          <div
+            v-if="showEditName"
+            class="flex justify-content-between align-items-center align-content-center"
+          >
+            <h1>
+              <i class="pi pi-chart-line" style="font-size: 2rem" />
+            </h1>
+            <InputText v-model="bond.name" />
+            <Button
+              @click="
+                () => {
+                  showEditName = false
+                }
+              "
+              icon="pi pi-save"
+              aria-label="Save Name"
+              severity="secondary"
+              class="h-2rem m-1"
+            />
+          </div>
+          <div
+            v-else
+            class="flex justify-content-between align-items-center align-content-center"
+          >
+            <h1>
+              <i class="pi pi-chart-line" style="font-size: 2rem" />
+              {{ bond.name }}
+            </h1>
+            <Button
+              @click="
+                () => {
+                  showEditName = true
+                }
+              "
+              icon="pi pi-pencil"
+              aria-label="Edit name"
+              severity="secondary"
+              text
+              class="h-2rem m-1"
+            />
+          </div>
+        </div>
         <Button
           @click="saveLoan"
           :disabled="!unSaved"
@@ -409,6 +448,19 @@ import {
 import currencies from "../assets/currencies.json"
 import PrimeChart from "../components/PrimeChart.vue"
 
+// PrimeVue imports...
+import InputText from "primevue/inputtext"
+import InputNumber from "primevue/inputnumber"
+import InputGroup from "primevue/inputgroup"
+import Button from "primevue/button"
+import Dropdown from "primevue/dropdown"
+import Calendar from "primevue/calendar"
+import Fieldset from "primevue/fieldset"
+import DataTable from "primevue/datatable"
+import Column from "primevue/column"
+import Divider from "primevue/divider"
+
+// Props
 const props = defineProps({
   route: {
     type: String,
@@ -458,16 +510,7 @@ onMounted(async () => {
   )
 })
 
-// PrimeVue imports...
-import InputNumber from "primevue/inputnumber"
-import InputGroup from "primevue/inputgroup"
-import Button from "primevue/button"
-import Dropdown from "primevue/dropdown"
-import Calendar from "primevue/calendar"
-import Fieldset from "primevue/fieldset"
-import DataTable from "primevue/datatable"
-import Column from "primevue/column"
-import Divider from "primevue/divider"
+const showEditName = ref(false)
 
 // COMPONENT VARIABLES
 const expandedRows = ref([])
