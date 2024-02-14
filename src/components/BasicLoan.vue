@@ -445,6 +445,10 @@ import {
   matchMonthlyPayment,
 } from "../assets/LoanCalcs"
 
+import { useRouter } from "vue-router"
+import { miscStore } from "../stores/miscStore"
+import { auth, db } from "../firebase"
+import { doc, setDoc } from "firebase/firestore"
 import currencies from "../assets/currencies.json"
 import PrimeChart from "../components/PrimeChart.vue"
 
@@ -459,6 +463,8 @@ import Fieldset from "primevue/fieldset"
 import DataTable from "primevue/datatable"
 import Column from "primevue/column"
 import Divider from "primevue/divider"
+
+const router = useRouter()
 
 // Props
 const props = defineProps({
@@ -682,8 +688,27 @@ function deepCloneBond(_object) {
   return _clone
 }
 
-function saveLoan() {
-  initBond.value = deepCloneBond(bond)
+async function saveLoan() {
+  if (!auth.currentUser) {
+    router.push("/Login")
+  } else {
+    miscStore.progressSpinnerActive = true
+
+    initBond.value = deepCloneBond(bond)
+    await setDoc(doc(db, "Users", auth.currentUser.uid, "Loans", bond.name), {
+      route: props.route,
+      saved: true,
+      bond,
+    })
+      .then(() => {
+        console.log("Loan saved to database.")
+      })
+      .catch((error) => {
+        console.log("Error saving loan to database:")
+        console.log(error)
+      })
+    miscStore.progressSpinnerActive = false
+  }
 }
 
 // CLASSES
