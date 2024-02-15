@@ -13,7 +13,7 @@
             class="flex justify-content-between align-items-center align-content-center"
           >
             <h1>
-              <i class="pi pi-chart-line" style="font-size: 2rem" />
+              <i :class="props.icon" style="font-size: 2rem" />
             </h1>
             <InputText v-model="bond.name" />
             <Button
@@ -471,6 +471,10 @@ const props = defineProps({
   route: {
     type: String,
     default: "/Basic",
+  },
+  icon: {
+    type: String,
+    default: "pi pi-chart-line"
   },
   saved: {
     type: Boolean,

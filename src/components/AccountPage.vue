@@ -1,7 +1,24 @@
 <template>
-  <div v-if="authStore.user" class="w-21rem max-w-21rem m-2">
+  <div
+    v-if="authStore.user"
+    class="m-2 flex flex-column justify-content-center align-items-center align-content-center"
+  >
     <h2>Welcome {{ authStore.user.name }}!</h2>
-    <Fieldset legend="Accound Details" class="my-2" :toggleable="true">
+    <Fieldset
+      legend="Saved Loans"
+      class="my-2 w-21rem flex flex-row justify-content-around"
+      :toggleable="true"
+    >
+      <LoanCard />
+      <LoanCard />
+      <LoanCard />
+    </Fieldset>
+    <Fieldset
+      legend="Accound Details"
+      class="my-2 w-21rem"
+      :toggleable="true"
+      :collapsed="true"
+    >
       <form
         @submit.prevent="updateUser(userData)"
         class="flex flex-column m-4 justify-content-center align-items-center gap-4"
@@ -66,6 +83,7 @@
 </template>
 
 <script setup>
+import LoanCard from "./LoanCard.vue"
 import currencies from "../assets/currencies.json"
 import InputText from "primevue/inputtext"
 import Dropdown from "primevue/dropdown"
