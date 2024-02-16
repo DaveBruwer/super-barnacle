@@ -22,7 +22,7 @@
                   showEditName = false
                 }
               "
-              icon="pi pi-save"
+              icon="pi pi-check"
               aria-label="Save Name"
               severity="secondary"
               class="h-2rem m-1"
@@ -474,7 +474,7 @@ const props = defineProps({
   },
   icon: {
     type: String,
-    default: "pi pi-chart-line"
+    default: "pi pi-chart-line",
   },
   saved: {
     type: Boolean,
@@ -702,6 +702,7 @@ async function saveLoan() {
     await setDoc(doc(db, "Users", auth.currentUser.uid, "Loans", bond.name), {
       route: props.route,
       saved: true,
+      icon: props.icon,
       bond,
     })
       .then(() => {

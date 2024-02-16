@@ -4,15 +4,17 @@
     class="m-2 flex flex-column justify-content-center align-items-center align-content-center"
   >
     <h2>Welcome {{ authStore.user.name }}!</h2>
-    <Fieldset
-      legend="Saved Loans"
-      class="my-2 w-21rem flex flex-row justify-content-around"
-      :toggleable="true"
-    >
-      <LoanCard />
-      <LoanCard />
-      <LoanCard />
-    </Fieldset>
+    <Divider align="left"> Saved Loans </Divider>
+    <div class="flex flex-row flex-wrap">
+      <LoanCard
+        v-for="loan in mySavedLoans"
+        :key="loan.bond.name"
+        :route="loan.route"
+        :icon="loan.icon"
+        :bond="loan.bond"
+      />
+    </div>
+    <Divider />
     <Fieldset
       legend="Accound Details"
       class="my-2 w-21rem"
@@ -83,6 +85,7 @@
 </template>
 
 <script setup>
+import Divider from "primevue/divider"
 import LoanCard from "./LoanCard.vue"
 import currencies from "../assets/currencies.json"
 import InputText from "primevue/inputtext"
@@ -91,14 +94,28 @@ import Button from "primevue/button"
 import Fieldset from "primevue/fieldset"
 import Message from "primevue/message"
 import { authStore } from "../stores/authStore"
-import { reactive, ref, onMounted, watch } from "vue"
+import { reactive, ref, onMounted, watch, onBeforeMount } from "vue"
 import { auth, db } from "../firebase"
-import { doc, updateDoc } from "firebase/firestore"
+import { doc, collection, getDocs, updateDoc } from "firebase/firestore"
 import { signOut, updateProfile, sendPasswordResetEmail } from "firebase/auth"
 import { useRouter } from "vue-router"
 import { miscStore } from "../stores/miscStore"
 import { useVuelidate } from "@vuelidate/core"
 import { required, minLength, maxLength } from "@vuelidate/validators"
+
+const mySavedLoans = ref([])
+
+onBeforeMount(async () => {
+  miscStore.progressSpinnerActive = true
+  const querySnapshot = await getDocs(
+    collection(db, "Users", auth.currentUser.uid, "Loans")
+  )
+  querySnapshot.forEach((_doc) => {
+    // _doc.data() is never undefined for query _doc snapshots
+    mySavedLoans.value.push(_doc.data())
+  })
+  console.log(mySavedLoans.value)
+})
 
 const router = useRouter()
 
@@ -139,6 +156,7 @@ onMounted(async () => {
     { immediate: true }
   )
   signOutEnabled.value = true
+  miscStore.progressSpinnerActive = false
 })
 
 async function signOutUser() {

@@ -1,5 +1,5 @@
 <template>
-  <Card class="w-21rem">
+  <Card class="w-18rem m-2">
     <template #title>
       <i :class="props.icon" style="font-size: 2rem" />
       {{ props.bond.name }}</template
@@ -17,7 +17,7 @@
         />
       </p>
       <p class="my-2">Interest Rate: {{ props.bond.interestRate }}%</p>
-      <p class="m-0">Period {{ props.bond.loanPeriod }} years</p>
+      <p class="m-0">Period: {{ props.bond.loanPeriod }} years</p>
     </template>
   </Card>
 </template>
