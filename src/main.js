@@ -4,11 +4,13 @@ import router from "./router"
 import PrimeVue from "primevue/config"
 import "primeflex/primeflex.css"
 import "primeicons/primeicons.css"
+import ConfirmationService from "primevue/confirmationservice"
 
 const app = createApp(App)
 
 app.use(router)
 app.use(PrimeVue, { ripple: true })
+app.use(ConfirmationService)
 
 app.mount("#app")
 

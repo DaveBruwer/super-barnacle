@@ -26,8 +26,9 @@
           aria-label="Open Loan"
           class="h-2rem"
         />
+        <ConfirmPopup></ConfirmPopup>
         <Button
-          @click="deleteLoan()"
+          @click="confirmDelete($event)"
           icon="pi pi-trash"
           title="Open Loan"
           severity="danger"
@@ -45,10 +46,15 @@ import { basicLoanProps } from "../stores/loanStore"
 import Card from "primevue/card"
 import Button from "primevue/button"
 import InputNumber from "primevue/inputnumber"
+import ConfirmPopup from "primevue/confirmpopup"
+import { useConfirm } from "primevue/useconfirm"
 import { defineProps } from "vue"
 import { useRouter } from "vue-router"
+import { doc, deleteDoc } from "firebase/firestore"
+import { auth, db } from "../firebase"
 
 const router = useRouter()
+const confirm = useConfirm()
 
 const props = defineProps({
   route: {
@@ -100,6 +106,37 @@ function openLoan() {
   router.push({
     name: "Basic",
   })
+}
+
+const confirmDelete = (event) => {
+  console.log(event)
+  confirm.require({
+    target: event.currentTarget,
+    message: "Do you want to delete this record?",
+    icon: "pi pi-info-circle",
+    rejectClass: "p-button-secondary p-button-outlined p-button-sm",
+    acceptClass: "p-button-danger p-button-sm",
+    rejectLabel: "Cancel",
+    acceptLabel: "Delete",
+    accept: () => {
+      deleteLoan()
+    },
+    reject: () => {},
+  })
+}
+
+async function deleteLoan() {
+  await deleteDoc(
+    doc(db, "Users", auth.currentUser.uid, "Loans", props.bond.name)
+  )
+    .then(() => {
+      console.log("Loan deleted from database.")
+      router.go()
+    })
+    .catch((error) => {
+      console.log("Error deleting loan from database:")
+      console.log(error)
+    })
 }
 </script>
 
