@@ -18,19 +18,42 @@
       </p>
       <p class="my-2">Interest Rate: {{ props.bond.interestRate }}%</p>
       <p class="m-0">Period: {{ props.bond.loanPeriod }} years</p>
+      <div class="flex flex-row justify-content-between">
+        <Button
+          @click="openLoan()"
+          icon="pi pi-folder-open"
+          title="Open Loan"
+          aria-label="Open Loan"
+          class="h-2rem"
+        />
+        <Button
+          @click="deleteLoan()"
+          icon="pi pi-trash"
+          title="Open Loan"
+          severity="danger"
+          aria-label="Open Loan"
+          class="h-2rem"
+        />
+      </div>
     </template>
   </Card>
 </template>
 
 <script setup>
+import deepCloneBond from "../assets/deepCloneBond.js"
+import { basicLoanProps } from "../stores/loanStore"
 import Card from "primevue/card"
+import Button from "primevue/button"
 import InputNumber from "primevue/inputnumber"
 import { defineProps } from "vue"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
 
 const props = defineProps({
   route: {
     type: String,
-    default: "/Basic",
+    default: "Basic",
   },
   icon: {
     type: String,
@@ -71,7 +94,13 @@ const props = defineProps({
 // CLASSES
 
 const blendedInput = "w-8rem opacity-100 bg-transparent border-transparent"
-const boldBlendedInput = blendedInput + " font-bold"
+
+function openLoan() {
+  basicLoanProps.value = deepCloneBond(props)
+  router.push({
+    name: "Basic",
+  })
+}
 </script>
 
 <style></style>

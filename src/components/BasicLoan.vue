@@ -13,7 +13,7 @@
             class="flex justify-content-between align-items-center align-content-center"
           >
             <h1>
-              <i :class="props.icon" style="font-size: 2rem" />
+              <i :class="basicLoanProps.icon" style="font-size: 2rem" />
             </h1>
             <InputText v-model="bond.name" />
             <Button
@@ -432,7 +432,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted, defineProps } from "vue"
+import { ref, computed, watch, onMounted } from "vue"
 import { authStore } from "../stores/authStore"
 import {
   calcMinPayment,
@@ -447,9 +447,11 @@ import {
 
 import { useRouter } from "vue-router"
 import { miscStore } from "../stores/miscStore"
+import { basicLoanProps } from "../stores/loanStore"
 import { auth, db } from "../firebase"
 import { doc, setDoc } from "firebase/firestore"
 import currencies from "../assets/currencies.json"
+import deepCloneBond from "../assets/deepCloneBond.js"
 import PrimeChart from "../components/PrimeChart.vue"
 
 // PrimeVue imports...
@@ -466,53 +468,11 @@ import Divider from "primevue/divider"
 
 const router = useRouter()
 
-// Props
-const props = defineProps({
-  route: {
-    type: String,
-    default: "/Basic",
-  },
-  icon: {
-    type: String,
-    default: "pi pi-chart-line",
-  },
-  saved: {
-    type: Boolean,
-    default: false,
-  },
-  bond: {
-    type: Object,
-    default() {
-      return {
-        name: "Basic Loan",
-        currency: {
-          symbol: "$",
-          name: "US Dollar",
-          decimal_digits: 2,
-          rounding: 0,
-          code: "USD",
-          name_plural: "US dollars",
-        },
-        loanAmount: 500000,
-        interestRate: 7,
-        loanPeriod: 30,
-        actualPayment: calcMinPayment(500000, 7, 30),
-        customPayment: false,
-        startingDate: new Date(),
-        adHocPayments: Array.from({ length: 60 * 12 + 1 }, () => 0),
-        customPayments: Array.from({ length: 60 * 12 + 1 }, () => 0),
-        adHocInterest: Array.from({ length: 60 * 12 + 1 }, () => null),
-        adHocMonthlyPayments: Array.from({ length: 60 * 12 + 1 }, () => null),
-      }
-    },
-  },
-})
-
-onMounted(async () => {
+onMounted(() => {
   watch(
     () => authStore.user,
     () => {
-      if (props.saved === false && authStore.user) {
+      if (basicLoanProps.value.saved === false && authStore.user) {
         bond.currency = authStore.user.defaultCurrency
       }
     },
@@ -524,9 +484,9 @@ const showEditName = ref(false)
 
 // COMPONENT VARIABLES
 const expandedRows = ref([])
-const initBond = ref(null)
-initBond.value = reactive(structuredClone(props.bond))
-const bond = reactive(structuredClone(props.bond))
+const initLoanProps = ref(null)
+initLoanProps.value = deepCloneBond(basicLoanProps.value.bond)
+const bond = basicLoanProps.value.bond
 
 //COMPUTED PROPERTIES
 const minPayment = computed(() =>
@@ -619,11 +579,16 @@ const dataTableArray = computed(() => {
 })
 
 const unSaved = computed(() => {
-  const initBondJSON = JSON.stringify(initBond.value)
-  const bondJSON = JSON.stringify(bond)
+  const initBondJSON = ref(null)
+  try {
+    initBondJSON.value = JSON.stringify(authStore.userLoans[bond.name].bond)
+    const bondJSON = JSON.stringify(bond)
 
-  if (initBondJSON === bondJSON) {
-    return false
+    if (initBondJSON.value === bondJSON) {
+      return false
+    }
+  } catch (error) {
+    console.log(error)
   }
   return true
 })
@@ -684,25 +649,17 @@ function onCellEdit(event) {
   }
 }
 
-function deepCloneBond(_object) {
-  const _clone = JSON.parse(JSON.stringify(_object))
-  if (_clone.startingDate) {
-    _clone.startingDate = new Date(_clone.startingDate)
-  }
-  return _clone
-}
-
 async function saveLoan() {
   if (!auth.currentUser) {
     router.push("/Login")
   } else {
     miscStore.progressSpinnerActive = true
 
-    initBond.value = deepCloneBond(bond)
+    authStore.userLoans[bond.name].bond = deepCloneBond(bond)
     await setDoc(doc(db, "Users", auth.currentUser.uid, "Loans", bond.name), {
-      route: props.route,
+      route: basicLoanProps.value.route,
       saved: true,
-      icon: props.icon,
+      icon: basicLoanProps.value.icon,
       bond,
     })
       .then(() => {

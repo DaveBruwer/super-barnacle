@@ -124,11 +124,13 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async () => {
   miscStore.progressSpinnerActive = true
-  setTimeout(() => {
-    next()
-  }, 50)
+  await auth.authStateReady().then(
+    setTimeout(() => {
+      return true
+    }, 150)
+  )
 })
 
 router.afterEach(() => {
