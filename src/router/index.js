@@ -6,6 +6,7 @@ import Register from "../components/RegisterPage.vue"
 import Login from "../components/LoginPage.vue"
 import ResetPassword from "../components/ResetPasswordPage.vue"
 import Account from "../components/AccountPage.vue"
+import MessagePage from "../components/MessagePage.vue"
 import { createRouter, createWebHistory } from "vue-router"
 import { auth } from "../firebase"
 import { miscStore } from "../stores/miscStore"
@@ -59,7 +60,7 @@ const routes = [
   {
     path: "/Contact",
     name: "Contact",
-    component: ComingSoon,
+    component: MessagePage,
   },
   {
     path: "/Account",

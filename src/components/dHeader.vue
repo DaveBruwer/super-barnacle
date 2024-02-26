@@ -45,7 +45,7 @@
           </SelectButton>
           <router-link to="Contact">
             <Button
-              icon="pi pi-phone"
+              icon="pi pi-comments"
               severity="info"
               rounded
               aria-label="Contact"
