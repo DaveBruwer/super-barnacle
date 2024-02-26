@@ -1,7 +1,10 @@
 <template>
   <div class="flex flex-column align-items-center">
     <dHeader />
-    <div style="max-width: 60rem">
+    <div
+      style="max-width: 60rem"
+      class="m-2 w-full flex flex-column align-items-center"
+    >
       <RouterView />
     </div>
   </div>
