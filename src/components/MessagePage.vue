@@ -99,13 +99,10 @@ import { reactive, ref, onMounted } from "vue"
 import { useVuelidate } from "@vuelidate/core"
 import { required, email, minLength, maxLength } from "@vuelidate/validators"
 import { authStore } from "../stores/authStore"
-
-import { auth } from "../firebase"
-import { signInWithEmailAndPassword } from "firebase/auth"
-import { useRouter } from "vue-router"
+import { getDateString } from "../assets/LoanCalcs"
+import { db } from "../firebase"
+import { doc, setDoc } from "firebase/firestore"
 import { miscStore } from "../stores/miscStore"
-
-const router = useRouter()
 
 const messagePayload = reactive({
   name: "",
@@ -148,38 +145,57 @@ onMounted(() => {
   disableSubmit.value = false
 })
 
-async function submitMessage(messagePayload) {
-  infoMessages.value = []
-
+async function submitMessage(payload) {
   disableSubmit.value = true
   miscStore.progressSpinnerActive = true
 
   const isDataValid = await v$.value.$validate()
 
   if (isDataValid) {
-    infoMessages.value = [
+    infoMessages.value = []
+
+    const messageDate = new Date()
+    const messageDateString = getDateString(messageDate)
+    const messageID = payload.title + "_" + messageDate.getTime()
+
+    await setDoc(
+      doc(
+        db,
+        "Messages",
+        messageDateString,
+        messageDate.toDateString(),
+        messageID
+      ),
       {
-        content: "Message sent successfully!",
-        severity: "success",
-      },
-    ]
-    // await signInWithEmailAndPassword(
-    //   auth,
-    //   messagePayload.email,
-    //   messagePayload.password
-    // ).catch((error) => {
-    //   console.log("Error during user sign in:")
-    //   console.log(error.code)
-    //   if (error.code === "auth/invalid-credential") {
-    //     loginErrorMessage.value = "Error! Wrong email or password."
-    //   } else {
-    //     loginErrorMessage.value = "An unexpected error occured!"
-    //   }
-    // })
-    // // Navigate to /Account if user logged in.
-    // if (auth.currentUser) {
-    //   router.push("/Account")
-    // }
+        messageDate,
+        ...payload,
+      }
+    )
+      .then(() => {
+        messagePayload.title = ""
+        messagePayload.type = ""
+        messagePayload.message = ""
+      })
+      .then(() => {
+        infoMessages.value = [
+          {
+            content:
+              "Thank you for your message! Someone from the LoanSim team will review it as soon as possible!",
+            severity: "success",
+          },
+        ]
+        console.log("Message sent!")
+      })
+      .catch((error) => {
+        infoMessages.value = [
+          {
+            content: "Something went wrong! Message not sent!",
+            severity: "error",
+          },
+        ]
+        console.log("Error sending message:")
+        console.log(error)
+      })
   }
 
   disableSubmit.value = false
