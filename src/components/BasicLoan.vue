@@ -657,7 +657,17 @@ async function saveLoan() {
   } else {
     miscStore.progressSpinnerActive = true
 
-    authStore.userLoans[bond.name].bond = deepCloneBond(bond)
+    if (!authStore.userLoans[bond.name]) {
+      authStore.userLoans[bond.name] = {
+        route: basicLoanProps.value.route,
+        saved: true,
+        icon: basicLoanProps.value.icon,
+        bond,
+      }
+    } else {
+      authStore.userLoans[bond.name].bond = deepCloneBond(bond)
+    }
+
     await setDoc(doc(db, "Users", auth.currentUser.uid, "Loans", bond.name), {
       route: basicLoanProps.value.route,
       saved: true,
