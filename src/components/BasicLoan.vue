@@ -579,13 +579,13 @@ const dataTableArray = computed(() => {
 })
 
 const unSaved = computed(() => {
-  const initBondJSON = ref(null)
+  // const initBondJSON = ref(null)
   try {
     if (authStore.userLoans[bond.name]) {
-      initBondJSON.value = JSON.stringify(authStore.userLoans[bond.name].bond)
+      const initBondJSON = JSON.stringify(authStore.userLoans[bond.name].bond)
       const bondJSON = JSON.stringify(bond)
 
-      if (initBondJSON.value === bondJSON) {
+      if (initBondJSON === bondJSON) {
         return false
       }
     }
