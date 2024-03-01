@@ -110,43 +110,6 @@
           />
         </div>
       </div>
-      <Divider align="left"> Repayments </Divider>
-      <div
-        class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
-      >
-        <div class="w-14rem m-1">
-          <label for="actualPayment" class="font-bold block">
-            Monthly Payment Amount: {{ bond.customPayment ? "" : "*" }}</label
-          >
-          <InputGroup>
-            <InputNumber
-              v-model.lazy="bond.actualPayment"
-              mode="currency"
-              :currency="bond.currency.code"
-              locale="en-US"
-              inputId="actualPayment"
-              :step="100"
-              :min="minPayment"
-            />
-            <Button
-              icon="pi pi-refresh"
-              @click="bond.actualPayment = minPayment"
-              title="Reset to Min Payment"
-            />
-          </InputGroup>
-        </div>
-        <div class="w-14rem m-1">
-          <label for="startDate" class="font-bold block">
-            First Payment Month:
-          </label>
-          <Calendar
-            v-model.lazy="bond.startingDate"
-            view="month"
-            dateFormat="MM yy"
-            showIcon
-          />
-        </div>
-      </div>
       <Divider align="left"> Insights </Divider>
       <div class="m-0 flex justify-content-evenly flex-wrap">
         <div class="mx-2">
@@ -193,6 +156,43 @@
             locale="en-US"
             disabled
             inputId="totalPayments"
+          />
+        </div>
+      </div>
+      <Divider align="left"> Repayments </Divider>
+      <div
+        class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
+      >
+        <div class="w-14rem m-1">
+          <label for="actualPayment" class="font-bold block">
+            Custom Payment Amount: {{ bond.customPayment ? "" : "*" }}</label
+          >
+          <InputGroup>
+            <InputNumber
+              v-model.lazy="bond.actualPayment"
+              mode="currency"
+              :currency="bond.currency.code"
+              locale="en-US"
+              inputId="actualPayment"
+              :step="100"
+              :min="minPayment"
+            />
+            <Button
+              icon="pi pi-refresh"
+              @click="bond.actualPayment = minPayment"
+              title="Reset to Min Payment"
+            />
+          </InputGroup>
+        </div>
+        <div class="w-14rem m-1">
+          <label for="startDate" class="font-bold block">
+            First Payment Month:
+          </label>
+          <Calendar
+            v-model.lazy="bond.startingDate"
+            view="month"
+            dateFormat="MM yy"
+            showIcon
           />
         </div>
       </div>
@@ -654,6 +654,8 @@ async function saveLoan() {
     router.push("/Login")
   } else {
     miscStore.progressSpinnerActive = true
+
+    console.log(bond)
 
     authStore.userLoans[bond.name].bond = deepCloneBond(bond)
     await setDoc(doc(db, "Users", auth.currentUser.uid, "Loans", bond.name), {
