@@ -109,7 +109,6 @@ function openLoan() {
 }
 
 const confirmDelete = (event) => {
-  console.log(event)
   confirm.require({
     target: event.currentTarget,
     message: "Do you want to delete this record?",
