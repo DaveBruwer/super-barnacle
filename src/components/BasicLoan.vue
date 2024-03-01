@@ -581,11 +581,13 @@ const dataTableArray = computed(() => {
 const unSaved = computed(() => {
   const initBondJSON = ref(null)
   try {
-    initBondJSON.value = JSON.stringify(authStore.userLoans[bond.name].bond)
-    const bondJSON = JSON.stringify(bond)
+    if (authStore.userLoans[bond.name]) {
+      initBondJSON.value = JSON.stringify(authStore.userLoans[bond.name].bond)
+      const bondJSON = JSON.stringify(bond)
 
-    if (initBondJSON.value === bondJSON) {
-      return false
+      if (initBondJSON.value === bondJSON) {
+        return false
+      }
     }
   } catch (error) {
     console.log(error)
@@ -655,7 +657,17 @@ async function saveLoan() {
   } else {
     miscStore.progressSpinnerActive = true
 
-    authStore.userLoans[bond.name].bond = deepCloneBond(bond)
+    if (!authStore.userLoans[bond.name]) {
+      authStore.userLoans[bond.name] = {
+        route: basicLoanProps.value.route,
+        saved: true,
+        icon: basicLoanProps.value.icon,
+        bond,
+      }
+    } else {
+      authStore.userLoans[bond.name].bond = deepCloneBond(bond)
+    }
+
     await setDoc(doc(db, "Users", auth.currentUser.uid, "Loans", bond.name), {
       route: basicLoanProps.value.route,
       saved: true,
