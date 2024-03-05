@@ -2,23 +2,33 @@
   <div class="w-full card relative z-2">
     <Menubar :model="items">
       <template #start>
-        <router-link to="/">
+        <router-link class="p-menuitem" to="/">
           <img alt="logo" src="/LoanSim_Icon3.svg" height="40" class="mr-2" />
         </router-link>
       </template>
       <template #item="{ label, item, props, root, hasSubmenu }">
-        <router-link
+        <router-link :to="item.route">
+          <Button :icon="item.icon" severity="info" class="mx-2" />
+        </router-link>
+        <!-- <router-link
+          class="p-2 bg-white h-4rem"
+          v-if="item.route"
+          :to="item.route"
+        >
+          <i :class="item.icon" /> {{ item.label }}
+        </router-link> -->
+        <!-- <router-link
           v-if="item.route"
           v-slot="routerProps"
           :to="item.route"
           custom
         >
-          <a :href="routerProps.href" v-bind="props.action">
+          <a :href="item.route" v-bind="props.action">
             <span v-bind="props.icon" />
             <span v-bind="props.label">{{ label }}</span>
           </a>
-        </router-link>
-        <a v-else :href="item.url" :target="item.target" v-bind="props.action">
+        </router-link> -->
+        <!-- <a v-else :href="item.url" :target="item.target" v-bind="props.action">
           <span v-bind="props.icon" />
           <span v-bind="props.label">{{ label }}</span>
           <span
@@ -28,7 +38,7 @@
             ]"
             v-bind="props.submenuicon"
           />
-        </a>
+        </a> -->
       </template>
       <template #end>
         <div class="flex justify-content-between">
@@ -92,63 +102,78 @@ const themeOptions = ref([
 
 const items = ref([
   {
-    label: "Loan Simulators",
+    label: "Basic Loan",
     icon: "pi pi-chart-line",
-    items: [
-      {
-        label: "Basic Loan",
-        icon: "pi pi-chart-line",
-        route: "/Basic",
-      },
-      {
-        label: "Home Loan",
-        icon: "pi pi-home",
-        route: "/HomeLoan",
-      },
-      {
-        label: "Car Loan",
-        icon: "pi pi-car",
-        route: "/CarLoan",
-      },
-    ],
+    route: "/Basic",
   },
   {
-    label: "Cost of Ownership",
-    icon: "pi pi-dollar",
-    items: [
-      {
-        label: "Home",
-        icon: "pi pi-home",
-        route: "/HomeCost",
-      },
-      {
-        label: "Car",
-        icon: "pi pi-car",
-        route: "/CarCost",
-      },
-    ],
+    label: "Home Loan",
+    icon: "pi pi-home",
+    route: "/HomeLoan",
   },
   {
-    label: "Cashflow Calculators",
-    icon: "pi pi-dollar",
-    items: [
-      {
-        label: "Rental Property",
-        icon: "pi pi-home",
-        route: "/RentalProperty",
-      },
-      {
-        label: "House Flip",
-        icon: "pi pi-wrench",
-        route: "/HouseFlip",
-      },
-      {
-        label: "Property Development",
-        icon: "pi pi-building",
-        route: "/PropDev",
-      },
-    ],
+    label: "Car Loan",
+    icon: "pi pi-car",
+    route: "/CarLoan",
   },
+  // {
+  //   label: "Loan Simulators",
+  //   icon: "pi pi-chart-line",
+  //   items: [
+  //     {
+  //       label: "Basic Loan",
+  //       icon: "pi pi-chart-line",
+  //       route: "/Basic",
+  //     },
+  //     {
+  //       label: "Home Loan",
+  //       icon: "pi pi-home",
+  //       route: "/HomeLoan",
+  //     },
+  //     {
+  //       label: "Car Loan",
+  //       icon: "pi pi-car",
+  //       route: "/CarLoan",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "Cost of Ownership",
+  //   icon: "pi pi-dollar",
+  //   items: [
+  //     {
+  //       label: "Home",
+  //       icon: "pi pi-home",
+  //       route: "/HomeCost",
+  //     },
+  //     {
+  //       label: "Car",
+  //       icon: "pi pi-car",
+  //       route: "/CarCost",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "Cashflow Calculators",
+  //   icon: "pi pi-dollar",
+  //   items: [
+  //     {
+  //       label: "Rental Property",
+  //       icon: "pi pi-home",
+  //       route: "/RentalProperty",
+  //     },
+  //     {
+  //       label: "House Flip",
+  //       icon: "pi pi-wrench",
+  //       route: "/HouseFlip",
+  //     },
+  //     {
+  //       label: "Property Development",
+  //       icon: "pi pi-building",
+  //       route: "/PropDev",
+  //     },
+  //   ],
+  // },
 ])
 
 watch(
@@ -160,7 +185,7 @@ watch(
         theme: newVal,
       })
         .then(() => {
-          console.log(`User theme saved as ${newVal}.`)
+          console.log("User theme updated.")
         })
         .catch((error) => {
           console.log("Error during user Update:")
@@ -179,4 +204,8 @@ watch(
 )
 </script>
 
-<style></style>
+<style>
+a {
+  text-decoration: none;
+}
+</style>

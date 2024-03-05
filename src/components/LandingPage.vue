@@ -10,37 +10,36 @@
     <h2 class="w-auto">
       Understand, Forecast, and Track your loans in one place!
     </h2>
+    <router-link to="/Basic">
+      <Card class="mycard">
+        <template #title
+          ><i class="pi pi-chart-line" style="font-size: 2rem" /> Basic
+        </template>
+        <template #content>
+          <p class="m-0">
+            Like a basic, easy to use loan repayment calculator. But with so
+            much more! Change the interest rate, monthly payment, or once-off
+            payment at any month during the loan period to see how it affects
+            the overall loan.
+          </p>
+        </template>
+      </Card>
+    </router-link>
     <Divider align="left"
       ><i class="pi pi-chart-line" /> Loan Simulators
     </Divider>
     <div
       class="flex flex-wrap justify-content-around align-content-around gap-3"
     >
-      <router-link to="/Basic">
-        <Card class="mycard">
-          <template #title
-            ><i class="pi pi-chart-line" style="font-size: 2rem" /> Basic Loan
-          </template>
-          <template #content>
-            <p class="m-0">
-              Like a basic loan repayment calculator, but much more powerfull!
-              Change the interest rate, monthly payment, or add a once-off
-              payment at any month during the loan period to see how it affects
-              the overall loan.
-            </p>
-          </template>
-        </Card>
-      </router-link>
       <router-link to="/HomeLoan">
         <Card class="mycard">
           <template #title
-            ><i class="pi pi-home" style="font-size: 2rem" /> Home Loan
+            ><i class="pi pi-home" style="font-size: 2rem" /> Home
           </template>
           <template #content>
             <p class="m-0">
-              A loan simulator specifically for Home Loans! Track the value of
-              the property vs. the loan balance and see the amount of equity in
-              the property!
+              A loan simulator specifically for Homes! Calculate affordability,
+              and track equity over time.
             </p>
           </template>
         </Card>
@@ -48,19 +47,19 @@
       <router-link to="/CarLoan">
         <Card class="mycard">
           <template #title
-            ><i class="pi pi-car" style="font-size: 2rem" /> Car Loan
+            ><i class="pi pi-car" style="font-size: 2rem" /> Car
           </template>
           <template #content>
             <p class="m-0">
-              A loan simulator specifically for Car Loans! Track the value of
-              the car vs. the loan balance and see the amount of equity in the
-              asset.
+              A loan simulator specifically for buying a Car! Calculate cost of
+              ownership, and track the value of the car vs. the loan balance and
+              see the amount of equity in the asset.
             </p>
           </template>
         </Card>
       </router-link>
     </div>
-    <Divider align="left"
+    <!-- <Divider align="left"
       ><i class="pi pi-dollar" /> Cost of Ownership
     </Divider>
     <div
@@ -69,12 +68,16 @@
       <router-link to="/HomeCost">
         <Card class="mycard">
           <template #title
-            ><i class="pi pi-home" style="font-size: 2rem" /> Home
+            ><i class="pi pi-dollar" style="font-size: 1rem" /><i
+              class="pi pi-home"
+              style="font-size: 2rem"
+            />
+            Home
           </template>
           <template #content>
             <p class="m-0">
               Understand the total cost of buying that dream property. Mortgage
-              repayments, rates & takes, upkeep, etc.
+              repayments, rates & taxes, upkeep, etc.
             </p>
           </template>
         </Card>
@@ -82,7 +85,11 @@
       <router-link to="/CarCost">
         <Card class="mycard">
           <template #title
-            ><i class="pi pi-home" style="font-size: 2rem" /> Car
+            ><i class="pi pi-dollar" style="font-size: 1rem" /><i
+              class="pi pi-car"
+              style="font-size: 2rem"
+            />
+            Car
           </template>
           <template #content>
             <p class="m-0">
@@ -92,8 +99,8 @@
           </template>
         </Card>
       </router-link>
-    </div>
-    <Divider align="left"><i class="pi pi-dollar" /> Cashflow </Divider>
+    </div> -->
+    <!-- <Divider align="left"><i class="pi pi-dollar" /> Cashflow </Divider>
     <div
       class="flex flex-wrap justify-content-around align-content-around gap-3"
     >
@@ -123,7 +130,7 @@
           </template>
         </Card>
       </router-link>
-    </div>
+    </div> -->
   </div>
 </template>
 
