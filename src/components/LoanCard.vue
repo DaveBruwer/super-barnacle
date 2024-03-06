@@ -42,7 +42,7 @@
 
 <script setup>
 import deepCloneBond from "../assets/deepCloneBond.js"
-import { basicLoanProps } from "../stores/loanStore"
+import { basicLoanProps, homeLoanProps } from "../stores/loanStore"
 import Card from "primevue/card"
 import Button from "primevue/button"
 import InputNumber from "primevue/inputnumber"
@@ -59,7 +59,7 @@ const confirm = useConfirm()
 const props = defineProps({
   route: {
     type: String,
-    default: "Basic",
+    default: "/Basic",
   },
   icon: {
     type: String,
@@ -68,6 +68,16 @@ const props = defineProps({
   saved: {
     type: Boolean,
     default: true,
+  },
+  asset: {
+    type: Object,
+    default() {
+      return {
+        purchasePrice: 0,
+        deposit: 0,
+        renovationCost: 0,
+      }
+    },
   },
   bond: {
     type: Object,
@@ -102,10 +112,12 @@ const props = defineProps({
 const blendedInput = "w-8rem opacity-100 bg-transparent border-transparent"
 
 function openLoan() {
-  basicLoanProps.value = deepCloneBond(props)
-  router.push({
-    name: "Basic",
-  })
+  if (props.route === "/Basic") {
+    basicLoanProps.value = deepCloneBond(props)
+  } else if (props.route === "/HomeLoan") {
+    homeLoanProps.value = deepCloneBond(props)
+  }
+  router.push(props.route)
 }
 
 const confirmDelete = (event) => {

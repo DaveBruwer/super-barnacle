@@ -1,6 +1,7 @@
 // router
 import LandingPage from "../components/LandingPage.vue"
 import BasicLoan from "../components/BasicLoan.vue"
+import HomeLoan from "../components/HomeLoan.vue"
 import ComingSoon from "../components/ComingSoon.vue"
 import Register from "../components/RegisterPage.vue"
 import Login from "../components/LoginPage.vue"
@@ -25,7 +26,7 @@ const routes = [
   {
     path: "/HomeLoan",
     name: "HomeLoan",
-    component: ComingSoon,
+    component: HomeLoan,
   },
   {
     path: "/CarLoan",

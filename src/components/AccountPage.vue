@@ -11,6 +11,7 @@
         :key="loan.bond.name"
         :route="loan.route"
         :icon="loan.icon"
+        :asset="loan.asset"
         :bond="loan.bond"
       />
     </div>
