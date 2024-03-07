@@ -152,6 +152,138 @@
           />
         </div>
       </div>
+      <Divider align="left"> Repayments </Divider>
+      <div
+        class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
+      >
+        <div class="w-14rem m-1">
+          <label for="actualPayment" class="font-bold block">
+            Monthly Payment Amount: {{ bond.customPayment ? "" : "*" }}</label
+          >
+          <InputGroup>
+            <InputNumber
+              v-model.lazy="bond.actualPayment"
+              mode="currency"
+              :currency="bond.currency.code"
+              locale="en-US"
+              inputId="actualPayment"
+              :step="100"
+              :min="minPayment"
+            />
+            <Button
+              icon="pi pi-refresh"
+              @click="bond.actualPayment = minPayment"
+              title="Reset to Min Payment"
+            />
+          </InputGroup>
+        </div>
+        <div class="w-14rem m-1">
+          <label for="startDate" class="font-bold block">
+            First Payment Month:
+          </label>
+          <Calendar
+            v-model.lazy="bond.startingDate"
+            view="month"
+            dateFormat="MM yy"
+            showIcon
+          />
+        </div>
+      </div>
+      <Divider align="left"> Monthly Expenses </Divider>
+      <div
+        class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
+      >
+        <div class="w-14rem m-1">
+          <label for="actualPayment" class="font-bold block">
+            Loan Payment:</label
+          >
+          <InputNumber
+            v-model.lazy="bond.actualPayment"
+            mode="currency"
+            :currency="bond.currency.code"
+            locale="en-US"
+            inputId="actualPayment"
+            disabled
+          />
+        </div>
+        <div class="w-14rem m-1 md:mx-6 lg:mx-1">
+          <label for="rates-taxes" class="font-bold block">
+            Rates & Taxes:
+          </label>
+          <InputNumber
+            v-model.lazy="homeLoanProps.asset.ratesTaxes"
+            inputId="rates-taxes"
+            mode="currency"
+            :currency="bond.currency.code"
+            locale="en-US"
+            :step="500"
+          />
+        </div>
+        <div class="w-14rem m-1 md:mx-6 lg:mx-1">
+          <label for="insurance" class="font-bold block"> Insurance: </label>
+          <InputNumber
+            v-model.lazy="homeLoanProps.asset.insurance"
+            inputId="insurance"
+            mode="currency"
+            :currency="bond.currency.code"
+            locale="en-US"
+            :step="500"
+          />
+        </div>
+      </div>
+      <div
+        class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
+      >
+        <div class="w-14rem m-1 md:mx-6 lg:mx-1">
+          <label for="levies" class="font-bold block"> Levies / HOA: </label>
+          <InputNumber
+            v-model.lazy="homeLoanProps.asset.levies"
+            inputId="levies"
+            mode="currency"
+            :currency="bond.currency.code"
+            locale="en-US"
+            :step="500"
+          />
+        </div>
+        <div class="w-14rem m-1 md:mx-6 lg:mx-1">
+          <label for="maintenance" class="font-bold block">
+            Maintenance:
+          </label>
+          <InputNumber
+            v-model.lazy="homeLoanProps.asset.maintenance"
+            inputId="maintenance"
+            mode="currency"
+            :currency="bond.currency.code"
+            locale="en-US"
+            :step="500"
+          />
+        </div>
+        <div class="w-14rem m-1 md:mx-6 lg:mx-1">
+          <label for="other" class="font-bold block"> Other: </label>
+          <InputNumber
+            v-model.lazy="homeLoanProps.asset.other"
+            inputId="other"
+            mode="currency"
+            :currency="bond.currency.code"
+            locale="en-US"
+            :step="500"
+          />
+        </div>
+      </div>
+      <div class="m-0 flex justify-content-start flex-wrap">
+        <div class="mx-2 font-bold text-lg">
+          <label for="minPayment" class=""> Total Monthly Expenses: </label>
+          <InputNumber
+            :input-class="boldBlendedInput"
+            v-model.lazy="totalMonthlyExpenses"
+            mode="currency"
+            :currency="bond.currency.code"
+            locale="en-US"
+            disabled
+            inputId="minPayment"
+          />
+        </div>
+      </div>
       <Divider align="left"> Insights </Divider>
       <div class="m-0 flex justify-content-evenly flex-wrap">
         <div class="mx-2">
@@ -198,43 +330,6 @@
             locale="en-US"
             disabled
             inputId="totalPayments"
-          />
-        </div>
-      </div>
-      <Divider align="left"> Repayments </Divider>
-      <div
-        class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
-      >
-        <div class="w-14rem m-1">
-          <label for="actualPayment" class="font-bold block">
-            Custom Payment Amount: {{ bond.customPayment ? "" : "*" }}</label
-          >
-          <InputGroup>
-            <InputNumber
-              v-model.lazy="bond.actualPayment"
-              mode="currency"
-              :currency="bond.currency.code"
-              locale="en-US"
-              inputId="actualPayment"
-              :step="100"
-              :min="minPayment"
-            />
-            <Button
-              icon="pi pi-refresh"
-              @click="bond.actualPayment = minPayment"
-              title="Reset to Min Payment"
-            />
-          </InputGroup>
-        </div>
-        <div class="w-14rem m-1">
-          <label for="startDate" class="font-bold block">
-            First Payment Month:
-          </label>
-          <Calendar
-            v-model.lazy="bond.startingDate"
-            view="month"
-            dateFormat="MM yy"
-            showIcon
           />
         </div>
       </div>
@@ -625,6 +720,17 @@ const dataTableArray = computed(() => {
     }
   })
   return _dataTableArray
+})
+
+const totalMonthlyExpenses = computed(() => {
+  return (
+    homeLoanProps.value.asset.ratesTaxes +
+    homeLoanProps.value.asset.insurance +
+    homeLoanProps.value.asset.levies +
+    homeLoanProps.value.asset.maintenance +
+    homeLoanProps.value.asset.other +
+    bond.actualPayment
+  )
 })
 
 const unSaved = computed(() => {

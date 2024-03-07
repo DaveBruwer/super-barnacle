@@ -36,6 +36,11 @@ const defaultHomeLoanProps = {
     purchasePrice: 750000,
     deposit: 150000,
     renovationCost: 0,
+    ratesTaxes: 3000 / 12,
+    insurance: 1500 / 12,
+    levies: 0,
+    maintenance: 3000 / 12,
+    other: 0,
   },
   bond: {
     name: "Home Loan",
