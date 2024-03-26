@@ -352,9 +352,22 @@
           :value="dataTableArray"
           tableStyle="min-width: 60rem"
         >
+          <ColumnGroup type="header">
+            <Row>
+              <Column header="Year" :rowspan="2" :colspan="2" />
+              <Column header="Opening" :colspan="2" />
+              <Column header="Closing" :colspan="2" />
+            </Row>
+            <Row>
+              <Column header="Balance" />
+              <Column header="Equity" />
+              <Column header="Balance" />
+              <Column header="Equity" />
+            </Row>
+          </ColumnGroup>
           <Column expander style="width: 4rem"></Column>
-          <Column field="year" header="Year"></Column>
-          <Column field="totalContributions" header="Contributions">
+          <Column field="year"></Column>
+          <Column field="startingCapital">
             <template #body="{ data, field }">
               <InputNumber
                 :input-class="blendedInput"
@@ -366,7 +379,7 @@
               />
             </template>
           </Column>
-          <Column field="startingCapital" header="Opening Balance">
+          <Column field="startingEquity">
             <template #body="{ data, field }">
               <InputNumber
                 :input-class="blendedInput"
@@ -378,7 +391,19 @@
               />
             </template>
           </Column>
-          <Column field="endingCapital" header="Closing Balance">
+          <Column field="endingCapital">
+            <template #body="{ data, field }">
+              <InputNumber
+                :input-class="blendedInput"
+                v-model.lazy="data[field]"
+                mode="currency"
+                :currency="bond.currency.code"
+                locale="en-US"
+                disabled
+              />
+            </template>
+          </Column>
+          <Column field="endingEquity">
             <template #body="{ data, field }">
               <InputNumber
                 :input-class="blendedInput"
@@ -601,6 +626,8 @@ import Calendar from "primevue/calendar"
 import Fieldset from "primevue/fieldset"
 import DataTable from "primevue/datatable"
 import Column from "primevue/column"
+import ColumnGroup from "primevue/columngroup"
+import Row from "primevue/row"
 import Divider from "primevue/divider"
 
 const router = useRouter()
@@ -624,6 +651,18 @@ const expandedRows = ref([])
 const initLoanProps = ref(null)
 initLoanProps.value = deepCloneBond(homeLoanProps.value.bond)
 const bond = homeLoanProps.value.bond
+
+const assetValue = ref(Array.from({ length: 60 * 12 + 1 }, () => 0))
+
+assetValue.value.forEach((_, i) => {
+  if (i > 0) {
+    assetValue.value[i] = assetValue.value[i - 1]
+  } else {
+    assetValue.value[i] =
+      homeLoanProps.value.asset.purchasePrice +
+      homeLoanProps.value.asset.renovationCost
+  }
+})
 
 bond.loanAmount = computed(
   () =>
@@ -674,6 +713,7 @@ const chartData = computed(() => {
 const dataTableArray = computed(() => {
   let _dataTableArray = []
   monthlyFigures.value.forEach((month, i) => {
+    // if it is NOT the first month of the given year, do this:
     if (
       _dataTableArray.length > 0 &&
       _dataTableArray[_dataTableArray.length - 1].year === month.year
@@ -689,6 +729,9 @@ const dataTableArray = computed(() => {
         payment: month.payment,
         monthIndex: i,
         minPayment: month.minPayment,
+        assetValue: assetValue.value[i],
+        startingEquity: assetValue.value[i] - month.startingCap,
+        endingEquity: assetValue.value[i] - month.endingCap,
       })
       _dataTableArray[_dataTableArray.length - 1].totalContributions =
         _dataTableArray[_dataTableArray.length - 1].totalContributions +
@@ -696,12 +739,20 @@ const dataTableArray = computed(() => {
         month.payment
       _dataTableArray[_dataTableArray.length - 1].endingCapital =
         month.endingCap
+      _dataTableArray[_dataTableArray.length - 1].endingEquity =
+        assetValue.value[i] - month.endingCap
+      _dataTableArray[_dataTableArray.length - 1].assetValue =
+        assetValue.value[i]
     } else {
+      // else, if it IS the FIRST month of any year, do this:
       _dataTableArray.push({
         year: month.year,
         totalContributions: month.adHocPayment + month.payment,
         endingCapital: month.endingCap,
         startingCapital: month.startingCap,
+        assetValue: assetValue.value[i],
+        startingEquity: assetValue.value[i] - month.startingCap,
+        endingEquity: assetValue.value[i] - month.endingCap,
         months: [
           {
             onceOffPayment: month.adHocPayment,
@@ -714,6 +765,9 @@ const dataTableArray = computed(() => {
             payment: month.payment,
             monthIndex: i,
             minPayment: month.minPayment,
+            assetValue: assetValue.value[i],
+            startingEquity: assetValue.value[i] - month.startingCap,
+            endingEquity: assetValue.value[i] - month.endingCap,
           },
         ],
       })
