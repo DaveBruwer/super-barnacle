@@ -359,9 +359,9 @@
               <Column header="Closing" :colspan="2" />
             </Row>
             <Row>
-              <Column header="Balance" />
+              <Column header="Loan Balance" />
               <Column header="Equity" />
-              <Column header="Balance" />
+              <Column header="Loan Balance" />
               <Column header="Equity" />
             </Row>
           </ColumnGroup>
@@ -423,43 +423,31 @@
               @cell-edit-complete="onCellEdit"
             >
               <Column field="date" header="Month" style="width: 7rem"></Column>
-              <Column field="onceOffPayment" header="Once-off Payment">
+              <Column field="interest" header="Interest Rate">
                 <template #body="{ data, field }">
-                  <InputGroup class="w-8rem">
-                    <InputNumber
-                      v-model.lazy="data[field]"
-                      mode="currency"
-                      :currency="bond.currency.code"
-                      locale="en-US"
-                      :step="500"
-                    />
-                    <Button
-                      icon="pi pi-delete-left"
-                      @click="
-                        resetOnceOffPayment(bond.adHocPayments, data.monthIndex)
-                      "
-                      title="Clear Payment"
-                    />
-                  </InputGroup>
+                  <InputNumber
+                    input-class="w-5rem"
+                    v-model="data[field]"
+                    mode="decimal"
+                    :minFractionDigits="2"
+                    :min="0"
+                    inputId="interestRate"
+                    suffix="%"
+                    :step="1"
+                  />
                 </template>
                 <template #editor="{ data, field }">
-                  <InputGroup class="w-8rem">
-                    <InputNumber
-                      v-model.lazy="data[field]"
-                      mode="currency"
-                      :currency="bond.currency.code"
-                      locale="en-US"
-                      :step="500"
-                      highlightOnFocus="true"
-                    />
-                    <Button
-                      icon="pi pi-delete-left"
-                      @click="
-                        resetOnceOffPayment(bond.adHocPayments, data.monthIndex)
-                      "
-                      title="Clear Payment"
-                    />
-                  </InputGroup>
+                  <InputNumber
+                    input-class="w-5rem"
+                    v-model="data[field]"
+                    mode="decimal"
+                    :minFractionDigits="2"
+                    :min="0"
+                    inputId="interestRate"
+                    suffix="%"
+                    highlightOnFocus="true"
+                    :step="1"
+                  />
                 </template>
               </Column>
               <Column field="payment" header="Monthly Payments">
@@ -534,34 +522,96 @@
                   </InputGroup>
                 </template>
               </Column>
-              <Column field="interest" header="Interest Rate">
+              <Column field="onceOffPayment" header="Once-off Payment">
                 <template #body="{ data, field }">
-                  <InputNumber
-                    input-class="w-5rem"
-                    v-model="data[field]"
-                    mode="decimal"
-                    :minFractionDigits="2"
-                    :min="0"
-                    inputId="interestRate"
-                    suffix="%"
-                    :step="1"
-                  />
+                  <InputGroup class="w-8rem">
+                    <InputNumber
+                      v-model.lazy="data[field]"
+                      mode="currency"
+                      :currency="bond.currency.code"
+                      locale="en-US"
+                      :step="500"
+                    />
+                    <Button
+                      icon="pi pi-delete-left"
+                      @click="
+                        resetOnceOffPayment(bond.adHocPayments, data.monthIndex)
+                      "
+                      title="Clear Payment"
+                    />
+                  </InputGroup>
                 </template>
                 <template #editor="{ data, field }">
-                  <InputNumber
-                    input-class="w-5rem"
-                    v-model="data[field]"
-                    mode="decimal"
-                    :minFractionDigits="2"
-                    :min="0"
-                    inputId="interestRate"
-                    suffix="%"
-                    highlightOnFocus="true"
-                    :step="1"
-                  />
+                  <InputGroup class="w-8rem">
+                    <InputNumber
+                      v-model.lazy="data[field]"
+                      mode="currency"
+                      :currency="bond.currency.code"
+                      locale="en-US"
+                      :step="500"
+                      highlightOnFocus="true"
+                    />
+                    <Button
+                      icon="pi pi-delete-left"
+                      @click="
+                        resetOnceOffPayment(bond.adHocPayments, data.monthIndex)
+                      "
+                      title="Clear Payment"
+                    />
+                  </InputGroup>
                 </template>
               </Column>
-              <Column field="startingCap" header="Opening Balance">
+              <Column field="assetValue" header="Home Value">
+                <template #body="{ data, field }">
+                  <InputGroup class="w-10rem">
+                    <InputNumber
+                      input-class="w-6rem"
+                      v-model.lazy="data[field]"
+                      mode="currency"
+                      :currency="bond.currency.code"
+                      locale="en-US"
+                    />
+                    <Button
+                      icon="pi pi-sort-up"
+                      @click="
+                        resetHomeValuePayment(
+                          bond.adHocMonthlyPayments,
+                          bond.customPayments,
+                          data.monthIndex,
+                          monthlyFigures[data.monthIndex - 1].payment
+                        )
+                      "
+                      title="Match Previous Value"
+                    />
+                  </InputGroup>
+                </template>
+                <template #editor="{ data, field }">
+                  <InputGroup class="w-10rem">
+                    <InputNumber
+                      input-class="w-6rem"
+                      v-model.lazy="data[field]"
+                      mode="currency"
+                      :currency="bond.currency.code"
+                      locale="en-US"
+                      :step="100"
+                      highlightOnFocus="true"
+                    />
+                    <Button
+                      icon="pi pi-sort-up"
+                      @click="
+                        resetHomeValuePayment(
+                          bond.adHocMonthlyPayments,
+                          bond.customPayments,
+                          data.monthIndex,
+                          monthlyFigures[data.monthIndex - 1].payment
+                        )
+                      "
+                      title="Match Previous Value"
+                    />
+                  </InputGroup>
+                </template>
+              </Column>
+              <Column field="endingCap" header="Loan Balance">
                 <template #body="{ data, field }">
                   <InputNumber
                     :input-class="blendedInput"
@@ -573,7 +623,7 @@
                   />
                 </template>
               </Column>
-              <Column field="endingCap" header="Closing Balance">
+              <Column field="endingEquity" header="Equity">
                 <template #body="{ data, field }">
                   <InputNumber
                     :input-class="blendedInput"
