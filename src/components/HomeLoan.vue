@@ -15,7 +15,7 @@
             <h1>
               <i :class="homeLoanProps.icon" style="font-size: 2rem" />
             </h1>
-            <InputText v-model="bond.name" />
+            <InputText v-model.lazy="bond.name" />
             <Button
               @click="
                 () => {
@@ -427,7 +427,7 @@
                 <template #body="{ data, field }">
                   <InputNumber
                     input-class="w-5rem"
-                    v-model="data[field]"
+                    v-model.lazy="data[field]"
                     mode="decimal"
                     :minFractionDigits="2"
                     :min="0"
@@ -439,13 +439,13 @@
                 <template #editor="{ data, field }">
                   <InputNumber
                     input-class="w-5rem"
-                    v-model="data[field]"
+                    v-model.lazy="data[field]"
                     mode="decimal"
                     :minFractionDigits="2"
                     :min="0"
                     inputId="interestRate"
                     suffix="%"
-                    highlightOnFocus="true"
+                    :highlightOnFocus="true"
                     :step="1"
                   />
                 </template>
@@ -494,7 +494,7 @@
                       :currency="bond.currency.code"
                       locale="en-US"
                       :step="100"
-                      highlightOnFocus="true"
+                      :highlightOnFocus="true"
                     />
                     <Button
                       icon="pi pi-sort-down"
@@ -549,7 +549,7 @@
                       :currency="bond.currency.code"
                       locale="en-US"
                       :step="500"
-                      highlightOnFocus="true"
+                      :highlightOnFocus="true"
                     />
                     <Button
                       icon="pi pi-delete-left"
@@ -593,8 +593,8 @@
                       mode="currency"
                       :currency="bond.currency.code"
                       locale="en-US"
-                      :step="100"
-                      highlightOnFocus="true"
+                      :step="5000"
+                      :highlightOnFocus="true"
                     />
                     <Button
                       icon="pi pi-sort-up"
@@ -702,16 +702,18 @@ const initLoanProps = ref(null)
 initLoanProps.value = deepCloneBond(homeLoanProps.value.bond)
 const bond = homeLoanProps.value.bond
 
-const assetValue = ref(Array.from({ length: 60 * 12 + 1 }, () => 0))
-
-assetValue.value.forEach((_, i) => {
-  if (i > 0) {
-    assetValue.value[i] = assetValue.value[i - 1]
-  } else {
-    assetValue.value[i] =
-      homeLoanProps.value.asset.purchasePrice +
-      homeLoanProps.value.asset.renovationCost
-  }
+const assetValue = computed(() => {
+  let mostRecentValue =
+    homeLoanProps.value.asset.purchasePrice +
+    homeLoanProps.value.asset.renovationCost
+  return homeLoanProps.value.asset.assetValue.map((val, i) => {
+    if (!homeLoanProps.value.asset.customValue[i]) {
+      return mostRecentValue
+    } else {
+      mostRecentValue = val
+      return val
+    }
+  })
 })
 
 bond.loanAmount = computed(
@@ -901,6 +903,10 @@ function onCellEdit(event) {
         break
       case "onceOffPayment":
         bond.adHocPayments[i] = newValue
+        break
+      case "assetValue":
+        homeLoanProps.value.asset.assetValue[i] = newValue
+        homeLoanProps.value.asset.customValue[i] = 1
         break
       default:
         console.log("Change field not regocnised: ", field)

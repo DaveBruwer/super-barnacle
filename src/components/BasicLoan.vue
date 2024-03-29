@@ -288,7 +288,7 @@
                       :currency="bond.currency.code"
                       locale="en-US"
                       :step="500"
-                      highlightOnFocus="true"
+                      :highlightOnFocus="true"
                     />
                     <Button
                       icon="pi pi-delete-left"
@@ -344,7 +344,7 @@
                       :currency="bond.currency.code"
                       locale="en-US"
                       :step="100"
-                      highlightOnFocus="true"
+                      :highlightOnFocus="true"
                     />
                     <Button
                       icon="pi pi-sort-down"
@@ -394,7 +394,7 @@
                     :min="0"
                     inputId="interestRate"
                     suffix="%"
-                    highlightOnFocus="true"
+                    :highlightOnFocus="true"
                     :step="1"
                   />
                 </template>

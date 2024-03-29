@@ -41,6 +41,8 @@ const defaultHomeLoanProps = {
     levies: 0,
     maintenance: 3000 / 12,
     other: 0,
+    assetValue: Array.from({ length: 60 * 12 + 1 }, () => 0),
+    customValue: Array.from({ length: 60 * 12 + 1 }, () => 0),
   },
   bond: {
     name: "Home Loan",
