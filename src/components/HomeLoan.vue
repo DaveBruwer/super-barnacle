@@ -124,6 +124,7 @@
             :currency="bond.currency.code"
             locale="en-US"
             disabled
+            input-class="opacity-100"
           />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
@@ -204,6 +205,7 @@
             locale="en-US"
             inputId="actualPayment"
             disabled
+            input-class="opacity-100"
           />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
@@ -573,14 +575,7 @@
                     />
                     <Button
                       icon="pi pi-sort-up"
-                      @click="
-                        resetHomeValuePayment(
-                          bond.adHocMonthlyPayments,
-                          bond.customPayments,
-                          data.monthIndex,
-                          monthlyFigures[data.monthIndex - 1].payment
-                        )
-                      "
+                      @click="resetHomeValue(data.monthIndex)"
                       title="Match Previous Value"
                     />
                   </InputGroup>
@@ -598,14 +593,7 @@
                     />
                     <Button
                       icon="pi pi-sort-up"
-                      @click="
-                        resetHomeValuePayment(
-                          bond.adHocMonthlyPayments,
-                          bond.customPayments,
-                          data.monthIndex,
-                          monthlyFigures[data.monthIndex - 1].payment
-                        )
-                      "
+                      @click="resetHomeValue(data.monthIndex)"
                       title="Match Previous Value"
                     />
                   </InputGroup>
@@ -914,6 +902,11 @@ function onCellEdit(event) {
   } else {
     console.log("no change")
   }
+}
+
+function resetHomeValue(i) {
+  homeLoanProps.value.asset.customValue[i] = 0
+  homeLoanProps.value.asset.assetValue[i] = 0
 }
 
 async function saveLoan() {
