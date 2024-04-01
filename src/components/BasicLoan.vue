@@ -515,6 +515,8 @@ const chartData = computed(() => {
       {
         label: "Loan Balance",
         data: Array.from(monthlyFigures.value, (x) => x.endingCap),
+        borderColor: "#318dcc",
+        backgroundColor: "#245a7f",
       },
       {
         label: "Original Loan Balance",
@@ -522,6 +524,8 @@ const chartData = computed(() => {
         fill: false,
         borderDash: [2],
         borderWidth: 2,
+        borderColor: "#c75069",
+        backgroundColor: "#893b4b",
       },
     ],
   }

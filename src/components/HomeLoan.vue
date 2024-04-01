@@ -731,13 +731,25 @@ const finalMonthName = computed(() => getMonthName(finalMonth.value))
 const finalYear = computed(() =>
   monthlyFigures.value[monthlyFigures.value.length - 1].date.getFullYear()
 )
+
 const chartData = computed(() => {
   return {
     labels: Array.from(defaultFigures.value, (x) => x.dateString),
     datasets: [
       {
+        label: "Equity",
+        data: Array.from(
+          monthlyFigures.value,
+          (x, i) => assetValue.value[i] - x.endingCap
+        ),
+        borderColor: "#F4D03F",
+        backgroundColor: "#F7DC6F80",
+      },
+      {
         label: "Loan Balance",
         data: Array.from(monthlyFigures.value, (x) => x.endingCap),
+        borderColor: "#318dcc",
+        backgroundColor: "#245a7f",
       },
       {
         label: "Original Loan Balance",
@@ -745,6 +757,8 @@ const chartData = computed(() => {
         fill: false,
         borderDash: [2],
         borderWidth: 2,
+        borderColor: "#c75069",
+        backgroundColor: "#893b4b",
       },
     ],
   }
