@@ -691,9 +691,14 @@ initLoanProps.value = deepCloneBond(homeLoanProps.value.bond)
 const bond = homeLoanProps.value.bond
 
 const assetValue = computed(() => {
+  // console.log(homeLoanProps.value.asset.assetValue)
+  // console.log(homeLoanProps.value.asset.customValue)
   let mostRecentValue =
     homeLoanProps.value.asset.purchasePrice +
     homeLoanProps.value.asset.renovationCost
+  // console.log(mostRecentValue)
+  // console.log(homeLoanProps.value.asset.assetValue)
+  // console.log(homeLoanProps.value.asset.customValue)
   return homeLoanProps.value.asset.assetValue.map((val, i) => {
     if (!homeLoanProps.value.asset.customValue[i]) {
       return mostRecentValue
@@ -843,12 +848,19 @@ const totalMonthlyExpenses = computed(() => {
 
 const unSaved = computed(() => {
   // const initBondJSON = ref(null)
+
+  // const bond = homeLoanProps.value.bond
   try {
     if (authStore.userLoans[bond.name]) {
       const initBondJSON = JSON.stringify(authStore.userLoans[bond.name].bond)
-      const bondJSON = JSON.stringify(bond)
+      const bondJSON = JSON.stringify(homeLoanProps.value.bond)
+      const initAssetJSON = JSON.stringify(authStore.userLoans[bond.name].asset)
+      const assetJSON = JSON.stringify(homeLoanProps.value.asset)
+      // console.log(JSON.stringify(authStore.userLoans[bond.name].asset))
+      // console.log(JSON.stringify(homeLoanProps.value.asset))
+      console.log(initBondJSON === initBondJSON)
 
-      if (initBondJSON === bondJSON) {
+      if (initBondJSON === bondJSON && initAssetJSON === assetJSON) {
         return false
       }
     }
@@ -938,8 +950,7 @@ async function saveLoan() {
         bond,
       }
     } else {
-      authStore.userLoans[bond.name].asset = homeLoanProps.value.asset
-      authStore.userLoans[bond.name].bond = deepCloneBond(bond)
+      authStore.userLoans[bond.name] = deepCloneBond(homeLoanProps.value)
     }
 
     await setDoc(doc(db, "Users", auth.currentUser.uid, "Loans", bond.name), {
