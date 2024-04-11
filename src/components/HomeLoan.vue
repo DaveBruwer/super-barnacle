@@ -743,10 +743,13 @@ const chartData = computed(() => {
     datasets: [
       {
         label: "Equity",
-        data: Array.from(
-          monthlyFigures.value,
-          (x, i) => assetValue.value[i] - x.endingCap
-        ),
+        data: Array.from(defaultFigures.value, (x, i) => {
+          if (monthlyFigures.value[i]) {
+            return assetValue.value[i] - monthlyFigures.value[i].endingCap
+          } else {
+            return assetValue.value[i]
+          }
+        }),
         borderColor: "#F4D03F",
         backgroundColor: "#F7DC6F80",
       },
