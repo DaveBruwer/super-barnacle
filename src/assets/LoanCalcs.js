@@ -64,13 +64,20 @@ export function monthlyCalcs(bond) {
   let _monthlyFigures = []
   do {
     const _i = _monthlyFigures.length
+    // console.log(_i)
+    // console.log(bond.startingDate.getMonth())
 
     // calcs go here
     //date & dateString
-    const tempDate = new Date(bond.startingDate).setMonth(
-      bond.startingDate.getMonth() + _i
-    )
+    const tempDate = new Date(
+      bond.startingDate.getFullYear(),
+      bond.startingDate.getMonth(),
+      1
+    ).setMonth(bond.startingDate.getMonth() + _i)
+    console.log(new Date(tempDate))
+    // console.log(new Date(tempDate).getMonth())
     const tempDateString = getDateString(new Date(tempDate))
+    // console.log(tempDateString)
 
     // Starting Capital
     let startingCap
