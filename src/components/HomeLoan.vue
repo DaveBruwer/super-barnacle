@@ -72,6 +72,7 @@
             :currency="bond.currency.code"
             locale="en-US"
             :step="50000"
+            :highlightOnFocus="true"
           />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
@@ -83,6 +84,7 @@
             :currency="bond.currency.code"
             locale="en-US"
             :step="5000"
+            :highlightOnFocus="true"
           />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
@@ -96,6 +98,7 @@
             :currency="bond.currency.code"
             locale="en-US"
             :step="5000"
+            :highlightOnFocus="true"
           />
         </div>
       </div>
@@ -125,6 +128,7 @@
             locale="en-US"
             disabled
             input-class="opacity-100"
+            :highlightOnFocus="true"
           />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
@@ -139,6 +143,7 @@
             :min="0"
             inputId="interestRate"
             suffix="%"
+            :highlightOnFocus="true"
           />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
@@ -150,6 +155,7 @@
             inputId="loanPeriod"
             suffix=" Yrs"
             :step="5"
+            :highlightOnFocus="true"
           />
         </div>
       </div>
@@ -170,6 +176,7 @@
               inputId="actualPayment"
               :step="100"
               :min="minPayment"
+              :highlightOnFocus="true"
             />
             <Button
               icon="pi pi-refresh"
@@ -219,6 +226,7 @@
             :currency="bond.currency.code"
             locale="en-US"
             :step="500"
+            :highlightOnFocus="true"
           />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
@@ -230,6 +238,7 @@
             :currency="bond.currency.code"
             locale="en-US"
             :step="500"
+            :highlightOnFocus="true"
           />
         </div>
       </div>
@@ -245,6 +254,7 @@
             :currency="bond.currency.code"
             locale="en-US"
             :step="500"
+            :highlightOnFocus="true"
           />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
@@ -258,6 +268,7 @@
             :currency="bond.currency.code"
             locale="en-US"
             :step="500"
+            :highlightOnFocus="true"
           />
         </div>
         <div class="w-14rem m-1 md:mx-6 lg:mx-1">
@@ -269,6 +280,7 @@
             :currency="bond.currency.code"
             locale="en-US"
             :step="500"
+            :highlightOnFocus="true"
           />
         </div>
       </div>
