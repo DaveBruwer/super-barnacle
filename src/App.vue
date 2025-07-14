@@ -1,6 +1,8 @@
 <template>
   <div class="flex flex-column align-items-center">
+    <!-- The dHeader.vue component renders here -->
     <dHeader />
+    <!-- The router view renders here inside this div -->
     <div
       style="max-width: 60rem"
       class="m-2 w-full flex flex-column align-items-center"
@@ -8,6 +10,7 @@
       <RouterView />
     </div>
   </div>
+  <!-- This is the loading dialog box that pops up over page while its loading -->
   <dialog ref="progressSpinnerModal" class="w-auto h-auto border-none">
     <div
       class="flex justify-content-center align-itmes-center align-content-center w-full h-full"
@@ -25,8 +28,9 @@ import dHeader from "./components/dHeader.vue"
 import { miscStore } from "./stores/miscStore"
 import { ref, watch, onMounted } from "vue"
 
-const progressSpinnerModal = ref(null)
+const progressSpinnerModal = ref(null) // Used to control the loading dialog box.
 
+// watcher is created to watch the progressSpinnerActive variable in the miscStore. This is the main variable that controls the loading dialog box.
 onMounted(() => {
   watch(
     () => miscStore.progressSpinnerActive,
@@ -37,7 +41,7 @@ onMounted(() => {
     }
   )
 
-  miscStore.progressSpinnerActive = false
+  miscStore.progressSpinnerActive = false //loading dialog box is initialised to off.
 })
 </script>
 
