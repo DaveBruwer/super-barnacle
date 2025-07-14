@@ -30,7 +30,7 @@ import { ref, watch, onMounted } from "vue"
 
 const progressSpinnerModal = ref(null) // Used to control the loading dialog box.
 
-// watcher is created to watch the progressSpinnerActive variable in the miscStore. This is the main variable that controls the loading dialog box.
+// A watcher is created to watch the progressSpinnerActive variable in the miscStore. This is the main variable that controls the loading dialog box.
 onMounted(() => {
   watch(
     () => miscStore.progressSpinnerActive,
