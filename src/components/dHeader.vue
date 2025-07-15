@@ -10,35 +10,6 @@
         <router-link :to="item.route">
           <Button :icon="item.icon" severity="info" class="mx-2" />
         </router-link>
-        <!-- <router-link
-          class="p-2 bg-white h-4rem"
-          v-if="item.route"
-          :to="item.route"
-        >
-          <i :class="item.icon" /> {{ item.label }}
-        </router-link> -->
-        <!-- <router-link
-          v-if="item.route"
-          v-slot="routerProps"
-          :to="item.route"
-          custom
-        >
-          <a :href="item.route" v-bind="props.action">
-            <span v-bind="props.icon" />
-            <span v-bind="props.label">{{ label }}</span>
-          </a>
-        </router-link> -->
-        <!-- <a v-else :href="item.url" :target="item.target" v-bind="props.action">
-          <span v-bind="props.icon" />
-          <span v-bind="props.label">{{ label }}</span>
-          <span
-            :class="[
-              hasSubmenu &&
-                (root ? 'pi pi-fw pi-angle-down' : 'pi pi-fw pi-angle-right'),
-            ]"
-            v-bind="props.submenuicon"
-          />
-        </a> -->
       </template>
       <template #end>
         <div class="flex justify-content-between">
@@ -116,64 +87,6 @@ const items = ref([
     icon: "pi pi-car",
     route: "/CarLoan",
   },
-  // {
-  //   label: "Loan Simulators",
-  //   icon: "pi pi-chart-line",
-  //   items: [
-  //     {
-  //       label: "Basic Loan",
-  //       icon: "pi pi-chart-line",
-  //       route: "/Basic",
-  //     },
-  //     {
-  //       label: "Home Loan",
-  //       icon: "pi pi-home",
-  //       route: "/HomeLoan",
-  //     },
-  //     {
-  //       label: "Car Loan",
-  //       icon: "pi pi-car",
-  //       route: "/CarLoan",
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: "Cost of Ownership",
-  //   icon: "pi pi-dollar",
-  //   items: [
-  //     {
-  //       label: "Home",
-  //       icon: "pi pi-home",
-  //       route: "/HomeCost",
-  //     },
-  //     {
-  //       label: "Car",
-  //       icon: "pi pi-car",
-  //       route: "/CarCost",
-  //     },
-  //   ],
-  // },
-  // {
-  //   label: "Cashflow Calculators",
-  //   icon: "pi pi-dollar",
-  //   items: [
-  //     {
-  //       label: "Rental Property",
-  //       icon: "pi pi-home",
-  //       route: "/RentalProperty",
-  //     },
-  //     {
-  //       label: "House Flip",
-  //       icon: "pi pi-wrench",
-  //       route: "/HouseFlip",
-  //     },
-  //     {
-  //       label: "Property Development",
-  //       icon: "pi pi-building",
-  //       route: "/PropDev",
-  //     },
-  //   ],
-  // },
 ])
 
 watch(
