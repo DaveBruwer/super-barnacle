@@ -1,12 +1,13 @@
 <template>
   <div class="w-full card relative z-2">
+    <!--Menubar item from Primevue-->
     <Menubar :model="items">
       <template #start>
         <router-link class="p-menuitem" to="/">
           <img alt="logo" src="/LoanSim_Icon3.svg" height="40" class="mr-2" />
         </router-link>
       </template>
-      <template #item="{ label, item, props, root, hasSubmenu }">
+      <template #item="{ item }">
         <router-link :to="item.route">
           <Button :icon="item.icon" severity="info" class="mx-2" />
         </router-link>
