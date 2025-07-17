@@ -4,17 +4,20 @@
       class="w-full flex flex-column justify-content-center"
       style="max-width: 60rem"
     >
+      <!--Top row with loan name and save button-->
       <div
         class="flex justify-content-between align-items-center align-content-center"
       >
-        <div>
+        <div class="flex align-items-left">
+          <!--Chart Icon-->
+          <h1 class="mx-2">
+            <i :class="basicLoanProps.icon" style="font-size: 2rem" />
+          </h1>
+          <!--This div only renders if the loan name is being edited-->
           <div
             v-if="showEditName"
             class="flex justify-content-between align-items-center align-content-center"
           >
-            <h1>
-              <i :class="basicLoanProps.icon" style="font-size: 2rem" />
-            </h1>
             <InputText v-model="bond.name" />
             <Button
               @click="
@@ -28,14 +31,16 @@
               class="h-2rem m-1"
             />
           </div>
+          <!--This section below is rendered by default to display the loan name and edit button.-->
           <div
             v-else
             class="flex justify-content-between align-items-center align-content-center"
           >
+            <!--Name of Loan.-->
             <h1>
-              <i class="pi pi-chart-line" style="font-size: 2rem" />
               {{ bond.name }}
             </h1>
+            <!--Button to edit name of loan.-->
             <Button
               @click="
                 () => {
@@ -50,6 +55,7 @@
             />
           </div>
         </div>
+        <!--Save button to save changes to the laon.-->
         <Button
           @click="saveLoan"
           :disabled="!unSaved"
@@ -58,6 +64,7 @@
           class="h-2rem"
         />
       </div>
+      <!--First row with currency, loan amount, interest rate, loan period-->
       <div
         class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
       >
@@ -114,6 +121,7 @@
         </div>
       </div>
       <Divider align="left"> Repayments </Divider>
+      <!--Second row with custom payment amount and first payment month-->
       <div
         class="flex flex-column md:flex-row flex-wrap justify-content-around align-content-around"
       >
@@ -152,6 +160,7 @@
         </div>
       </div>
       <Divider align="left"> Insights </Divider>
+      <!--Insights row-->
       <div class="m-0 flex justify-content-evenly flex-wrap">
         <div class="mx-2">
           <label for="minPayment" class=""> Minimum monthly repayments: </label>
@@ -201,6 +210,7 @@
         </div>
       </div>
       <Divider align="left"> Balance </Divider>
+      <!--Balance row with chart-->
       <div class="w-full card align-self-center">
         <PrimeChart
           ref="primaryChart"
@@ -208,6 +218,7 @@
           :currency-symbol="bond.currency.symbol"
         />
       </div>
+      <!--Collapsable section with advanced options-->
       <Fieldset
         class="m-3 flex justify-content-center"
         legend="Advanced"
