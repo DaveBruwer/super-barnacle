@@ -10,6 +10,7 @@
     <h2 class="w-auto">
       Understand, Forecast, and Track your loans in one place!
     </h2>
+    <!--Card for the basic loan calculator page.-->
     <router-link to="/Basic">
       <Card class="mycard">
         <template #title
@@ -31,6 +32,7 @@
     <div
       class="flex flex-wrap justify-content-around align-content-around gap-3"
     >
+      <!--Card for the home loan calculator page.-->
       <router-link to="/HomeLoan">
         <Card class="mycard">
           <template #title
@@ -44,6 +46,7 @@
           </template>
         </Card>
       </router-link>
+      <!--Card for the car loan calculator page.-->
       <router-link to="/CarLoan">
         <Card class="mycard">
           <template #title
@@ -59,78 +62,6 @@
         </Card>
       </router-link>
     </div>
-    <!-- <Divider align="left"
-      ><i class="pi pi-dollar" /> Cost of Ownership
-    </Divider>
-    <div
-      class="flex flex-wrap justify-content-around align-content-around gap-3"
-    >
-      <router-link to="/HomeCost">
-        <Card class="mycard">
-          <template #title
-            ><i class="pi pi-dollar" style="font-size: 1rem" /><i
-              class="pi pi-home"
-              style="font-size: 2rem"
-            />
-            Home
-          </template>
-          <template #content>
-            <p class="m-0">
-              Understand the total cost of buying that dream property. Mortgage
-              repayments, rates & taxes, upkeep, etc.
-            </p>
-          </template>
-        </Card>
-      </router-link>
-      <router-link to="/CarCost">
-        <Card class="mycard">
-          <template #title
-            ><i class="pi pi-dollar" style="font-size: 1rem" /><i
-              class="pi pi-car"
-              style="font-size: 2rem"
-            />
-            Car
-          </template>
-          <template #content>
-            <p class="m-0">
-              Understand the total cost of buying that dream car. Loan
-              repayments, insurance, upkeep, etc.
-            </p>
-          </template>
-        </Card>
-      </router-link>
-    </div> -->
-    <!-- <Divider align="left"><i class="pi pi-dollar" /> Cashflow </Divider>
-    <div
-      class="flex flex-wrap justify-content-around align-content-around gap-3"
-    >
-      <router-link to="/RentalProperty">
-        <Card class="mycard">
-          <template #title
-            ><i class="pi pi-home" style="font-size: 2rem" /> Rental Property
-          </template>
-          <template #content>
-            <p class="m-0">
-              Keep track of any rental property! Compare the mortgage repayments
-              with rental income, vacancy rate, etc.
-            </p>
-          </template>
-        </Card>
-      </router-link>
-      <router-link to="/HouseFlip">
-        <Card class="mycard">
-          <template #title
-            ><i class="pi pi-home" style="font-size: 2rem" /> House Flip
-          </template>
-          <template #content>
-            <p class="m-0">
-              Easily calculate what needs to be done to flip that property for a
-              profit. Renovation costs, comp. prices, etc.
-            </p>
-          </template>
-        </Card>
-      </router-link>
-    </div> -->
   </div>
 </template>
 
