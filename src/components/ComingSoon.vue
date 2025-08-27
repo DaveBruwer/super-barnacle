@@ -10,6 +10,13 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import { whenMounted } from "../assets/onMounted"
+import { onMounted } from "vue"
+
+onMounted(() => {
+  whenMounted()
+})
+</script>
 
 <style></style>

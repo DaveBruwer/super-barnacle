@@ -87,6 +87,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth"
 import { doc, setDoc } from "firebase/firestore"
 import { useRouter } from "vue-router"
 import { miscStore } from "../stores/miscStore"
+import { whenMounted } from "../assets/onMounted"
 
 const router = useRouter()
 
@@ -114,6 +115,7 @@ const v$ = useVuelidate(rules, registrationData)
 // .......................
 onMounted(() => {
   disableSubmit.value = false
+  whenMounted()
 })
 
 async function registerNewUser(registrationData) {

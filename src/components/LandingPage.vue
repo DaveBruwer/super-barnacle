@@ -68,6 +68,12 @@
 <script setup>
 import Card from "primevue/card"
 import Divider from "primevue/divider"
+import { whenMounted } from "../assets/onMounted"
+import { onMounted } from "vue"
+
+onMounted(() => {
+  whenMounted()
+})
 </script>
 
 <style>

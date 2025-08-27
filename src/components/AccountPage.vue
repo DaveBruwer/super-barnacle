@@ -103,6 +103,7 @@ import { useRouter } from "vue-router"
 import { miscStore } from "../stores/miscStore"
 import { useVuelidate } from "@vuelidate/core"
 import { required, minLength, maxLength } from "@vuelidate/validators"
+import { whenMounted } from "../assets/onMounted"
 
 const router = useRouter()
 
@@ -143,7 +144,7 @@ onMounted(async () => {
     { immediate: true }
   )
   signOutEnabled.value = true
-  miscStore.progressSpinnerActive = false
+  whenMounted()
 })
 
 async function signOutUser() {

@@ -60,6 +60,7 @@ import { auth } from "../firebase"
 import { signInWithEmailAndPassword } from "firebase/auth"
 import { useRouter } from "vue-router"
 import { miscStore } from "../stores/miscStore"
+import { whenMounted } from "../assets/onMounted"
 
 const router = useRouter()
 
@@ -82,6 +83,7 @@ const v$ = useVuelidate(rules, loginData)
 // .......................
 onMounted(() => {
   disableSubmit.value = false
+  whenMounted()
 })
 
 async function logInNewUser(loginData) {

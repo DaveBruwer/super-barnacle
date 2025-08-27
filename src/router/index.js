@@ -127,6 +127,7 @@ const router = createRouter({
 })
 
 router.beforeEach(async () => {
+  console.log("before router")
   miscStore.progressSpinnerActive = true
   await auth.authStateReady().then(
     setTimeout(() => {
@@ -135,8 +136,9 @@ router.beforeEach(async () => {
   )
 })
 
-router.afterEach(() => {
-  miscStore.progressSpinnerActive = false
-})
+// router.afterEach(() => {
+//   miscStore.progressSpinnerActive = false
+//   console.log("after router")
+// })
 
 export default router

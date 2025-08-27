@@ -459,6 +459,7 @@ import {
   resetMonthlyPayment,
   matchMonthlyPayment,
 } from "../assets/LoanCalcs"
+import { whenMounted } from "../assets/onMounted.js"
 
 import { useRouter } from "vue-router"
 import { miscStore } from "../stores/miscStore"
@@ -493,6 +494,7 @@ onMounted(() => {
     },
     { immediate: true }
   )
+  whenMounted()
 })
 
 const showEditName = ref(false)

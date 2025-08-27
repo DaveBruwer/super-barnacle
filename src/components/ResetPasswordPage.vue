@@ -46,6 +46,7 @@ import { RouterLink } from "vue-router"
 import { auth } from "../firebase"
 import { sendPasswordResetEmail } from "firebase/auth"
 import { miscStore } from "../stores/miscStore"
+import { whenMounted } from "../assets/onMounted"
 
 const resetData = reactive({
   email: "",
@@ -64,6 +65,7 @@ const v$ = useVuelidate(rules, resetData)
 // .......................
 onMounted(() => {
   disableSubmit.value = false
+  whenMounted()
 })
 
 async function resetPassword(resetData) {

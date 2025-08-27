@@ -103,6 +103,7 @@ import { getDateString } from "../assets/LoanCalcs"
 import { db } from "../firebase"
 import { doc, setDoc } from "firebase/firestore"
 import { miscStore } from "../stores/miscStore"
+import { whenMounted } from "../assets/onMounted"
 
 const messagePayload = reactive({
   name: "",
@@ -143,6 +144,7 @@ onMounted(() => {
     messagePayload.email = authStore.user.email
   }
   disableSubmit.value = false
+  whenMounted()
 })
 
 async function submitMessage(payload) {
